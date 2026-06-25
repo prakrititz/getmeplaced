@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Layers, CheckSquare, User, AppWindow, Settings, Cpu, ChevronRight, RotateCcw, Server, Activity, FolderOpen, Terminal, ArrowDownUp, Code, Power, HardDrive, Database, AlertTriangle, ShieldCheck, AlertOctagon, Skull } from 'lucide-react';
+import { BookOpen, Layers, CheckSquare, User, AppWindow, Settings, Cpu, ChevronRight, RotateCcw, Server, Activity, FolderOpen, Terminal, ArrowDownUp, Code, Power, HardDrive, Database, AlertTriangle, ShieldCheck, AlertOctagon, Skull, Sun, Moon, Menu, X } from 'lucide-react';
 
 // --- DATA STRUCTURE ---
 const courseModules = [
@@ -1430,77 +1430,601 @@ const courseModules = [
       { question: "In the Page Fault Frequency technique, what action is taken if the page-fault rate exceeds the upper limit?", options: ["Kill the process.", "Allocate the process another frame.", "Remove a frame from the process.", "Restart the computer."], answer: 1 },
       { question: "Which thrashing prevention technique is directly based on the 'Locality Model'?", options: ["Page Fault Frequency", "Working Set Model", "Optimal Page Replacement", "Demand Paging"], answer: 1 }
     ]
+  },
+  {
+    id: 'dbms_arch',
+    title: '17. DBMS Architecture',
+    notes: {
+      threeSchema: {
+        title: "1. View of Data (Three Schema Architecture)",
+        intro: "The major purpose of DBMS is to provide users with an abstract view of the data. That is, the system hides certain details of how the data is stored and maintained.",
+        objective: "To enable multiple users to access the same data with a personalized view while storing the underlying data only once.",
+        levels: [
+          {
+            name: "Physical level / Internal level",
+            desc: "The lowest level of abstraction describes how the data are stored. Low-level data structures used.",
+            details: ["Has Physical schema which describes physical storage structure.", "Talks about Storage allocation (N-ary tree etc), Data compression & encryption.", "Goal: We must define algorithms that allow efficient access to data."]
+          },
+          {
+            name: "Logical level / Conceptual level",
+            desc: "Describes the design of a database at the conceptual level (what data are stored, relationships).",
+            details: ["User at logical level does not need to be aware about physical-level structures.", "DBA uses this level to decide what information to keep in DB.", "Goal: ease to use."]
+          },
+          {
+            name: "View level / External level",
+            desc: "Highest level of abstraction aims to simplify users' interaction by providing different view to different end-user.",
+            details: ["View schema describes part of DB user is interested in, hides the rest.", "Contains subschemas to describe different views.", "Provides a security mechanism to prevent unauthorized access."]
+          }
+        ]
+      },
+      instancesSchemas: {
+        title: "2. Instances and Schemas",
+        points: [
+          { term: "Instance", desc: "The collection of information stored in the DB at a particular moment." },
+          { term: "Schema", desc: "The overall design of the DB. Structural description of data (doesn't change frequently)." },
+          { term: "Types of Schemas", desc: "Physical, Logical, and several view schemas (subschemas)." },
+          { term: "Logical Schema", desc: "Most important in terms of its effect on application programs (programmers construct apps using logical schema)." },
+          { term: "Physical Data Independence", desc: "Physical schema changes should not affect logical schema/application programs." }
+        ]
+      },
+      dataModels: {
+        title: "3. Data Models",
+        points: [
+          "Provides a way to describe the design of a DB at logical level.",
+          "Underlying structure of the DB is the Data Model; a collection of conceptual tools for describing data, relationships, semantics & consistency constraints.",
+          "E.g., ER model, Relational Model, object-oriented model, object-relational data model etc."
+        ]
+      },
+      databaseLanguages: {
+        title: "4. Database Languages",
+        ddl: { name: "Data Definition Language (DDL)", desc: "Specify database schema and consistency constraints checked on every update." },
+        dml: { 
+          name: "Data Manipulation Language (DML)", 
+          desc: "Express database queries and updates (Retrieval, Insertion, Deletion, Updating existing information).",
+          query: "Query language is a part of DML used to specify statements requesting the retrieval of information."
+        }
+      },
+      appAccess: {
+        title: "5. Database Access from Apps",
+        desc: "Apps (written in host languages like C/C++, Java) interact with DB. APIs are provided to send DML/DDL statements to DB and retrieve results (e.g., ODBC for C, JDBC for Java)."
+      },
+      dba: {
+        title: "6. Database Administrator (DBA)",
+        desc: "A person who has central control of both the data and the programs that access those data.",
+        functions: ["Schema Definition", "Storage structure & access methods", "Schema and physical organization modifications", "Authorization control", "Routine maintenance (Periodic backups, Security patches, Any upgrades)"]
+      },
+      architectures: {
+        title: "7. DBMS Application Architectures",
+        types: [
+          { name: "1-Tier (T1)", desc: "The client, server & DB all present on the same machine." },
+          { name: "2-Tier (T2)", desc: "App partitioned into 2-components. Client invokes DB at server end through query statements using APIs like ODBC & JDBC." },
+          { name: "3-Tier (T3)", desc: "App partitioned into 3 logical components. Client acts as frontend. App server acts as middle layer handling Business Logic and communicating with DB. Best for WWW.", advantages: ["Scalability due to distributed app servers", "Data integrity via middle layer", "Security, client can't directly access DB"] }
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is the main objective of the Three Schema Architecture?", back: "To enable multiple users to access the same data with a personalized view while storing the underlying data only once." },
+      { front: "Which level of abstraction is concerned with data compression, encryption, and storage algorithms?", back: "Physical level / Internal level." },
+      { front: "What is the difference between an Instance and a Schema?", back: "An Instance is the data at a particular moment (changes frequently), while a Schema is the overall structural design (doesn't change frequently)." },
+      { front: "What is DDL and DML?", back: "DDL (Data Definition Language) specifies the schema and constraints. DML (Data Manipulation Language) handles queries, inserts, deletes, and updates." },
+      { front: "What are the advantages of a 3-Tier (T3) Architecture over a 2-Tier?", back: "1. Scalability (distributed app servers)\n2. Data integrity (middle layer minimizes corruption)\n3. Better Security (clients can't access DB directly)." }
+    ],
+    quiz: [
+      { question: "Which level of database abstraction is used by the Database Administrator (DBA) to decide what information to keep?", options: ["Physical level", "Logical level", "View level", "Hardware level"], answer: 1 },
+      { question: "A structural description of data that doesn't change frequently is called a:", options: ["Data Model", "Instance", "Schema", "Constraint"], answer: 2 },
+      { question: "Which language feature is used to define consistency constraints checked during every DB update?", options: ["Data Manipulation Language (DML)", "Query Language", "Data Definition Language (DDL)", "Host Language"], answer: 2 },
+      { question: "In which architecture does the Application Server act as a middle layer containing business logic?", options: ["1-Tier", "2-Tier", "3-Tier", "Distributed-Tier"], answer: 2 }
+    ]
+  },
+  {
+    id: 'er_model',
+    title: '18. Entity-Relationship Model',
+    notes: {
+      intro: {
+        title: "1. Data Model & ER Model",
+        dataModel: "Collection of conceptual tools for describing data, data relationships, data semantics, and consistency constraints.",
+        erModel: [
+          "It is a high level data model based on a perception of a real world that consists of a collection of basic objects, called entities and of relationships among these objects.",
+          "Graphical representation of ER Model is ER diagram, which acts as a blueprint of DB."
+        ]
+      },
+      entities: {
+        title: "2. Entities & Entity Sets",
+        entityDef: "An Entity is a 'thing' or 'object' in the real world that is distinguishable from all other objects (e.g., each student in a college). It has physical existence and can be uniquely identified by a primary attribute (Primary Key).",
+        entityTypes: [
+          { name: "Strong Entity", desc: "Can be uniquely identified." },
+          { name: "Weak Entity", desc: "Cannot be uniquely identified on its own. Depends on some other strong entity for its existence. It doesn't have sufficient attributes to select a uniquely identifiable attribute (e.g., Loan -> Strong Entity, Payment -> Weak Entity)." }
+        ],
+        entitySet: "It is a set of entities of the same type that share the same properties, or attributes (e.g., Student, Customer of a bank)."
+      },
+      attributes: {
+        title: "3. Attributes & Types",
+        attributeDef: "An entity is represented by a set of attributes (e.g., Student_ID, Name, Standard, Course, Batch, Contact number, Address). For each attribute, there is a set of permitted values called the domain (or value set).",
+        types: [
+          { name: "Simple", desc: "Attributes which can't be divided further (e.g., Account number, Roll number)." },
+          { name: "Composite", desc: "Can be divided into subparts (e.g., Name into first-name, middle-name, last-name; Address into street, city, state, PIN)." },
+          { name: "Single-valued", desc: "Only one value attribute (e.g., Student ID)." },
+          { name: "Multi-valued", desc: "Attribute having more than one value (e.g., phone-number, dependent-name). May have upper or lower limits applied." },
+          { name: "Derived", desc: "Value of this type can be derived from the value of other related attributes (e.g., Age from date of birth, membership-period)." },
+          { name: "NULL Value", desc: "When an entity does not have a value for it. May indicate 'not applicable' (value doesn't exist, e.g., no middle-name) or 'unknown' (missing entry or not known yet, e.g., salary)." }
+        ]
+      },
+      relationships: {
+        title: "4. Relationships & Constraints",
+        relationshipDef: "Association among two or more entities (e.g., Person has vehicle, Customer borrow loan).",
+        relationshipTypes: [
+          "Strong Relationship: between two independent entities.",
+          "Weak Relationship: between weak entity and its owner/strong entity."
+        ],
+        degree: "Number of entities participating in a relationship (Unary, Binary (most common), Ternary).",
+        cardinality: {
+          title: "Mapping Cardinality / Cardinality Ratio",
+          desc: "Number of entities to which another entity can be associated via a relationship.",
+          types: [
+            { name: "One to one (1:1)", desc: "Entity in A associates with at most one entity in B, and vice versa (e.g., Citizen has Aadhar Card)." },
+            { name: "One to many (1:N)", desc: "Entity in A associated with N entities in B, but entity in B is associated with at most one entity in A (e.g., Citizen has Vehicle)." },
+            { name: "Many to one (N:1)", desc: "Entity in A associated with at most one entity in B, but entity in B can be associated with N entities in A (e.g., Course taken by Professor)." },
+            { name: "Many to many (M:N)", desc: "Entity in A associated with N entities in B, and entity in B associated with N entities in A (e.g., Customer buys product, Student attend course)." }
+          ]
+        },
+        participation: {
+          title: "Participation Constraints",
+          desc: "Also known as Minimum cardinality constraint.",
+          types: [
+            { name: "Partial Participation", desc: "Not all entities are involved in the relationship instance." },
+            { name: "Total Participation", desc: "Each entity must be involved in at least one relationship instance (e.g., Loan has total participation in 'Customer borrow loan' as it can't exist without a customer). Weak entities have total participation constraint." }
+          ]
+        }
+      },
+      notations: {
+        title: "5. ER Notations (Symbols)",
+        symbols: [
+          { symbol: "Rectangle", meaning: "Entity" },
+          { symbol: "Double Rectangle", meaning: "Weak Entity" },
+          { symbol: "Oval", meaning: "Attribute" },
+          { symbol: "Double Oval", meaning: "Multi-valued Attribute" },
+          { symbol: "Oval with underline", meaning: "Primary Key Attribute" },
+          { symbol: "Oval with dashed underline", meaning: "Weak Key Attribute" },
+          { symbol: "Dashed Oval", meaning: "Derived Attribute" },
+          { symbol: "Diamond", meaning: "Relationship" },
+          { symbol: "Double Diamond", meaning: "Weak Relationship" },
+          { symbol: "Double Line", meaning: "Total Participation" }
+        ]
+      },
+      trap: {
+        title: "6. The Classic Database Trap",
+        desc: "It is incredibly common to confuse these two concepts because they often overlap in the real world. To clear this up, you just have to remember what each concept is actually measuring:",
+        identity: {
+          title: "1. Strong vs. Weak Entity (The 'Identity' Question)",
+          desc: "This is entirely about whether an entity has its own Primary Key to uniquely identify itself without anyone else's help.",
+          strong: "It can stand completely on its own. Example: A 'University Building' has a unique identifier ('Building_Name'). It doesn't need any other information to exist or be identified.",
+          weak: "It does not have a unique identifier of its own. It relies on a Strong Entity to give it meaning. Example: A 'Room'. If told to 'Go to Room 101', you will ask, 'Which building?'. Room 101 means absolutely nothing on its own. The 'Room' (Weak Entity) depends entirely on the 'Building' (Strong Entity) for its identity. (Visual Symbol: Double Rectangle)"
+        },
+        rules: {
+          title: "2. Total vs. Partial Participation (The 'Rules' Question)",
+          desc: "This has nothing to do with identity or primary keys. This is just a business rule set by the database designer about a specific relationship (verb).",
+          total: "The database physically forces every single entity in this group to be part of the relationship. Example: An 'Employee' and a 'Department'. The company rule is: 'Every employee MUST be assigned to a department.' Therefore, the Employee entity has Total Participation. You cannot exist in the database as a floating employee with no department. (Visual Symbol: Double Line)",
+          partial: "The entity can participate, but it doesn't have to. Example: The 'Department' side of that same relationship. A company might create a brand new 'AI Department' but hasn't hired anyone for it yet. The department exists, but currently has no employees. Therefore, the Department has Partial Participation. (Visual Symbol: Single Line)"
+        },
+        overlap: {
+          title: "3. Why do people confuse them? (The Overlap)",
+          desc: "People confuse them because a Weak Entity ALWAYS has Total Participation. Think about the Room and the Building. Because a room relies on a building for its very existence, it is physically impossible to have a room floating in the database without being attached to a building. Therefore, a Weak Entity is always connected with a Double Line (Total Participation).",
+          difference: "The difference is that a Strong Entity can ALSO have Total Participation. Let's look at a Patient and a Hospital Bed:\n\n1. A Patient is a Strong Entity. They have their own unique Patient_ID. They don't need a bed to have an identity.\n2. However, the hospital might have a rule: 'Every admitted patient MUST be assigned to a bed.'\n3. Therefore, the Patient has Total Participation in the 'Assigned To' relationship.",
+          summary: [
+            "If you lack a Primary Key and need another entity just to exist, you are a Weak Entity.",
+            "If you have a Primary Key, but the business rules force you to be connected to something else, you are a Strong Entity with Total Participation.",
+            "Visual Rule of Thumb: Whenever you see a Weak Entity, you will see a 'Double-Double-Double' combination: Double Rectangle (Weak Entity), Double Diamond (Identifying Relationship), and Double Line (Total Participation)."
+          ]
+        }
+      }
+    },
+    flashcards: [
+      { front: "What is the difference between a Strong Entity and a Weak Entity?", back: "A Strong Entity can be uniquely identified using its primary key. A Weak Entity cannot be uniquely identified on its own and depends on a strong entity for its existence." },
+      { front: "Give an example of a Composite Attribute and a Derived Attribute.", back: "Composite: Name (can be split into first, middle, last). Derived: Age (can be calculated from Date of Birth)." },
+      { front: "What does a double rectangle and a double oval signify in an ER diagram?", back: "Double rectangle = Weak Entity. Double oval = Multi-valued Attribute." },
+      { front: "What is Mapping Cardinality and what are its four types?", back: "It's the number of entities to which another entity can be associated. The 4 types are: One-to-one, One-to-many, Many-to-one, and Many-to-many." },
+      { front: "What is Total Participation?", back: "A constraint where every entity in the entity set must be involved in at least one relationship instance (represented by a double line in ER diagrams)." }
+    ],
+    quiz: [
+      { question: "Which type of attribute can be divided into subparts, such as an Address divided into street, city, and state?", options: ["Simple Attribute", "Derived Attribute", "Composite Attribute", "Multi-valued Attribute"], answer: 2 },
+      { question: "In an ER diagram, what shape is used to represent a Relationship?", options: ["Rectangle", "Oval", "Diamond", "Double Oval"], answer: 2 },
+      { question: "If a weak entity like 'Payment' depends on a strong entity like 'Loan', what type of relationship exists between them?", options: ["Strong Relationship", "Weak Relationship", "Unary Relationship", "Ternary Relationship"], answer: 1 },
+      { question: "Which relationship type describes 'A citizen has an Aadhar Card'?", options: ["One to many", "Many to one", "Many to many", "One to one"], answer: 3 }
+    ]
+  },
+  {
+    id: 'extended_er',
+    title: '19. Extended ER Features',
+    notes: {
+      intro: {
+        title: "Lecture 4: Extended ER Features",
+        desc: "As systems get massive and complex, basic building blocks (Entities, Attributes, Relationships) aren't enough. Database designers borrowed concepts from Object-Oriented Programming (like Classes and Inheritance) to make ER diagrams smarter, cleaner, and less repetitive."
+      },
+      blankSpaces: {
+        title: "1. The Problem with Blank Spaces (NULLs)",
+        problem: "Imagine one giant table for a University holding everyone (`PERSON`). It has columns like Name, Date_of_Birth, Salary (Professors), and GPA (Students).",
+        disaster: "Adding a Student leaves Salary blank (NULL). Adding a Professor leaves GPA blank. With 50,000 people, the database fills with millions of wasted, blank spaces.",
+        fix: "We use the Superclass / Subclass system (Specialisation & Generalisation) to break the data apart so that attributes only live where they belong."
+      },
+      specialisation: {
+        title: "2. Specialisation (The 'Top-Down' Approach)",
+        setup: "You start with a very broad, general entity (Superclass, e.g., `Person`).",
+        split: "You break it down into more specific Subclasses (e.g., `Employee`, `Student`, `Customer`).",
+        isA: "An Employee 'is a' Person. A Student 'is a' Person. Visually represented by a triangle connecting them.",
+        reason: "To keep attributes where they belong! An Employee needs a Salary attribute. A Customer needs a Credit_Card attribute. Specialisation keeps the blueprint clean and avoids NULLs."
+      },
+      generalisation: {
+        title: "3. Generalisation (The 'Bottom-Up' Approach)",
+        desc: "The exact reverse of Specialisation. You start with specific distinct entities and realize they share the exact same attributes.",
+        setup: "You have `Car`, `Jeep`, and `Bus` as separate entities, all having `Engine_Size` and `Number_of_Wheels`.",
+        grouping: "Instead of writing those attributes three times, you create a new Superclass called `Vehicle` and push common attributes up to it.",
+        reason: "To completely eliminate data repetition and simplify the database design."
+      },
+      inheritance: {
+        title: "4. Inheritance (The Magic of Superclasses)",
+        desc: "Using Specialisation or Generalisation automatically triggers Inheritance. Subclasses automatically receive traits of the Superclass.",
+        attribute: "An `Employee` automatically inherits `Name` and `Date_of_Birth` from the `Person` Superclass.",
+        participation: "If a `Person` can participate in a 'Holds' relationship with a `Bank_Account`, then `Employee` and `Student` automatically get permission to hold a bank account too."
+      },
+      aggregation: {
+        title: "5. Aggregation (Boxing it up)",
+        desc: "A specific solution to a strict rule: You are never allowed to connect a Relationship (Diamond) directly to another Relationship (Diamond). Entities connect to Relationships, and that is it.",
+        problem: "Imagine a `Doctor` prescribes (`prescribes`) a `Medicine`. You want to record which `Pharmacy` filled (`filled`) that prescription. You cannot connect the `Pharmacy` via `filled` directly to the `prescribes` diamond.",
+        solution: "Aggregation is a visual hack. You draw a massive rectangular box around the entire [Doctor - prescribes - Medicine] section. The database treats everything inside this box as one single, giant Entity (e.g., 'Prescription Document'). Now, you can connect the `Pharmacy` to the giant box using the `filled` relationship."
+      }
+    },
+    flashcards: [
+      { front: "What is the main problem Specialisation and Generalisation solve?", back: "They eliminate wasted blank (NULL) spaces and data repetition by organizing attributes into Superclasses and Subclasses." },
+      { front: "What is Specialisation?", back: "A top-down approach where a broad Superclass (e.g., Person) is broken down into specific Subclasses (e.g., Student, Professor) to assign specific attributes where they belong." },
+      { front: "What is Generalisation?", back: "A bottom-up approach where specific entities sharing common attributes (e.g., Car, Bus) are grouped into a new Superclass (e.g., Vehicle) to eliminate repetition." },
+      { front: "What happens when Inheritance is triggered?", back: "Subclasses automatically inherit all attributes and relationship participation permissions from their Superclass." },
+      { front: "Why is Aggregation used in ER Diagrams?", back: "It provides a visual hack to bypass the rule that Relationships (Diamonds) cannot connect to other Relationships. By boxing a relationship and its entities, it's treated as a single abstract entity." }
+    ],
+    quiz: [
+      { question: "Which approach starts with specific entities and groups them into a broader Superclass?", options: ["Specialisation", "Generalisation", "Aggregation", "Inheritance"], answer: 1 },
+      { question: "What is the visual representation of an 'Is-A' relationship in an ER diagram?", options: ["A diamond", "A double rectangle", "A triangle", "A dashed line"], answer: 2 },
+      { question: "If an Employee inherits the 'Name' attribute from a Person superclass, what concept is this?", options: ["Aggregation", "Attribute Inheritance", "Generalisation", "Participation Constraints"], answer: 1 },
+      { question: "How does Aggregation solve the 'Diamond-to-Diamond' rule violation?", options: ["It uses a double line to connect them.", "It draws a box around a relationship making it an abstract entity.", "It uses a triangle to link them.", "It creates a weak entity."], answer: 1 }
+    ]
+  },
+  {
+    id: 'relational_model',
+    title: '20. Relational Model',
+    notes: {
+      intro: {
+        title: "1. The Basic Vocabulary (Translating the Blueprint)",
+        desc: "The Relational Model teaches us how to take a theoretical ER diagram (the blueprint) and turn it into actual tables that a computer can understand (using software like MySQL or Oracle). We stop using words like 'Entity' and start using spreadsheet terminology.",
+        definitions: [
+          { term: "Relation = Table", meaning: "An entity (like 'Student') becomes a table." },
+          { term: "Tuple = Row", meaning: "A single record in the table (e.g., all the data for John Doe)." },
+          { term: "Attribute = Column", meaning: "The properties of the entity (e.g., Name, Age, GPA)." },
+          { term: "Domain", meaning: "The strict list of permitted values for a specific column. (e.g., The domain for a 'Month' column is only the numbers 1 through 12)." },
+          { term: "Degree", meaning: "The total number of columns in the table." },
+          { term: "Cardinality", meaning: "The total number of rows in the table." },
+          { term: "Relational Key", meaning: "Set of attributes which can uniquely identify each tuple." }
+        ]
+      },
+      properties: {
+        title: "2. Properties of a Relational Table (The Strict Rules)",
+        list: [
+          "The name of the relation is distinct among all other relations.",
+          "Values must be Atomic: Multi-valued (multiple phone numbers) and Composite attributes (Address = Street + City + ZIP) from ER diagrams are illegal here. Every cell holds one indivisible piece of data.",
+          "The name of each attribute/column must be unique.",
+          "Every tuple (row) must be unique: You cannot have two identical rows.",
+          "Sequence doesn't matter: The database doesn't care what order the rows or columns are in.",
+          "Tables must follow integrity constraints to maintain data consistency."
+        ]
+      },
+      keys: {
+        title: "3. Database Keys (The Hierarchy)",
+        list: [
+          { name: "Super Key (SK)", desc: "Any combination of columns that can uniquely identify a row. Example: {Aadhar Card + First Name + Last Name}. It guarantees we find the person, but it's overkill." },
+          { name: "Candidate Key (CK)", desc: "A Super Key stripped down to its minimal form with absolutely no redundant attributes. Example: {Aadhar Card} is a CK. {Passport Number} is also a CK." },
+          { name: "Primary Key (PK)", desc: "The database designer looks at all Candidate Keys and picks exactly one to be the official identifier. Example: The designer chooses {Aadhar Card} as the PK." },
+          { name: "Alternate Key (AK)", desc: "The 'losers' of the Primary Key election. Example: Because Aadhar was chosen, {Passport Number} becomes an Alternate Key." },
+          { name: "Foreign Key (FK)", desc: "Creates a relationship between two tables. A relation (r1) may include the PK of another relation (r2). r1 is called the Referencing (Child) relation of the FK dependency, and r2 is called the Referenced (Parent) relation. Helps to cross-reference between two different relations. Example: An Orders table has a Customer_ID column pointing back to the Customers table." },
+          { name: "Composite Key", desc: "A Primary Key that requires at least two columns combined to be unique (e.g., {Flight_Number + Date})." },
+          { name: "Compound Key", desc: "A specific type of Composite Key where the columns you are combining are both Foreign Keys pointing to other tables." },
+          { name: "Surrogate Key", desc: "A completely fake, synthetic column created by the database just to act as an ID when natural data makes a terrible PK (like an auto-incrementing integer: 1, 2, 3...)." }
+        ]
+      },
+      integrity: {
+        title: "4. Integrity Constraints (Keeping the Data Clean)",
+        desc: "Constraints are the invisible electric fences the database sets up to prevent bad data from corrupting the system when users run CRUD operations.",
+        types: [
+          { name: "Domain Constraints", desc: "Prevents users from entering the wrong type or range of data. Example: If you try to enter 'Apple' into a Phone_Number column, or a birth year of '3024', the Domain Constraint blocks it." },
+          { name: "Entity Constraints", desc: "The most fundamental rule: Every table must have a Primary Key, and that Primary Key cannot be NULL. You cannot have a completely anonymous, unidentifiable row floating in your table." },
+          { name: "Referential Constraints", desc: "Maintains consistency among tuples of two relations. Requires that a foreign key value in the referencing (child) table must exactly match a primary key value in the referenced (parent) table, or it must be NULL." },
+          { name: "Key Constraints (The 6 Types)", desc: "These constraints enforce rules at the column (attribute) level to maintain data integrity during CRUD operations:", list: [
+            { name: "1. NOT NULL", desc: "Restricts the user from entering a NULL value. It ensures that every required element in the database has a concrete value." },
+            { name: "2. UNIQUE", desc: "Ensures that all the values in a specific column are completely different from each other (no duplicates allowed)." },
+            { name: "3. DEFAULT", desc: "Used to set a fallback default value to the column. If a user inserts a row but doesn't provide a value for this column, the default is automatically injected." },
+            { name: "4. CHECK", desc: "A custom logical test that keeps a check on data before and after a CRUD operation. E.g., 'Age > 18'. If the test fails, the database rejects the action." },
+            { name: "5. PRIMARY KEY", desc: "An attribute (or set of attributes) that uniquely identifies each entity. It is a strict combination of UNIQUE and NOT NULL constraints." },
+            { name: "6. FOREIGN KEY", desc: "When there is a relationship between two tables, there must be a common attribute. The parent's Primary Key becomes the child's Foreign Key. This constraint prevents actions that would result in orphaned data or loss of connection." }
+          ]}
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is the difference between Degree and Cardinality in a table?", back: "Degree is the number of attributes/columns. Cardinality is the total number of tuples/rows." },
+      { front: "What is the difference between a Super Key (SK) and a Candidate Key (CK)?", back: "A Super Key is any combination of attributes that uniquely identifies a tuple. A Candidate Key is a minimal Super Key (no redundant attributes)." },
+      { front: "What does it mean for table values to be atomic?", back: "The values cannot be broken down any further (e.g., a single value per cell, not an array or list)." },
+      { front: "What is the role of a Foreign Key (FK)?", back: "It creates a relationship between two tables by having the Child (Referencing) table include the Primary Key of the Parent (Referenced) table." },
+      { front: "What is a Surrogate Key?", back: "A synthetic Primary Key generated automatically by the database, usually an integer, rather than being derived from application data." }
+    ],
+    quiz: [
+      { question: "Which key is defined as the minimum subset of super keys that can uniquely identify each tuple?", options: ["Primary Key", "Alternate Key", "Candidate Key", "Surrogate Key"], answer: 2 },
+      { question: "The total number of rows (tuples) in a relation is known as its:", options: ["Degree", "Domain", "Cardinality", "Schema"], answer: 2 },
+      { question: "Which constraint ensures that every relation must have a Primary Key and it cannot be NULL?", options: ["Domain Constraint", "Foreign Key Constraint", "Entity Constraint", "Atomic Constraint"], answer: 2 },
+      { question: "If relation 'r1' includes the Primary Key of relation 'r2', what is 'r1' known as?", options: ["Referenced Relation", "Parent Relation", "Referencing (Child) Relation", "Surrogate Relation"], answer: 2 }
+    ]
+  },
+  {
+    id: 'er_to_relational',
+    title: '21. Transform - ER to Relational',
+    notes: {
+      intro: {
+        title: "1. Introduction to Transformation",
+        points: [
+          "Both ER-Model and Relational Model are abstract logical representation of real world enterprises. Because the two models implies the similar design principles, we can convert ER design into Relational design.",
+          "Converting a DB representation from an ER diagram to a table format is the way we arrive at Relational DB-design from an ER diagram."
+        ]
+      },
+      notations: {
+        title: "2. ER Diagram Notations to Relations",
+        rules: [
+          {
+            entity: "1. Strong Entity",
+            steps: [
+              "Becomes an individual table with entity name, attributes becomes columns of the relation.",
+              "Entity's Primary Key (PK) is used as Relation's PK.",
+              "FK are added to establish relationships with other relations."
+            ]
+          },
+          {
+            entity: "2. Weak Entity",
+            steps: [
+              "A table is formed with all the attributes of the entity.",
+              "PK of its corresponding Strong Entity will be added as FK.",
+              "PK of the relation will be a composite PK, {FK + Partial discriminator Key}."
+            ]
+          },
+          {
+            entity: "3. Single Values Attributes",
+            steps: [
+              "Represented as columns directly in the tables/relations."
+            ]
+          },
+          {
+            entity: "4. Composite Attributes",
+            steps: [
+              "Handled by creating a separate attribute itself in the original relation for each composite attribute.",
+              "e.g., Address: {street-name, house-no}, is a composite attribute in customer relation, we add address-street-name & address-house-name as new columns in the attribute and ignore \"address\" as an attribute."
+            ]
+          },
+          {
+            entity: "5. Multivalued Attributes",
+            steps: [
+              "New tables (named as original attribute name) are created for each multivalued attribute.",
+              "PK of the entity is used as column FK in the new table.",
+              "Multivalued attribute's similar name is added as a column to define multiple values.",
+              "PK of the new table would be {FK + multivalued name}.",
+              "e.g., For Strong entity Employee, dependent-name is a multivalued attribute.",
+              "  1. New table named dependent-name will be formed with columns emp-id, and dname.",
+              "  2. PK: {emp-id, name}",
+              "  3. FK: {emp-id}"
+            ]
+          },
+          {
+            entity: "6. Derived Attributes",
+            steps: [
+              "Not considered in the tables."
+            ]
+          },
+          {
+            entity: "7. Generalisation",
+            steps: [
+              "Method-1: Create a table for the higher level entity set. For each lower-level entity set, create a table that includes a column for each of the attributes of that entity set plus a column for each attribute of the primary key of the higher-level entity set.\nFor e.g., Banking System generalisation of Account - saving & current.\n1. Table 1: account (account-number, balance)\n2. Table 2: savings-account (account-number, interest-rate, daily-withdrawal-limit)\n3. Table 3: current-account (account-number, overdraft-amount, per-transaction-charges)",
+              "Method-2: An alternative representation is possible, if the generalisation is disjoint and complete—that is, if no entity is a member of two lower-level entity sets directly below a higher-level entity set, and if every entity in the higher level entity set is also a member of one of the lower-level entity sets. Here, do not create a table for the higher-level entity set. Instead, for each lower-level entity set, create a table that includes a column for each of the attributes of that entity set plus a column for each attribute of the higher-level entity sets.\nTables would be:\n1. Table 1: savings-account (account-number, balance, interest-rate, daily-withdrawal-limit)\n2. Table 2: current-account (account-number, balance, overdraft-amount, per-transaction-charges)",
+              "Drawbacks of Method-2: If the second method were used for an overlapping generalisation, some values such as balance would be stored twice unnecessarily. Similarly, if the generalisation were not complete—that is, if some accounts were neither savings nor current accounts—then such accounts could not be represented with the second method."
+            ]
+          },
+          {
+            entity: "8. Aggregation",
+            steps: [
+              "Table of the relationship set is made.",
+              "Attributes includes primary keys of entity set and aggregation set's entities.",
+              "Also, add descriptive attribute if any on the relationship."
+            ]
+          }
+        ]
+      }
+    },
+    flashcards: [
+      { front: "How is a Strong Entity converted to a relation?", back: "It becomes an individual table with its entity name. Attributes become columns. Its Primary Key becomes the table's PK." },
+      { front: "How is a Weak Entity converted?", back: "A table is formed with its attributes. The PK of its corresponding Strong Entity is added as an FK. The table's composite PK is {FK + Partial discriminator Key}." },
+      { front: "How are Composite Attributes handled?", back: "By creating a separate column for each component of the composite attribute. (e.g. Address becomes Address-Street and Address-House-No)." },
+      { front: "How are Multivalued Attributes handled?", back: "A new table is created named after the attribute. The PK of the main entity is used as an FK. The new table's PK is {FK + multivalued name}." },
+      { front: "Are Derived Attributes considered in relations?", back: "No, they are not considered in the tables." }
+    ],
+    quiz: [
+      { question: "In Method-1 of Generalisation mapping, how many tables are created for a parent with two children (e.g., Account -> Savings, Current)?", options: ["1 Table", "2 Tables", "3 Tables", "4 Tables"], answer: 2 },
+      { question: "What happens to a Weak Entity when transformed to a relational model?", options: ["It merges into the Strong Entity.", "It forms a table where its PK is the partial discriminator only.", "It forms a table with a composite PK of {Strong Entity FK + Partial Discriminator}.", "It is ignored in the relational model."], answer: 2 },
+      { question: "What is a drawback of Method-2 in Generalisation (creating tables only for lower-level entities)?", options: ["It requires too many tables.", "It cannot handle disjoint generalisation.", "If it's overlapping, values might be stored twice unnecessarily.", "It violates domain constraints."], answer: 2 },
+      { question: "When handling a multivalued attribute like 'dependent-name' for 'Employee', what is the Primary Key of the newly created table?", options: ["emp-id", "dependent-name", "A surrogate key", "{emp-id, dependent-name}"], answer: 3 }
+    ]
   }
 ];
 
 // --- MAIN APP COMPONENT ---
 export default function App() {
-  const [activeModuleId, setActiveModuleId] = useState(courseModules[16].id); // Defaulting to the new module 17 for visibility
+  const [activeGroup, setActiveGroup] = useState('OS');
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const courseGroups = {
+    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational'].includes(m.id)),
+    'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational'].includes(m.id))
+  };
+  
+  const activeGroupModules = courseGroups[activeGroup];
+  
+  const [activeModuleId, setActiveModuleId] = useState(courseGroups['OS'][0].id);
   const [activeTab, setActiveTab] = useState('notes');
 
-  const activeModule = courseModules.find(m => m.id === activeModuleId);
+  useEffect(() => {
+    if (!activeGroupModules.find(m => m.id === activeModuleId)) {
+      setActiveModuleId(activeGroupModules[0].id);
+      setActiveTab('notes');
+    }
+  }, [activeGroup, activeGroupModules, activeModuleId]);
+
+  // Apply theme to document element
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  const activeModule = courseModules.find(m => m.id === activeModuleId) || activeGroupModules[0];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans p-4 md:p-10">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="flex h-screen bg-background text-primary font-sans overflow-hidden">
+      
+      {/* Sidebar (Left Pane) - Desktop */}
+      <aside className={`w-72 md:w-80 flex-shrink-0 bg-surface border-r border-subtle flex flex-col h-full z-20 absolute md:static transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         
-        {/* Header & Module Selector */}
-        <header className="bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-800 flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-100">OS Placement Guide</h1>
-              <p className="text-slate-400 mt-1">Structured Module-by-Module Prep</p>
+        {/* Sidebar Header */}
+        <div className="p-5 border-b border-subtle">
+          <div className="flex justify-between items-center mb-5">
+            <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+              <BookOpen className="text-indigo-500" />
+              Prep Guide
+            </h1>
+            <div className="flex gap-2 items-center">
+              {/* Theme Toggle Button */}
+              <button 
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="p-2 rounded-lg bg-surface-muted hover:bg-subtle text-tertiary hover:text-primary transition-colors border border-subtle"
+                title="Toggle Theme"
+              >
+                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              {/* Mobile Close Button */}
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="md:hidden p-2 rounded-lg bg-surface-muted text-tertiary border border-subtle"
+              >
+                <X size={18} />
+              </button>
             </div>
           </div>
-
-          {/* Module Navigation */}
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {courseModules.map((mod) => (
+          
+          {/* Group Navigation (OS/DBMS) */}
+          <div className="flex bg-background p-1 rounded-xl border border-subtle w-full shadow-inner">
+            {Object.keys(courseGroups).map((group) => (
               <button
-                key={mod.id}
-                onClick={() => { setActiveModuleId(mod.id); setActiveTab('notes'); }}
-                className={`whitespace-nowrap flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                  activeModuleId === mod.id 
-                    ? 'bg-indigo-600 text-white shadow-md' 
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                key={group}
+                onClick={() => { setActiveGroup(group); setIsMobileMenuOpen(false); }}
+                className={`flex-1 py-1.5 rounded-lg text-sm font-bold transition-all ${
+                  activeGroup === group 
+                    ? 'bg-indigo-600 text-white shadow' 
+                    : 'text-tertiary hover:text-primary'
                 }`}
               >
-                <FolderOpen size={16} /> {mod.title}
+                {group}
               </button>
             ))}
           </div>
-        </header>
-
-        {/* Tab Navigation for Active Module */}
-        <div className="flex bg-slate-900 p-1.5 rounded-2xl border border-slate-800 shadow-sm w-full md:w-fit mx-auto md:mx-0 overflow-x-auto scrollbar-hide">
-          <button 
-            onClick={() => setActiveTab('notes')}
-            className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'notes' ? 'bg-indigo-900/40 shadow-sm text-indigo-300' : 'text-slate-400 hover:text-slate-200'}`}
-          >
-            <BookOpen size={16} /> Notes
-          </button>
-          <button 
-            onClick={() => setActiveTab('flashcards')}
-            className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'flashcards' ? 'bg-indigo-900/40 shadow-sm text-indigo-300' : 'text-slate-400 hover:text-slate-200'}`}
-          >
-            <Layers size={16} /> Flashcards ({activeModule.flashcards ? activeModule.flashcards.length : 0})
-          </button>
-          <button 
-            onClick={() => setActiveTab('quiz')}
-            className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'quiz' ? 'bg-indigo-900/40 shadow-sm text-indigo-300' : 'text-slate-400 hover:text-slate-200'}`}
-          >
-            <CheckSquare size={16} /> Quiz ({activeModule.quiz ? activeModule.quiz.length : 0})
-          </button>
         </div>
 
-        {/* Content Area */}
-        <main className="min-h-[500px]">
-          {activeTab === 'notes' && <NotesView module={activeModule} />}
-          {activeTab === 'flashcards' && <FlashcardsView cards={activeModule.flashcards} key={`fc-${activeModule.id}`} />}
-          {activeTab === 'quiz' && <QuizView questions={activeModule.quiz} key={`qz-${activeModule.id}`} />}
-        </main>
+        {/* Module Navigation (Vertical List) */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-1.5 scrollbar-hide">
+          <p className="px-3 pb-2 text-xs font-bold text-tertiary uppercase tracking-wider">{activeGroup} Modules</p>
+          {activeGroupModules.map((mod) => (
+            <button
+              key={mod.id}
+              onClick={() => { setActiveModuleId(mod.id); setActiveTab('notes'); setIsMobileMenuOpen(false); }}
+              className={`w-full text-left flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
+                activeModuleId === mod.id 
+                  ? 'bg-indigo-600/10 text-indigo-500 font-bold border border-indigo-500/20 shadow-sm' 
+                  : 'text-secondary hover:bg-surface-muted hover:text-primary border border-transparent'
+              }`}
+            >
+              <FolderOpen size={16} className={activeModuleId === mod.id ? 'text-indigo-500' : 'text-tertiary'} /> 
+              <span className="truncate">{mod.title}</span>
+            </button>
+          ))}
+        </div>
+      </aside>
 
-      </div>
+      {/* Main Content (Right Pane) */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
+        
+        {/* Mobile Header (Only visible on small screens) */}
+        <header className="md:hidden bg-surface border-b border-subtle p-4 flex justify-between items-center z-10 sticky top-0 shadow-sm">
+           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 bg-surface-muted border border-subtle rounded-lg text-primary">
+             <Menu size={20} />
+           </button>
+           <div className="font-bold text-primary truncate max-w-[200px] text-sm">{activeModule.title}</div>
+           <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 bg-surface-muted border border-subtle rounded-lg text-primary">
+             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+           </button>
+        </header>
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:px-16 w-full max-w-5xl mx-auto scrollbar-hide pb-24">
+          
+          {/* Module Title Header */}
+          <div className="mb-8 pt-4 md:pt-0 border-b border-subtle pb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-3 leading-tight">{activeModule.title}</h2>
+            <p className="text-tertiary flex items-center gap-2">
+              <span className="bg-surface-muted px-2 py-1 rounded text-xs font-semibold uppercase">{activeGroup}</span>
+              Structured Prep Module
+            </p>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex bg-surface p-1.5 rounded-2xl border border-subtle shadow-sm w-full md:w-fit mb-8 overflow-x-auto scrollbar-hide sticky top-4 z-10 backdrop-blur-xl bg-surface/90">
+            <button 
+              onClick={() => setActiveTab('notes')}
+              className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'notes' ? 'bg-indigo-600/10 shadow-sm text-indigo-500 font-bold border border-indigo-500/20' : 'text-tertiary hover:text-primary hover:bg-surface-muted'}`}
+            >
+              <BookOpen size={16} /> Notes
+            </button>
+            <button 
+              onClick={() => setActiveTab('flashcards')}
+              className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'flashcards' ? 'bg-indigo-600/10 shadow-sm text-indigo-500 font-bold border border-indigo-500/20' : 'text-tertiary hover:text-primary hover:bg-surface-muted'}`}
+            >
+              <Layers size={16} /> Flashcards ({activeModule.flashcards ? activeModule.flashcards.length : 0})
+            </button>
+            <button 
+              onClick={() => setActiveTab('quiz')}
+              className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'quiz' ? 'bg-indigo-600/10 shadow-sm text-indigo-500 font-bold border border-indigo-500/20' : 'text-tertiary hover:text-primary hover:bg-surface-muted'}`}
+            >
+              <CheckSquare size={16} /> Quiz ({activeModule.quiz ? activeModule.quiz.length : 0})
+            </button>
+          </div>
+          
+          {/* Active Tab View */}
+          <div className="min-h-[500px]">
+            {activeTab === 'notes' && <NotesView module={activeModule} />}
+            {activeTab === 'flashcards' && <FlashcardsView cards={activeModule.flashcards} key={`fc-${activeModule.id}`} />}
+            {activeTab === 'quiz' && <QuizView questions={activeModule.quiz} key={`qz-${activeModule.id}`} />}
+          </div>
+        </div>
+      </main>
+      
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-10 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
     </div>
   );
 }
@@ -1512,66 +2036,66 @@ function NotesView({ module }) {
   if (module.id === 'intro') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> System Architecture
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> System Architecture
           </h2>
           <div className="flex flex-col items-center max-w-sm mx-auto space-y-2">
-            <div className="flex flex-col items-center justify-center w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl">
-              <User className="text-slate-300 mb-2" size={32} />
-              <span className="font-semibold text-slate-200">User</span>
+            <div className="flex flex-col items-center justify-center w-full p-4 bg-surface-muted border-2 border-strong rounded-xl">
+              <User className="text-secondary mb-2" size={32} />
+              <span className="font-semibold text-primary">User</span>
             </div>
-            <ChevronRight className="rotate-90 text-slate-600" />
-            <div className="flex flex-col items-center justify-center w-full p-4 bg-blue-900/20 border-2 border-blue-800 rounded-xl">
-              <AppWindow className="text-blue-400 mb-2" size={28} />
-              <span className="font-semibold text-blue-300">Application Programs</span>
+            <ChevronRight className="rotate-90 text-tertiary" />
+            <div className="flex flex-col items-center justify-center w-full p-4 bg-blue-100 dark:bg-blue-900/20 border-2 border-blue-800 rounded-xl">
+              <AppWindow className="text-blue-600 dark:text-blue-400 mb-2" size={28} />
+              <span className="font-semibold text-blue-600 dark:text-blue-300">Application Programs</span>
             </div>
-            <ChevronRight className="rotate-90 text-slate-600" />
-            <div className="flex flex-col items-center justify-center w-full p-4 bg-indigo-900/30 border-2 border-indigo-500 rounded-xl shadow-sm">
-              <Settings className="text-indigo-400 mb-2" size={28} />
-              <span className="font-bold text-indigo-300 text-lg">Operating System</span>
+            <ChevronRight className="rotate-90 text-tertiary" />
+            <div className="flex flex-col items-center justify-center w-full p-4 bg-indigo-100 dark:bg-indigo-900/30 border-2 border-indigo-500 rounded-xl shadow-sm">
+              <Settings className="text-indigo-600 dark:text-indigo-400 mb-2" size={28} />
+              <span className="font-bold text-indigo-600 dark:text-indigo-300 text-lg">Operating System</span>
             </div>
-            <ChevronRight className="rotate-90 text-slate-600" />
-            <div className="flex flex-col items-center justify-center w-full p-4 bg-slate-950 border-2 border-slate-700 rounded-xl">
-              <Cpu className="text-slate-400 mb-2" size={28} />
+            <ChevronRight className="rotate-90 text-tertiary" />
+            <div className="flex flex-col items-center justify-center w-full p-4 bg-background border-2 border-strong rounded-xl">
+              <Cpu className="text-tertiary mb-2" size={28} />
               <span className="font-semibold text-white">Computer Hardware</span>
             </div>
           </div>
         </section>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-            <h2 className="text-xl font-bold text-slate-100 mb-6">Core Definitions</h2>
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-primary mb-6">Core Definitions</h2>
             <div className="space-y-6">
               {module.notes.definitions.map((item, idx) => (
                 <div key={idx} className="border-l-4 border-indigo-500 pl-4 text-left">
-                  <h3 className="font-bold text-slate-100 text-lg">{item.term}</h3>
-                  <p className="text-slate-300 mt-1">{item.desc}</p>
+                  <h3 className="font-bold text-primary text-lg">{item.term}</h3>
+                  <p className="text-secondary mt-1">{item.desc}</p>
                 </div>
               ))}
             </div>
           </section>
 
           <div className="space-y-6">
-            <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-              <h2 className="text-xl font-bold text-slate-100 mb-6 text-left">Key OS Functions</h2>
+            <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+              <h2 className="text-xl font-bold text-primary mb-6 text-left">Key OS Functions</h2>
               <ul className="space-y-3 text-left">
                 {module.notes.functions.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 bg-indigo-900/50 text-indigo-400 p-1 rounded-full shrink-0">
+                    <div className="mt-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-1 rounded-full shrink-0">
                       <CheckSquare size={14} />
                     </div>
                     <div>
-                      <strong className="text-slate-100">{item.title}: </strong>
-                      <span className="text-slate-300">{item.desc}</span>
+                      <strong className="text-primary">{item.title}: </strong>
+                      <span className="text-secondary">{item.desc}</span>
                     </div>
                   </li>
                 ))}
               </ul>
             </section>
 
-            <section className="bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-900/50 text-left">
-              <h2 className="text-xl font-bold text-amber-400 mb-4">What if there is no OS?</h2>
+            <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50 text-left">
+              <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4">What if there is no OS?</h2>
               <ul className="space-y-2 list-disc list-inside text-amber-200/80">
                 {module.notes.whyOs.map((item, idx) => (
                   <li key={idx}>{item}</li>
@@ -1580,12 +2104,12 @@ function NotesView({ module }) {
             </section>
 
             {module.notes.ipc && (
-              <section className="bg-blue-950/30 rounded-2xl p-8 shadow-sm border border-blue-900/50 text-left">
-                <h2 className="text-xl font-bold text-blue-400 mb-3 flex items-center gap-2">
+              <section className="bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8 shadow-sm border border-blue-200 dark:border-blue-900/50 text-left">
+                <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
                   <Activity className="text-blue-500" /> {module.notes.ipc.title}
                 </h2>
                 <p className="text-blue-200/80 mb-4">{module.notes.ipc.desc}</p>
-                <div className="inline-block bg-blue-900/50 border border-blue-800 text-blue-100 px-4 py-2 rounded-lg font-medium">
+                <div className="inline-block bg-blue-100 dark:bg-blue-900/50 border border-blue-800 text-blue-100 px-4 py-2 rounded-lg font-medium">
                   {module.notes.ipc.methods}
                 </div>
               </section>
@@ -1600,32 +2124,32 @@ function NotesView({ module }) {
   if (module.id === 'types') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Cpu className="text-indigo-400" /> Primary Goals of an OS
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Cpu className="text-indigo-600 dark:text-indigo-400" /> Primary Goals of an OS
           </h2>
           <ul className="space-y-3">
             {module.notes.osGoals.map((goal, idx) => (
               <li key={idx} className="flex items-center gap-3">
-                <div className="bg-indigo-900/50 text-indigo-400 p-1 rounded-full shrink-0">
+                <div className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-1 rounded-full shrink-0">
                   <CheckSquare size={14} />
                 </div>
-                <span className="text-slate-300 font-medium">{goal}</span>
+                <span className="text-secondary font-medium">{goal}</span>
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">Operating System Types</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6">Operating System Types</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.osTypes.map((type, idx) => (
-              <div key={idx} className="bg-slate-800/50 border border-slate-700 p-5 rounded-xl">
+              <div key={idx} className="bg-surface-muted/50 border border-strong p-5 rounded-xl">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-indigo-300 text-lg">{type.name}</h3>
-                  {type.examples && <span className="text-xs bg-slate-950 text-slate-400 px-2 py-0.5 rounded font-mono">{type.examples}</span>}
+                  <h3 className="font-bold text-indigo-600 dark:text-indigo-300 text-lg">{type.name}</h3>
+                  {type.examples && <span className="text-xs bg-background text-tertiary px-2 py-0.5 rounded font-mono">{type.examples}</span>}
                 </div>
-                <p className="text-slate-300 text-sm leading-relaxed">{type.desc}</p>
+                <p className="text-secondary text-sm leading-relaxed">{type.desc}</p>
               </div>
             ))}
           </div>
@@ -1638,37 +2162,37 @@ function NotesView({ module }) {
   if (module.id === 'threads') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">Core Concepts</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6">Core Concepts</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.coreConcepts.map((concept, idx) => (
-              <div key={idx} className="border-l-4 border-emerald-500 pl-4 bg-slate-800/30 p-3 rounded-r-xl">
-                <h3 className="font-bold text-slate-100">{concept.term}</h3>
-                <p className="text-slate-300 text-sm mt-1">{concept.desc}</p>
+              <div key={idx} className="border-l-4 border-emerald-500 pl-4 bg-surface-muted/30 p-3 rounded-r-xl">
+                <h3 className="font-bold text-primary">{concept.term}</h3>
+                <p className="text-secondary text-sm mt-1">{concept.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden text-left">
-          <div className="p-6 border-b border-slate-800 bg-slate-800/50">
-            <h2 className="text-xl font-bold text-slate-100">Multi-Tasking vs Multi-Threading</h2>
+        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+          <div className="p-6 border-b border-subtle bg-surface-muted/50">
+            <h2 className="text-xl font-bold text-primary">Multi-Tasking vs Multi-Threading</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr className="bg-slate-800 text-slate-300 text-sm">
-                  <th className="p-4 border-b border-slate-700 font-semibold w-1/4">Feature</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-indigo-300">Multi-Tasking</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-emerald-300">Multi-Threading</th>
+                <tr className="bg-surface-muted text-secondary text-sm">
+                  <th className="p-4 border-b border-strong font-semibold w-1/4">Feature</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-indigo-600 dark:text-indigo-300">Multi-Tasking</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-emerald-600 dark:text-emerald-300">Multi-Threading</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
                 {module.notes.multitaskingVsThreading.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-800/50 transition-colors">
-                    <td className="p-4 border-b border-slate-800 font-medium text-slate-200 align-top">{row.feature}</td>
-                    <td className="p-4 border-b border-slate-800 text-slate-300 align-top">{row.tasking}</td>
-                    <td className="p-4 border-b border-slate-800 text-slate-300 align-top">{row.threading}</td>
+                  <tr key={idx} className="hover:bg-surface-muted/50 transition-colors">
+                    <td className="p-4 border-b border-subtle font-medium text-primary align-top">{row.feature}</td>
+                    <td className="p-4 border-b border-subtle text-secondary align-top">{row.tasking}</td>
+                    <td className="p-4 border-b border-subtle text-secondary align-top">{row.threading}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1676,25 +2200,25 @@ function NotesView({ module }) {
           </div>
         </section>
 
-        <section className="bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden text-left">
-          <div className="p-6 border-b border-slate-800 bg-slate-800/50">
-            <h2 className="text-xl font-bold text-slate-100">Context Switching (Thread vs Process)</h2>
+        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+          <div className="p-6 border-b border-subtle bg-surface-muted/50">
+            <h2 className="text-xl font-bold text-primary">Context Switching (Thread vs Process)</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr className="bg-slate-800 text-slate-300 text-sm">
-                  <th className="p-4 border-b border-slate-700 font-semibold w-1/4">Feature</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-indigo-300">Thread Context Switch</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-emerald-300">Process Context Switch</th>
+                <tr className="bg-surface-muted text-secondary text-sm">
+                  <th className="p-4 border-b border-strong font-semibold w-1/4">Feature</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-indigo-600 dark:text-indigo-300">Thread Context Switch</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-emerald-600 dark:text-emerald-300">Process Context Switch</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
                 {module.notes.contextSwitching.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-800/50 transition-colors">
-                    <td className="p-4 border-b border-slate-800 font-medium text-slate-200 align-top">{row.feature}</td>
-                    <td className="p-4 border-b border-slate-800 text-slate-300 align-top">{row.thread}</td>
-                    <td className="p-4 border-b border-slate-800 text-slate-300 align-top">{row.process}</td>
+                  <tr key={idx} className="hover:bg-surface-muted/50 transition-colors">
+                    <td className="p-4 border-b border-subtle font-medium text-primary align-top">{row.feature}</td>
+                    <td className="p-4 border-b border-subtle text-secondary align-top">{row.thread}</td>
+                    <td className="p-4 border-b border-subtle text-secondary align-top">{row.process}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1709,55 +2233,55 @@ function NotesView({ module }) {
   if (module.id === 'components') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">Core Components</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6">Core Components</h2>
           <div className="space-y-4">
             {module.notes.coreComponents.map((comp, idx) => (
               <div key={idx} className="border-l-4 border-indigo-500 pl-4">
-                <h3 className="font-bold text-slate-200 text-lg">{comp.term}</h3>
-                <p className="text-slate-300 text-sm mt-1">{comp.desc}</p>
+                <h3 className="font-bold text-primary text-lg">{comp.term}</h3>
+                <p className="text-secondary text-sm mt-1">{comp.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">Kernel Functions</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6">Kernel Functions</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.kernelFunctions.map((func, idx) => (
-              <div key={idx} className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
-                <h3 className="font-bold text-emerald-400 mb-2">{func.title}</h3>
-                <p className="text-slate-300 text-sm leading-relaxed">{func.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
+                <h3 className="font-bold text-emerald-600 dark:text-emerald-400 mb-2">{func.title}</h3>
+                <p className="text-secondary text-sm leading-relaxed">{func.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">I/O Management Techniques</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6">I/O Management Techniques</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {module.notes.ioTechniques.map((tech, idx) => (
-              <div key={idx} className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
-                <h3 className="font-bold text-indigo-400 mb-2">{tech.term}</h3>
-                <p className="text-slate-300 text-sm leading-relaxed">{tech.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
+                <h3 className="font-bold text-indigo-600 dark:text-indigo-400 mb-2">{tech.term}</h3>
+                <p className="text-secondary text-sm leading-relaxed">{tech.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">Types of Kernels</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6">Types of Kernels</h2>
           <div className="space-y-4">
             {module.notes.kernelTypes.map((k, idx) => (
-              <div key={idx} className="bg-slate-800/20 p-5 rounded-xl border border-slate-800 hover:border-indigo-500/30 transition-all">
+              <div key={idx} className="bg-surface-muted/20 p-5 rounded-xl border border-subtle hover:border-indigo-500/30 transition-all">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-slate-200 text-lg">{k.type}</h3>
-                  {k.examples && <span className="text-xs bg-slate-950 text-slate-400 px-3 py-1 rounded font-mono">{k.examples}</span>}
+                  <h3 className="font-bold text-primary text-lg">{k.type}</h3>
+                  {k.examples && <span className="text-xs bg-background text-tertiary px-3 py-1 rounded font-mono">{k.examples}</span>}
                 </div>
-                <p className="text-slate-300 text-sm mb-3 leading-relaxed">{k.desc}</p>
+                <p className="text-secondary text-sm mb-3 leading-relaxed">{k.desc}</p>
                 <div className="grid md:grid-cols-2 gap-2 text-xs">
-                  <div className="bg-emerald-950/20 border border-emerald-900/30 p-2.5 rounded-lg text-emerald-300"><strong className="block mb-1 text-emerald-400">Pros:</strong> {k.pros}</div>
-                  <div className="bg-red-950/20 border border-red-900/30 p-2.5 rounded-lg text-red-300"><strong className="block mb-1 text-red-400">Cons:</strong> {k.cons}</div>
+                  <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 p-2.5 rounded-lg text-emerald-600 dark:text-emerald-300"><strong className="block mb-1 text-emerald-600 dark:text-emerald-400">Pros:</strong> {k.pros}</div>
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-2.5 rounded-lg text-red-600 dark:text-red-300"><strong className="block mb-1 text-red-600 dark:text-red-400">Cons:</strong> {k.cons}</div>
                 </div>
               </div>
             ))}
@@ -1773,58 +2297,58 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Overview and Diagram */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             
             {/* Overview Text */}
             <div className="flex-1 space-y-4 text-left">
-              <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-                <Terminal className="text-indigo-400" /> What are System Calls?
+              <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                <Terminal className="text-indigo-600 dark:text-indigo-400" /> What are System Calls?
               </h2>
-              <p className="text-slate-300 leading-relaxed border-l-4 border-indigo-500 pl-4 bg-indigo-950/20 py-2">
+              <p className="text-secondary leading-relaxed border-l-4 border-indigo-500 pl-4 bg-indigo-50 dark:bg-indigo-950/20 py-2">
                 {module.notes.overview.definition}
               </p>
               
-              <div className="bg-red-950/30 border border-red-900/50 p-4 rounded-xl text-red-200">
-                <strong className="text-red-400 block mb-1">Crucial Concept:</strong>
+              <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-4 rounded-xl text-red-200">
+                <strong className="text-red-600 dark:text-red-400 block mb-1">Crucial Concept:</strong>
                 {module.notes.overview.keyFact}
               </div>
 
-              <div className="space-y-2 mt-4 text-sm text-slate-400">
-                <p><strong className="text-slate-300">Implementation:</strong> {module.notes.overview.implementation}</p>
-                <p><strong className="text-slate-300">Wrappers:</strong> {module.notes.overview.wrapperExample}</p>
+              <div className="space-y-2 mt-4 text-sm text-tertiary">
+                <p><strong className="text-secondary">Implementation:</strong> {module.notes.overview.implementation}</p>
+                <p><strong className="text-secondary">Wrappers:</strong> {module.notes.overview.wrapperExample}</p>
               </div>
             </div>
 
             {/* Transition Diagram (User/Kernel) */}
-            <div className="w-full lg:w-72 shrink-0 bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-inner">
-              <h3 className="text-center font-bold text-slate-400 text-sm uppercase tracking-widest mb-4">Architecture Mode</h3>
+            <div className="w-full lg:w-72 shrink-0 bg-background border border-subtle rounded-xl p-5 shadow-inner">
+              <h3 className="text-center font-bold text-tertiary text-sm uppercase tracking-widest mb-4">Architecture Mode</h3>
               
               {/* User Mode Section */}
               <div className="space-y-2 mb-2 relative">
                 <div className="absolute -left-2 top-0 bottom-0 w-1 bg-blue-500 rounded-full"></div>
-                <div className="text-xs font-bold text-blue-400 mb-1 ml-2 text-left">USER MODE</div>
-                <div className="bg-slate-800 border border-slate-700 py-2 text-center rounded-lg text-slate-200 text-sm font-medium">User App</div>
-                <div className="bg-slate-800 border border-slate-700 py-2 text-center rounded-lg text-slate-200 text-sm font-medium">Glibc</div>
+                <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1 ml-2 text-left">USER MODE</div>
+                <div className="bg-surface-muted border border-strong py-2 text-center rounded-lg text-primary text-sm font-medium">User App</div>
+                <div className="bg-surface-muted border border-strong py-2 text-center rounded-lg text-primary text-sm font-medium">Glibc</div>
               </div>
 
               {/* Software Interrupt Boundary */}
               <div className="py-3 flex items-center gap-2">
-                <div className="flex-1 h-px bg-slate-700"></div>
-                <div className="flex flex-col items-center justify-center text-indigo-400 text-xs font-bold whitespace-nowrap bg-indigo-950/50 px-2 py-1 rounded border border-indigo-900/50">
+                <div className="flex-1 h-px bg-surface-muted"></div>
+                <div className="flex flex-col items-center justify-center text-indigo-600 dark:text-indigo-400 text-xs font-bold whitespace-nowrap bg-indigo-50 dark:bg-indigo-950/50 px-2 py-1 rounded border border-indigo-200 dark:border-indigo-900/50">
                   <ArrowDownUp size={14} className="mb-1" />
                   Software Interrupt
                 </div>
-                <div className="flex-1 h-px bg-slate-700"></div>
+                <div className="flex-1 h-px bg-surface-muted"></div>
               </div>
 
               {/* Kernel Mode Section */}
               <div className="space-y-2 mt-2 relative">
                 <div className="absolute -left-2 top-0 bottom-0 w-1 bg-emerald-500 rounded-full"></div>
-                <div className="text-xs font-bold text-emerald-400 mb-1 ml-2 text-left">KERNEL MODE</div>
-                <div className="bg-slate-800 border border-slate-700 py-2 text-center rounded-lg text-slate-200 text-sm font-medium">System Call Interface (SCI)</div>
-                <div className="bg-slate-800 border border-slate-700 py-2 text-center rounded-lg text-slate-200 text-sm font-medium">Kernel</div>
-                <div className="bg-slate-900 border border-slate-700 py-2 text-center rounded-lg text-slate-400 text-sm font-medium">Hardware</div>
+                <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1 ml-2 text-left">KERNEL MODE</div>
+                <div className="bg-surface-muted border border-strong py-2 text-center rounded-lg text-primary text-sm font-medium">System Call Interface (SCI)</div>
+                <div className="bg-surface-muted border border-strong py-2 text-center rounded-lg text-primary text-sm font-medium">Kernel</div>
+                <div className="bg-surface border border-strong py-2 text-center rounded-lg text-tertiary text-sm font-medium">Hardware</div>
               </div>
             </div>
 
@@ -1832,51 +2356,51 @@ function NotesView({ module }) {
         </section>
 
         {/* Categories Grid */}
-        <section className="bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden p-8 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Layers className="text-emerald-400" /> Types of System Calls
+        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden p-8 text-left">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Layers className="text-emerald-600 dark:text-emerald-400" /> Types of System Calls
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
              {module.notes.typesOfSyscalls.map((type, idx) => (
-                <div key={idx} className="bg-slate-800 border border-slate-700 p-4 rounded-xl hover:border-emerald-500/50 transition-colors">
-                  <h3 className="font-bold text-emerald-400 mb-2">{type.category}</h3>
-                  <p className="text-slate-300 text-sm leading-relaxed">{type.items}</p>
+                <div key={idx} className="bg-surface-muted border border-strong p-4 rounded-xl hover:border-emerald-500/50 transition-colors">
+                  <h3 className="font-bold text-emerald-600 dark:text-emerald-400 mb-2">{type.category}</h3>
+                  <p className="text-secondary text-sm leading-relaxed">{type.items}</p>
                 </div>
              ))}
           </div>
         </section>
 
         {/* Windows vs Unix Table */}
-        <section className="bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden text-left">
-          <div className="p-6 border-b border-slate-800 bg-slate-800/50">
-            <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-              <Code className="text-blue-400" /> Windows vs Unix System Calls
+        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+          <div className="p-6 border-b border-subtle bg-surface-muted/50">
+            <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+              <Code className="text-blue-600 dark:text-blue-400" /> Windows vs Unix System Calls
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
-                <tr className="bg-slate-800 text-slate-300 text-sm">
-                  <th className="p-4 border-b border-slate-700 font-semibold w-1/4">Category</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-blue-300">Windows</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-emerald-300">Unix</th>
+                <tr className="bg-surface-muted text-secondary text-sm">
+                  <th className="p-4 border-b border-strong font-semibold w-1/4">Category</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-blue-600 dark:text-blue-300">Windows</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-emerald-600 dark:text-emerald-300">Unix</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
                 {module.notes.comparisonTable.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-800/80 transition-colors">
-                    <td className="p-4 border-b border-slate-800 font-medium text-slate-200 align-top">{row.category}</td>
-                    <td className="p-4 border-b border-slate-800 align-top">
+                  <tr key={idx} className="hover:bg-surface-muted/80 transition-colors">
+                    <td className="p-4 border-b border-subtle font-medium text-primary align-top">{row.category}</td>
+                    <td className="p-4 border-b border-subtle align-top">
                       <div className="flex flex-wrap gap-1">
                         {row.win.split(', ').map((cmd, i) => (
-                           <span key={i} className="font-mono text-slate-400 bg-slate-950/50 px-2 py-0.5 rounded text-xs">{cmd}</span>
+                           <span key={i} className="font-mono text-tertiary bg-background/50 px-2 py-0.5 rounded text-xs">{cmd}</span>
                         ))}
                       </div>
                     </td>
-                    <td className="p-4 border-b border-slate-800 align-top">
+                    <td className="p-4 border-b border-subtle align-top">
                       <div className="flex flex-wrap gap-1">
                          {row.unix.split(', ').map((cmd, i) => (
-                           <span key={i} className="font-mono text-slate-400 bg-slate-950/50 px-2 py-0.5 rounded text-xs">{cmd}</span>
+                           <span key={i} className="font-mono text-tertiary bg-background/50 px-2 py-0.5 rounded text-xs">{cmd}</span>
                         ))}
                       </div>
                     </td>
@@ -1897,59 +2421,59 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Boot Flowchart/Diagram */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Activity className="text-rose-400" /> What happens during boot?
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Activity className="text-rose-600 dark:text-rose-400" /> What happens during boot?
           </h2>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-950 p-6 rounded-xl border border-slate-800">
-            <div className="flex flex-col items-center justify-center p-3 bg-slate-800 border border-slate-700 rounded-lg w-full md:w-40 text-center">
-              <span className="font-semibold text-rose-300 text-sm">Power On</span>
-              <span className="text-[10px] text-slate-500 mt-1">System initialized</span>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-background p-6 rounded-xl border border-subtle">
+            <div className="flex flex-col items-center justify-center p-3 bg-surface-muted border border-strong rounded-lg w-full md:w-40 text-center">
+              <span className="font-semibold text-rose-600 dark:text-rose-300 text-sm">Power On</span>
+              <span className="text-[10px] text-tertiary mt-1">System initialized</span>
             </div>
             <ChevronRight className="rotate-90 md:rotate-0 text-indigo-500 shrink-0" size={24} />
             
-            <div className="flex flex-col items-center justify-center p-3 bg-slate-800 border border-slate-700 rounded-lg w-full md:w-40 text-center">
-              <span className="font-semibold text-indigo-300 text-sm">BIOS / UEFI</span>
-              <span className="text-[10px] text-slate-500 mt-1">Runs POST</span>
+            <div className="flex flex-col items-center justify-center p-3 bg-surface-muted border border-strong rounded-lg w-full md:w-40 text-center">
+              <span className="font-semibold text-indigo-600 dark:text-indigo-300 text-sm">BIOS / UEFI</span>
+              <span className="text-[10px] text-tertiary mt-1">Runs POST</span>
             </div>
             <ChevronRight className="rotate-90 md:rotate-0 text-indigo-500 shrink-0" size={24} />
             
-            <div className="flex flex-col items-center justify-center p-3 bg-indigo-950/40 border-2 border-indigo-500 rounded-lg w-full md:w-40 text-center shadow-lg">
+            <div className="flex flex-col items-center justify-center p-3 bg-indigo-50 dark:bg-indigo-950/40 border-2 border-indigo-500 rounded-lg w-full md:w-40 text-center shadow-lg">
               <span className="font-bold text-indigo-200 text-sm">MBR / Disk</span>
-              <span className="text-[10px] text-indigo-400 mt-1">Reads first sector</span>
+              <span className="text-[10px] text-indigo-600 dark:text-indigo-400 mt-1">Reads first sector</span>
             </div>
             <ChevronRight className="rotate-90 md:rotate-0 text-indigo-500 shrink-0" size={24} />
             
-            <div className="flex flex-col items-center justify-center p-3 bg-slate-800 border border-slate-700 rounded-lg w-full md:w-40 text-center">
-              <span className="font-semibold text-emerald-300 text-sm">Bootloader</span>
-              <span className="text-[10px] text-slate-500 mt-1">Loads kernel</span>
+            <div className="flex flex-col items-center justify-center p-3 bg-surface-muted border border-strong rounded-lg w-full md:w-40 text-center">
+              <span className="font-semibold text-emerald-600 dark:text-emerald-300 text-sm">Bootloader</span>
+              <span className="text-[10px] text-tertiary mt-1">Loads kernel</span>
             </div>
             <ChevronRight className="rotate-90 md:rotate-0 text-indigo-500 shrink-0" size={24} />
             
-            <div className="flex flex-col items-center justify-center p-3 bg-emerald-950/20 border border-emerald-800 rounded-lg w-full md:w-40 text-center">
-              <span className="font-bold text-emerald-400 text-sm">Operating System</span>
+            <div className="flex flex-col items-center justify-center p-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-800 rounded-lg w-full md:w-40 text-center">
+              <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">Operating System</span>
               <span className="text-[10px] text-emerald-500 mt-1">User space ready</span>
             </div>
           </div>
-          <p className="text-slate-400 text-sm mt-4 italic">
+          <p className="text-tertiary text-sm mt-4 italic">
             The MBR (Master Boot Record) helps the computer find and start the operating system by specifying boot sectors and partition parameters.
           </p>
         </section>
 
         {/* Step-by-step Timeline */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-8 flex items-center gap-2">
-            <Power className="text-rose-400" /> Detail: System Startup Steps
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-8 flex items-center gap-2">
+            <Power className="text-rose-600 dark:text-rose-400" /> Detail: System Startup Steps
           </h2>
           <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-[1.15rem] before:h-full before:w-0.5 before:bg-gradient-to-b before:from-rose-500/50 before:via-indigo-500/50 before:to-emerald-500/50">
             {module.notes.steps.map((step, idx) => (
               <div key={idx} className="relative flex items-start gap-6 group">
-                <div className="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 group-hover:border-indigo-400 text-slate-400 group-hover:text-indigo-400 flex items-center justify-center shrink-0 z-10 transition-colors font-bold shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-surface border-2 border-strong group-hover:border-indigo-400 text-tertiary group-hover:text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 z-10 transition-colors font-bold shadow-sm">
                   {idx + 1}
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-xl flex-1 hover:border-slate-600 transition-colors">
-                  <h3 className="font-bold text-slate-200 mb-2">{step.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+                <div className="bg-surface-muted/50 border border-strong p-5 rounded-xl flex-1 hover:border-strong transition-colors">
+                  <h3 className="font-bold text-primary mb-2">{step.title}</h3>
+                  <p className="text-tertiary text-sm leading-relaxed">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -1957,62 +2481,62 @@ function NotesView({ module }) {
         </section>
 
         {/* What's inside the MBR? */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Server className="text-indigo-400" /> What's inside the MBR?
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Server className="text-indigo-600 dark:text-indigo-400" /> What's inside the MBR?
           </h2>
-          <p className="text-slate-300 text-sm mb-6">
+          <p className="text-secondary text-sm mb-6">
             Traditionally, the MBR occupies the <strong>first 512 bytes</strong> of the storage disk. Its internal layout is strictly structured:
           </p>
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-slate-800 border-l-4 border-blue-500 p-4 rounded-r-xl">
+            <div className="bg-surface-muted border-l-4 border-blue-500 p-4 rounded-r-xl">
               <div className="flex justify-between items-center mb-1">
-                <span className="font-bold text-blue-300 text-sm">1. Bootloader Code</span>
-                <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded font-mono">446 bytes</span>
+                <span className="font-bold text-blue-600 dark:text-blue-300 text-sm">1. Bootloader Code</span>
+                <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded font-mono">446 bytes</span>
               </div>
-              <p className="text-xs text-slate-400">Small program executed by BIOS to locate and run the secondary bootloader/OS kernel.</p>
+              <p className="text-xs text-tertiary">Small program executed by BIOS to locate and run the secondary bootloader/OS kernel.</p>
             </div>
             
-            <div className="bg-slate-800 border-l-4 border-indigo-500 p-4 rounded-r-xl">
+            <div className="bg-surface-muted border-l-4 border-indigo-500 p-4 rounded-r-xl">
               <div className="flex justify-between items-center mb-1">
-                <span className="font-bold text-indigo-300 text-sm">2. Partition Table</span>
-                <span className="text-xs bg-indigo-900/40 text-indigo-300 px-2 py-0.5 rounded font-mono">64 bytes</span>
+                <span className="font-bold text-indigo-600 dark:text-indigo-300 text-sm">2. Partition Table</span>
+                <span className="text-xs bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded font-mono">64 bytes</span>
               </div>
-              <p className="text-xs text-slate-400">Contains info for up to 4 primary partitions (start/end sectors, size, bootable flag).</p>
+              <p className="text-xs text-tertiary">Contains info for up to 4 primary partitions (start/end sectors, size, bootable flag).</p>
             </div>
 
-            <div className="bg-slate-800 border-l-4 border-emerald-500 p-4 rounded-r-xl">
+            <div className="bg-surface-muted border-l-4 border-emerald-500 p-4 rounded-r-xl">
               <div className="flex justify-between items-center mb-1">
-                <span className="font-bold text-emerald-300 text-sm">3. Boot Signature</span>
-                <span className="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-0.5 rounded font-mono">2 bytes</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-300 text-sm">3. Boot Signature</span>
+                <span className="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 px-2 py-0.5 rounded font-mono">2 bytes</span>
               </div>
-              <p className="text-xs text-slate-400">Usually set to <code className="text-emerald-400">0x55AA</code>. Tells the BIOS/UEFI that the sector is bootable.</p>
+              <p className="text-xs text-tertiary">Usually set to <code className="text-emerald-600 dark:text-emerald-400">0x55AA</code>. Tells the BIOS/UEFI that the sector is bootable.</p>
             </div>
           </div>
 
-          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-6">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">Visual 512-Byte MBR Map</span>
-            <div className="flex text-center text-xs font-mono font-bold text-white rounded-lg overflow-hidden border border-slate-700">
-              <div className="bg-blue-600/80 py-3 w-[87%] border-r border-slate-800">Bootloader Code (446B)</div>
-              <div className="bg-indigo-600/80 py-3 w-[11.5%] border-r border-slate-800">Partition Table (64B)</div>
+          <div className="bg-background p-4 rounded-xl border border-subtle mb-6">
+            <span className="text-xs font-bold text-tertiary uppercase tracking-widest block mb-2">Visual 512-Byte MBR Map</span>
+            <div className="flex text-center text-xs font-mono font-bold text-white rounded-lg overflow-hidden border border-strong">
+              <div className="bg-blue-600/80 py-3 w-[87%] border-r border-subtle">Bootloader Code (446B)</div>
+              <div className="bg-indigo-600/80 py-3 w-[11.5%] border-r border-subtle">Partition Table (64B)</div>
               <div className="bg-emerald-600/80 py-3 w-[1.5%]">Sig (2B)</div>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 text-sm">
             <div>
-              <h3 className="font-bold text-slate-200 mb-2">Example Scenario:</h3>
-              <p className="text-slate-400 leading-relaxed text-xs">
+              <h3 className="font-bold text-primary mb-2">Example Scenario:</h3>
+              <p className="text-tertiary leading-relaxed text-xs">
                 Suppose a storage disk contains a <strong>Windows partition</strong> and a <strong>Linux partition</strong>. The MBR partition table stores exactly where these partitions begin on the disk plates and which partition is marked as "active" (bootable) to let the boot code know where to hand off execution.
               </p>
             </div>
             <div>
-              <h3 className="font-bold text-slate-200 mb-2">Modern Systems & GPT:</h3>
-              <p className="text-slate-400 leading-relaxed text-xs">
+              <h3 className="font-bold text-primary mb-2">Modern Systems & GPT:</h3>
+              <p className="text-tertiary leading-relaxed text-xs">
                 Many modern systems use <strong>GPT (GUID Partition Table)</strong> instead of MBR. GPT is superior because it:
               </p>
-              <ul className="list-disc list-inside text-xs text-slate-400 mt-2 space-y-1">
+              <ul className="list-disc list-inside text-xs text-tertiary mt-2 space-y-1">
                 <li>Supports disks larger than 2 Terabytes (TB)</li>
                 <li>Allows more than 4 primary partitions (up to 128)</li>
                 <li>Includes backup partition tables for reliability</li>
@@ -2023,30 +2547,30 @@ function NotesView({ module }) {
 
         <div className="grid md:grid-cols-2 gap-6 text-left">
           {/* Hardware & Firmware */}
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-            <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-              <HardDrive className="text-indigo-400" /> Key Hardware & Firmware
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+              <HardDrive className="text-indigo-600 dark:text-indigo-400" /> Key Hardware & Firmware
             </h2>
             <div className="space-y-4">
               {module.notes.definitions.map((def, idx) => (
                 <div key={idx} className="border-l-4 border-indigo-500 pl-4">
-                  <h3 className="font-bold text-slate-200 text-lg">{def.term}</h3>
-                  <p className="text-slate-400 mt-1 text-sm">{def.desc}</p>
+                  <h3 className="font-bold text-primary text-lg">{def.term}</h3>
+                  <p className="text-tertiary mt-1 text-sm">{def.desc}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {/* OS Bootloaders */}
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-             <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-              <Terminal className="text-emerald-400" /> OS Bootloaders
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+             <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+              <Terminal className="text-emerald-600 dark:text-emerald-400" /> OS Bootloaders
             </h2>
             <div className="grid gap-3">
               {module.notes.bootloaders.map((boot, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-700">
-                   <span className="font-bold text-slate-300">{boot.os}</span>
-                   <span className="font-mono text-sm bg-slate-950/50 text-emerald-400 px-3 py-1 rounded-full">{boot.name}</span>
+                <div key={idx} className="flex items-center justify-between bg-surface-muted p-4 rounded-xl border border-strong">
+                   <span className="font-bold text-secondary">{boot.os}</span>
+                   <span className="font-mono text-sm bg-background/50 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full">{boot.name}</span>
                 </div>
               ))}
             </div>
@@ -2054,9 +2578,9 @@ function NotesView({ module }) {
         </div>
 
         {/* Exam Prep Key Concept Block */}
-        <section className="bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
-          <h2 className="text-lg font-bold text-indigo-300 mb-2">Exam Checkpoint</h2>
-          <p className="text-slate-300 text-sm leading-relaxed">
+        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
+          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-2">Exam Checkpoint</h2>
+          <p className="text-secondary text-sm leading-relaxed">
             <strong>MBR (Master Boot Record)</strong> is the first sector of a storage disk containing boot code and partition information used during system startup. Remember its exact 512-byte structure breakdown (446 bytes code + 64 bytes partitions + 2 bytes signature) for MCQ/theory exams!
           </p>
         </section>
@@ -2072,62 +2596,62 @@ function NotesView({ module }) {
         
         {/* Core Differences Grid */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-            <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-              <Cpu className="text-indigo-400" /> Registers & Data Processing
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+            <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+              <Cpu className="text-indigo-600 dark:text-indigo-400" /> Registers & Data Processing
             </h2>
             <div className="space-y-4">
               {module.notes.registers.map((reg, idx) => (
-                <div key={idx} className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
+                <div key={idx} className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-bold text-slate-200">{reg.title}</h3>
-                    <span className="text-xs bg-indigo-900/40 text-indigo-300 px-2 py-0.5 rounded font-mono font-bold">{reg.bytes} / cycle</span>
+                    <h3 className="font-bold text-primary">{reg.title}</h3>
+                    <span className="text-xs bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded font-mono font-bold">{reg.bytes} / cycle</span>
                   </div>
-                  <p className="text-slate-400 text-sm leading-relaxed">{reg.desc}</p>
+                  <p className="text-tertiary text-sm leading-relaxed">{reg.desc}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-6 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-400 leading-relaxed">
-              <strong className="text-slate-300 block mb-1">Performance Insight:</strong>
+            <div className="mt-6 bg-background p-4 rounded-xl border border-subtle text-xs text-tertiary leading-relaxed">
+              <strong className="text-secondary block mb-1">Performance Insight:</strong>
               Because 64-bit registers are twice as large, they process double the data per instruction cycle, yielding huge math & execution speedups.
             </div>
           </section>
 
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left flex flex-col justify-between">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-                <HardDrive className="text-emerald-400" /> Addressable Memory Limits
+              <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+                <HardDrive className="text-emerald-600 dark:text-emerald-400" /> Addressable Memory Limits
               </h2>
               <div className="space-y-4">
                 {module.notes.memory.map((mem, idx) => (
-                  <div key={idx} className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
+                  <div key={idx} className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-bold text-slate-200">{mem.term}</h3>
-                      <span className="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">{mem.value} max</span>
+                      <h3 className="font-bold text-primary">{mem.term}</h3>
+                      <span className="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">{mem.value} max</span>
                     </div>
-                    <p className="text-slate-400 text-sm leading-relaxed">{mem.desc}</p>
+                    <p className="text-tertiary text-sm leading-relaxed">{mem.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="mt-6 bg-indigo-950/30 border border-indigo-900/50 p-4 rounded-xl text-indigo-300 text-xs leading-relaxed">
-              <strong className="text-indigo-400 block mb-1">Why the 4GB limit?</strong>
+            <div className="mt-6 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/50 p-4 rounded-xl text-indigo-600 dark:text-indigo-300 text-xs leading-relaxed">
+              <strong className="text-indigo-600 dark:text-indigo-400 block mb-1">Why the 4GB limit?</strong>
               A 32-bit OS can only reference 2<sup>32</sup> distinct addresses. 2<sup>32</sup> bytes = exactly 4,294,967,296 bytes (4 GB). Beyond this, the CPU has no way to point to physical memory locations!
             </div>
           </section>
         </div>
 
         {/* Key Advantages */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <CheckSquare className="text-rose-400" /> Key Advantages of 64-Bit Architecture
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <CheckSquare className="text-rose-600 dark:text-rose-400" /> Key Advantages of 64-Bit Architecture
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {module.notes.advantages.map((adv, idx) => (
-              <div key={idx} className="bg-slate-800/50 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+              <div key={idx} className="bg-surface-muted/50 border border-strong p-5 rounded-xl flex flex-col justify-between">
                 <div>
-                  <h3 className="font-bold text-rose-300 mb-2">{adv.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{adv.desc}</p>
+                  <h3 className="font-bold text-rose-600 dark:text-rose-300 mb-2">{adv.title}</h3>
+                  <p className="text-tertiary text-sm leading-relaxed">{adv.desc}</p>
                 </div>
               </div>
             ))}
@@ -2135,9 +2659,9 @@ function NotesView({ module }) {
         </section>
 
         {/* Quick Interview Prep Card */}
-        <section className="bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
-          <h2 className="text-lg font-bold text-indigo-300 mb-2">Interview Summary</h2>
-          <p className="text-slate-300 text-sm leading-relaxed">
+        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
+          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-2">Interview Summary</h2>
+          <p className="text-secondary text-sm leading-relaxed">
             If asked the difference: <span className="italic text-white">"A 32-bit OS is limited to 4GB of RAM and processes 4 bytes per cycle, whereas a 64-bit OS can address virtually unlimited RAM and processes 8 bytes per cycle, making it vastly superior for performance and heavy resource usage."</span>
           </p>
         </section>
@@ -2152,80 +2676,80 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Memory Hierarchy Pyramid */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> The Memory Hierarchy
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> The Memory Hierarchy
           </h2>
-          <p className="text-slate-400 text-sm mb-8 leading-relaxed">
+          <p className="text-tertiary text-sm mb-8 leading-relaxed">
             Computer memory is structured like a pyramid: storage at the top is extremely fast, small, and expensive, while storage at the bottom is slow, massive, and cheap.
           </p>
 
           <div className="flex flex-col items-center max-w-md mx-auto space-y-2 mb-6">
             {/* Registers (Top) */}
-            <div className="w-full bg-rose-950/40 border-2 border-rose-500 rounded-lg p-3 text-center shadow-lg transform hover:scale-[1.02] transition-transform">
-              <span className="font-bold text-rose-300 text-sm block">1. Registers (Inside CPU)</span>
-              <span className="text-[10px] text-slate-400">Speed: Sub-nanosecond | Size: Bytes | Cost: Extremely High</span>
+            <div className="w-full bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-500 rounded-lg p-3 text-center shadow-lg transform hover:scale-[1.02] transition-transform">
+              <span className="font-bold text-rose-600 dark:text-rose-300 text-sm block">1. Registers (Inside CPU)</span>
+              <span className="text-[10px] text-tertiary">Speed: Sub-nanosecond | Size: Bytes | Cost: Extremely High</span>
             </div>
             
-            <ChevronRight className="rotate-90 text-slate-600 shrink-0" size={16} />
+            <ChevronRight className="rotate-90 text-tertiary shrink-0" size={16} />
 
             {/* Cache */}
-            <div className="w-[90%] bg-indigo-950/40 border-2 border-indigo-500 rounded-lg p-3 text-center shadow-md transform hover:scale-[1.02] transition-transform">
-              <span className="font-bold text-indigo-300 text-sm block">2. Cache (SRAM, Next to CPU)</span>
-              <span className="text-[10px] text-slate-400">Speed: Nanoseconds | Size: Megabytes (MB) | Cost: High</span>
+            <div className="w-[90%] bg-indigo-50 dark:bg-indigo-950/40 border-2 border-indigo-500 rounded-lg p-3 text-center shadow-md transform hover:scale-[1.02] transition-transform">
+              <span className="font-bold text-indigo-600 dark:text-indigo-300 text-sm block">2. Cache (SRAM, Next to CPU)</span>
+              <span className="text-[10px] text-tertiary">Speed: Nanoseconds | Size: Megabytes (MB) | Cost: High</span>
             </div>
             
-            <ChevronRight className="rotate-90 text-slate-600 shrink-0" size={16} />
+            <ChevronRight className="rotate-90 text-tertiary shrink-0" size={16} />
 
             {/* RAM */}
-            <div className="w-[80%] bg-blue-950/40 border-2 border-blue-500 rounded-lg p-3 text-center shadow-md transform hover:scale-[1.02] transition-transform">
-              <span className="font-bold text-blue-300 text-sm block">3. Main Memory (RAM / DRAM)</span>
-              <span className="text-[10px] text-slate-400">Speed: 10-50ns | Size: Gigabytes (GB) | Cost: Medium</span>
+            <div className="w-[80%] bg-blue-50 dark:bg-blue-950/40 border-2 border-blue-500 rounded-lg p-3 text-center shadow-md transform hover:scale-[1.02] transition-transform">
+              <span className="font-bold text-blue-600 dark:text-blue-300 text-sm block">3. Main Memory (RAM / DRAM)</span>
+              <span className="text-[10px] text-tertiary">Speed: 10-50ns | Size: Gigabytes (GB) | Cost: Medium</span>
             </div>
             
-            <ChevronRight className="rotate-90 text-slate-600 shrink-0" size={16} />
+            <ChevronRight className="rotate-90 text-tertiary shrink-0" size={16} />
 
             {/* Secondary Storage */}
-            <div className="w-[70%] bg-slate-800 border-2 border-slate-700 rounded-lg p-3 text-center transform hover:scale-[1.02] transition-transform">
-              <span className="font-bold text-slate-200 text-sm block">4. Secondary Storage (SSDs/HDDs)</span>
-              <span className="text-[10px] text-slate-400">Speed: Milliseconds | Size: Terabytes (TB) | Cost: Low</span>
+            <div className="w-[70%] bg-surface-muted border-2 border-strong rounded-lg p-3 text-center transform hover:scale-[1.02] transition-transform">
+              <span className="font-bold text-primary text-sm block">4. Secondary Storage (SSDs/HDDs)</span>
+              <span className="text-[10px] text-tertiary">Speed: Milliseconds | Size: Terabytes (TB) | Cost: Low</span>
             </div>
           </div>
         </section>
 
         {/* Detailed Descriptions Grid */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 text-left">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">Detailed Memory Levels</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <h2 className="text-xl font-bold text-primary mb-6">Detailed Memory Levels</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="font-bold text-indigo-400 text-lg border-b border-slate-800 pb-2">Primary Memory</h3>
+              <h3 className="font-bold text-indigo-600 dark:text-indigo-400 text-lg border-b border-subtle pb-2">Primary Memory</h3>
               {module.notes.hierarchy.slice(0, 3).map((item, idx) => (
-                <div key={idx} className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
+                <div key={idx} className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
                   <div className="flex justify-between items-center mb-1">
-                    <strong className="text-slate-200">{item.level}</strong>
-                    <span className="text-[10px] bg-slate-950 text-indigo-300 px-2 py-0.5 rounded font-mono">{item.size}</span>
+                    <strong className="text-primary">{item.level}</strong>
+                    <span className="text-[10px] bg-background text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded font-mono">{item.size}</span>
                   </div>
-                  <p className="text-slate-400 text-xs mt-1 leading-relaxed">{item.desc}</p>
+                  <p className="text-tertiary text-xs mt-1 leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-bold text-emerald-400 text-lg border-b border-slate-800 pb-2">Secondary Memory</h3>
-              <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700 h-full flex flex-col justify-between">
+              <h3 className="font-bold text-emerald-600 dark:text-emerald-400 text-lg border-b border-subtle pb-2">Secondary Memory</h3>
+              <div className="bg-surface-muted/40 p-4 rounded-xl border border-strong h-full flex flex-col justify-between">
                 <div>
-                  <strong className="text-slate-200 block mb-2">Long-term Permanent Storage</strong>
-                  <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                  <strong className="text-primary block mb-2">Long-term Permanent Storage</strong>
+                  <p className="text-tertiary text-xs leading-relaxed mb-4">
                     Unlike primary memory, secondary memory stores data permanently. Modern systems divide these into:
                   </p>
-                  <ul className="space-y-2 text-xs text-slate-300 list-disc list-inside">
+                  <ul className="space-y-2 text-xs text-secondary list-disc list-inside">
                     <li><strong>Electronic Disks:</strong> SSDs, USB Flash Drives</li>
                     <li><strong>Magnetic Disks:</strong> HDDs (Hard Disk Drives)</li>
                     <li><strong>Optical Disks:</strong> CDs, DVDs, Blu-rays</li>
                     <li><strong>Magnetic Tapes:</strong> Enterprise back-ups</li>
                   </ul>
                 </div>
-                <div className="mt-4 text-[10px] text-slate-500 italic">
+                <div className="mt-4 text-[10px] text-tertiary italic">
                   *Secondary memory can be thousands of times slower to access than CPU registers but holds millions of times more storage.
                 </div>
               </div>
@@ -2234,25 +2758,25 @@ function NotesView({ module }) {
         </section>
 
         {/* Trade-offs Comparisons */}
-        <section className="bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden text-left">
-          <div className="p-6 border-b border-slate-800 bg-slate-800/50">
-            <h2 className="text-xl font-bold text-slate-100">Trade-offs Comparisons (Primary vs Secondary)</h2>
+        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+          <div className="p-6 border-b border-subtle bg-surface-muted/50">
+            <h2 className="text-xl font-bold text-primary">Trade-offs Comparisons (Primary vs Secondary)</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr className="bg-slate-800 text-slate-300 text-sm">
-                  <th className="p-4 border-b border-slate-700 font-semibold w-1/4">Factor</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-indigo-300">Primary Memory</th>
-                  <th className="p-4 border-b border-slate-700 font-semibold w-3/8 text-emerald-300">Secondary Storage</th>
+                <tr className="bg-surface-muted text-secondary text-sm">
+                  <th className="p-4 border-b border-strong font-semibold w-1/4">Factor</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-indigo-600 dark:text-indigo-300">Primary Memory</th>
+                  <th className="p-4 border-b border-strong font-semibold w-3/8 text-emerald-600 dark:text-emerald-300">Secondary Storage</th>
                 </tr>
               </thead>
               <tbody className="text-sm">
                 {module.notes.comparisons.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-800/50 transition-colors">
-                    <td className="p-4 border-b border-slate-800 font-medium text-slate-200 align-top">{row.factor}</td>
-                    <td className="p-4 border-b border-slate-800 text-slate-300 align-top">{row.primary}</td>
-                    <td className="p-4 border-b border-slate-800 text-slate-300 align-top">{row.secondary}</td>
+                  <tr key={idx} className="hover:bg-surface-muted/50 transition-colors">
+                    <td className="p-4 border-b border-subtle font-medium text-primary align-top">{row.factor}</td>
+                    <td className="p-4 border-b border-subtle text-secondary align-top">{row.primary}</td>
+                    <td className="p-4 border-b border-subtle text-secondary align-top">{row.secondary}</td>
                   </tr>
                 ))}
               </tbody>
@@ -2261,17 +2785,17 @@ function NotesView({ module }) {
         </section>
 
         {/* Volatility Highlight Block */}
-        <section className="bg-amber-950/20 border border-amber-900/50 rounded-2xl p-6 text-left">
-          <h2 className="text-lg font-bold text-amber-400 mb-2 flex items-center gap-2">
+        <section className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-left">
+          <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-2">
             <Activity className="text-amber-500" /> Volatility Check
           </h2>
-          <div className="grid md:grid-cols-2 gap-4 text-xs text-slate-300">
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-              <strong className="text-amber-300 block mb-1">Volatile (RAM, Cache, Registers)</strong>
+          <div className="grid md:grid-cols-2 gap-4 text-xs text-secondary">
+            <div className="bg-surface/50 p-4 rounded-xl border border-subtle">
+              <strong className="text-amber-600 dark:text-amber-300 block mb-1">Volatile (RAM, Cache, Registers)</strong>
               Requires electrical currents to sustain states. Data is wiped instantly when power is cut.
             </div>
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-              <strong className="text-emerald-400 block mb-1">Non-Volatile (SSD, HDD, Flash Drives)</strong>
+            <div className="bg-surface/50 p-4 rounded-xl border border-subtle">
+              <strong className="text-emerald-600 dark:text-emerald-400 block mb-1">Non-Volatile (SSD, HDD, Flash Drives)</strong>
               Stores data physically or magnetically. Retains records permanently even when power is turned off.
             </div>
           </div>
@@ -2286,25 +2810,25 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Program vs Process */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-2 flex items-center gap-2">
-            <Activity className="text-indigo-400" /> Program vs. Process
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+            <Activity className="text-indigo-600 dark:text-indigo-400" /> Program vs. Process
           </h2>
-          <p className="text-slate-400 text-sm mb-6">
+          <p className="text-tertiary text-sm mb-6">
             The easiest way to understand this is the difference between a <strong>recipe (Program)</strong> and <strong>baking the cake (Process)</strong>.
           </p>
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-xl">
-              <span className="text-xs bg-slate-950 text-indigo-400 px-2 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Program</span>
-              <h3 className="font-bold text-slate-200 text-lg mb-1">Passive & Static</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
+            <div className="bg-surface-muted/50 border border-strong p-5 rounded-xl">
+              <span className="text-xs bg-background text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Program</span>
+              <h3 className="font-bold text-primary text-lg mb-1">Passive & Static</h3>
+              <p className="text-tertiary text-xs leading-relaxed">
                 Compiled binary code sitting passively on your hard drive (disk). It is just a file waiting to be executed.
               </p>
             </div>
-            <div className="bg-slate-800/50 border-l-4 border-indigo-500 p-5 rounded-r-xl">
-              <span className="text-xs bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Process</span>
-              <h3 className="font-bold text-indigo-300 text-lg mb-1">Active & Dynamic</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
+            <div className="bg-surface-muted/50 border-l-4 border-indigo-500 p-5 rounded-r-xl">
+              <span className="text-xs bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 px-2 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Process</span>
+              <h3 className="font-bold text-indigo-600 dark:text-indigo-300 text-lg mb-1">Active & Dynamic</h3>
+              <p className="text-tertiary text-xs leading-relaxed">
                 A program currently under execution. It is loaded into the RAM (primary memory) and actively utilizes hardware resources like the CPU.
               </p>
             </div>
@@ -2312,18 +2836,18 @@ function NotesView({ module }) {
         </section>
 
         {/* Process Creation Steps */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> How the OS Creates a Process
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> How the OS Creates a Process
           </h2>
           <div className="grid md:grid-cols-5 gap-4">
             {module.notes.steps.map((step, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700 p-4 rounded-xl flex flex-col relative">
-                <div className="absolute -top-3 -left-2 bg-indigo-600 text-white font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm">
+              <div key={idx} className="bg-surface-muted/40 border border-strong p-4 rounded-xl flex flex-col relative">
+                <div className="absolute -top-3 -left-2 bg-indigo-600 text-white font-bold text-xs w-6 h-6 rounded-full flex items-center justify-center border-2 border-subtle shadow-sm">
                   {idx + 1}
                 </div>
-                <h3 className="font-bold text-slate-200 text-sm mb-1 mt-1">{step.title}</h3>
-                <p className="text-slate-400 text-[11px] leading-relaxed flex-1">{step.desc}</p>
+                <h3 className="font-bold text-primary text-sm mb-1 mt-1">{step.title}</h3>
+                <p className="text-tertiary text-[11px] leading-relaxed flex-1">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -2331,66 +2855,66 @@ function NotesView({ module }) {
 
         {/* Architecture of Process */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-            <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-              <Terminal className="text-emerald-400" /> Process Memory Layout
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+              <Terminal className="text-emerald-600 dark:text-emerald-400" /> Process Memory Layout
             </h2>
             
             {/* Memory Stack Layout Representation */}
-            <div className="bg-slate-950 border border-slate-800 rounded-xl p-6 flex flex-col space-y-2 max-w-sm mx-auto shadow-inner relative">
-              <div className="text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest border-b border-slate-800 pb-1 mb-2">High Memory Addresses</div>
+            <div className="bg-background border border-subtle rounded-xl p-6 flex flex-col space-y-2 max-w-sm mx-auto shadow-inner relative">
+              <div className="text-center text-[10px] text-tertiary font-bold uppercase tracking-widest border-b border-subtle pb-1 mb-2">High Memory Addresses</div>
               
               {/* Stack Block */}
-              <div className="bg-slate-800 border-2 border-slate-700 rounded-lg p-3 text-center">
-                <span className="font-bold text-slate-200 text-sm block">Stack</span>
-                <span className="text-[10px] text-slate-400 block">Local variables & function arguments</span>
-                <span className="text-[9px] text-indigo-400 mt-1 block">↓ Grows Downward ↓</span>
+              <div className="bg-surface-muted border-2 border-strong rounded-lg p-3 text-center">
+                <span className="font-bold text-primary text-sm block">Stack</span>
+                <span className="text-[10px] text-tertiary block">Local variables & function arguments</span>
+                <span className="text-[9px] text-indigo-600 dark:text-indigo-400 mt-1 block">↓ Grows Downward ↓</span>
               </div>
               
               {/* Free Space */}
-              <div className="h-8 border border-dashed border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-slate-600">
+              <div className="h-8 border border-dashed border-subtle rounded-lg flex items-center justify-center text-[10px] text-tertiary">
                 Shared Free Address Space
               </div>
 
               {/* Heap Block */}
-              <div className="bg-slate-800 border-2 border-slate-700 rounded-lg p-3 text-center">
-                <span className="text-[9px] text-emerald-400 mb-1 block">↑ Grows Upward ↑</span>
-                <span className="font-bold text-slate-200 text-sm block">Heap</span>
-                <span className="text-[10px] text-slate-400 block">Dynamic allocations (malloc/new)</span>
+              <div className="bg-surface-muted border-2 border-strong rounded-lg p-3 text-center">
+                <span className="text-[9px] text-emerald-600 dark:text-emerald-400 mb-1 block">↑ Grows Upward ↑</span>
+                <span className="font-bold text-primary text-sm block">Heap</span>
+                <span className="text-[10px] text-tertiary block">Dynamic allocations (malloc/new)</span>
               </div>
 
               {/* Data Block */}
-              <div className="bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-center">
-                <span className="font-bold text-slate-200 text-sm block">Data</span>
-                <span className="text-[10px] text-slate-400 block">Global & static data</span>
+              <div className="bg-surface-muted border border-strong rounded-lg p-2.5 text-center">
+                <span className="font-bold text-primary text-sm block">Data</span>
+                <span className="text-[10px] text-tertiary block">Global & static data</span>
               </div>
 
               {/* Text Block */}
-              <div className="bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-center">
-                <span className="font-bold text-slate-200 text-sm block">Text</span>
-                <span className="text-[10px] text-slate-400 block">Compiled instructions (read-only)</span>
+              <div className="bg-surface-muted border border-strong rounded-lg p-2.5 text-center">
+                <span className="font-bold text-primary text-sm block">Text</span>
+                <span className="text-[10px] text-tertiary block">Compiled instructions (read-only)</span>
               </div>
               
-              <div className="text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest border-t border-slate-800 pt-1 mt-2">Low Memory Addresses</div>
+              <div className="text-center text-[10px] text-tertiary font-bold uppercase tracking-widest border-t border-subtle pt-1 mt-2">Low Memory Addresses</div>
             </div>
           </section>
 
           {/* PCB Section */}
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 flex flex-col justify-between">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-                <Server className="text-indigo-400" /> Process Control Block (PCB)
+              <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                <Server className="text-indigo-600 dark:text-indigo-400" /> Process Control Block (PCB)
               </h2>
-              <p className="text-slate-400 text-xs mb-6">
+              <p className="text-tertiary text-xs mb-6">
                 All processes are tracked by the OS in a <strong>Process Table</strong> where each entry is a <strong>PCB</strong>. Think of the PCB as the process's official ID profile.
               </p>
 
               {/* PCB Fields Grid */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {module.notes.pcb.map((item, idx) => (
-                  <div key={idx} className="bg-slate-850 border border-slate-800 p-2.5 rounded-lg">
-                    <strong className="text-indigo-300 block mb-0.5">{item.attr}</strong>
-                    <span className="text-slate-400 text-[11px] leading-tight block">{item.desc}</span>
+                  <div key={idx} className="bg-surface-muted border border-subtle p-2.5 rounded-lg">
+                    <strong className="text-indigo-600 dark:text-indigo-300 block mb-0.5">{item.attr}</strong>
+                    <span className="text-tertiary text-[11px] leading-tight block">{item.desc}</span>
                   </div>
                 ))}
               </div>
@@ -2399,20 +2923,20 @@ function NotesView({ module }) {
         </div>
 
         {/* Registers in PCB Context Switching */}
-        <section className="bg-indigo-950/30 border border-indigo-500/50 rounded-2xl p-8">
-          <h2 className="text-lg font-bold text-indigo-300 mb-3 flex items-center gap-2">
-            <Cpu className="text-indigo-400" /> Deep Dive: Registers in the PCB & Context Switching
+        <section className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-500/50 rounded-2xl p-8">
+          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-3 flex items-center gap-2">
+            <Cpu className="text-indigo-600 dark:text-indigo-400" /> Deep Dive: Registers in the PCB & Context Switching
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-4">
+          <p className="text-secondary text-sm leading-relaxed mb-4">
             Since CPU cores rapidly cycle between multiple active processes (Time Sharing), the OS must store the execution status when swapping processes out:
           </p>
           <div className="grid md:grid-cols-2 gap-4 text-xs">
-            <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850">
-              <strong className="text-rose-400 block mb-1">Swapping Out (Pause)</strong>
+            <div className="bg-surface/60 p-4 rounded-xl border border-subtle">
+              <strong className="text-rose-600 dark:text-rose-400 block mb-1">Swapping Out (Pause)</strong>
               When a process's time slice expires, the OS copies all register values from the CPU registers and saves them into the process's PCB before pausing it.
             </div>
-            <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850">
-              <strong className="text-emerald-400 block mb-1">Swapping In (Resume)</strong>
+            <div className="bg-surface/60 p-4 rounded-xl border border-subtle">
+              <strong className="text-emerald-600 dark:text-emerald-400 block mb-1">Swapping In (Resume)</strong>
               When the scheduler selects this process to execute again, the OS reads the register values from its PCB and writes them back to the CPU hardware registers, resuming execution seamlessly.
             </div>
           </div>
@@ -2428,16 +2952,16 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* State Transition Diagram */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Activity className="text-rose-400" /> State Transition Diagram
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Activity className="text-rose-600 dark:text-rose-400" /> State Transition Diagram
           </h2>
-          <p className="text-slate-400 text-sm mb-8 leading-relaxed">
+          <p className="text-tertiary text-sm mb-8 leading-relaxed">
             As a process executes, it transitions through different states. Click or hover on the states to learn more about the life cycle.
           </p>
 
           {/* Graphical State Flowchart (Authentic Transition Diagram) */}
-          <div className="bg-slate-950 p-6 rounded-xl border border-slate-800 flex justify-center items-center shadow-inner overflow-x-auto">
+          <div className="bg-background p-6 rounded-xl border border-subtle flex justify-center items-center shadow-inner overflow-x-auto">
             <svg viewBox="0 0 800 320" className="w-full min-w-[700px] text-xs font-semibold">
               <defs>
                 {/* Glow Filter */}
@@ -2531,13 +3055,13 @@ function NotesView({ module }) {
         </section>
 
         {/* Process States Descriptions */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6">The 5 Process States</h2>
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6">The 5 Process States</h2>
           <div className="grid md:grid-cols-5 gap-4">
             {module.notes.statesList.map((state, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700 p-4 rounded-xl">
-                <h3 className="font-bold text-slate-200 text-sm mb-2 pb-1 border-b border-slate-700">{state.name}</h3>
-                <p className="text-slate-400 text-[11px] leading-relaxed">{state.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-strong p-4 rounded-xl">
+                <h3 className="font-bold text-primary text-sm mb-2 pb-1 border-b border-strong">{state.name}</h3>
+                <p className="text-tertiary text-[11px] leading-relaxed">{state.desc}</p>
               </div>
             ))}
           </div>
@@ -2547,20 +3071,20 @@ function NotesView({ module }) {
         <div className="grid md:grid-cols-2 gap-6">
           
           {/* Queues */}
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 flex flex-col justify-between">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-                <Layers className="text-indigo-400" /> Process Queues
+              <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                <Layers className="text-indigo-600 dark:text-indigo-400" /> Process Queues
               </h2>
               <div className="space-y-4">
                 {module.notes.queues.map((q, idx) => (
-                  <div key={idx} className="bg-slate-800/50 border border-slate-700 p-4 rounded-xl">
+                  <div key={idx} className="bg-surface-muted/50 border border-strong p-4 rounded-xl">
                     <div className="flex justify-between items-center mb-1">
-                      <h3 className="font-bold text-indigo-300 text-sm">{q.name}</h3>
-                      <span className="text-[9px] bg-slate-950 text-slate-400 px-2 py-0.5 rounded font-mono">{q.memory}</span>
+                      <h3 className="font-bold text-indigo-600 dark:text-indigo-300 text-sm">{q.name}</h3>
+                      <span className="text-[9px] bg-background text-tertiary px-2 py-0.5 rounded font-mono">{q.memory}</span>
                     </div>
-                    <p className="text-slate-400 text-xs mb-2 leading-relaxed">{q.desc}</p>
-                    <div className="text-[10px] text-slate-500">
+                    <p className="text-tertiary text-xs mb-2 leading-relaxed">{q.desc}</p>
+                    <div className="text-[10px] text-tertiary">
                       <strong>Scheduler:</strong> {q.scheduler}
                     </div>
                   </div>
@@ -2570,16 +3094,16 @@ function NotesView({ module }) {
           </section>
 
           {/* Schedulers & Dispatcher */}
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 flex flex-col justify-between">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-                <Cpu className="text-emerald-400" /> Schedulers & Dispatchers
+              <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                <Cpu className="text-emerald-600 dark:text-emerald-400" /> Schedulers & Dispatchers
               </h2>
               <div className="space-y-4">
                 {module.notes.schedulerDetails.map((detail, idx) => (
-                  <div key={idx} className="bg-slate-850 border border-slate-800 p-3 rounded-lg">
-                    <strong className="text-emerald-400 text-xs block mb-1">{detail.term}</strong>
-                    <p className="text-slate-400 text-[11px] leading-relaxed">{detail.role}</p>
+                  <div key={idx} className="bg-surface-muted border border-subtle p-3 rounded-lg">
+                    <strong className="text-emerald-600 dark:text-emerald-400 text-xs block mb-1">{detail.term}</strong>
+                    <p className="text-tertiary text-[11px] leading-relaxed">{detail.role}</p>
                   </div>
                 ))}
               </div>
@@ -2588,9 +3112,9 @@ function NotesView({ module }) {
         </div>
 
         {/* Quick Review Card */}
-        <section className="bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
-          <h2 className="text-lg font-bold text-indigo-300 mb-2">Interview Checklist</h2>
-          <ul className="list-disc list-inside text-slate-300 text-sm space-y-1">
+        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
+          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-2">Interview Checklist</h2>
+          <ul className="list-disc list-inside text-secondary text-sm space-y-1">
             <li><strong>Waiting State Destination:</strong> After I/O completion, a process goes back to the <strong>Ready Queue</strong> (NOT straight to the Running state).</li>
             <li><strong>Multi-programming:</strong> The <strong>Long-Term Scheduler (LTS)</strong> determines how many processes occupy RAM (Degree of Multi-programming).</li>
             <li><strong>STS vs. Dispatcher:</strong> The STS <strong>decides</strong> who gets CPU time; the Dispatcher <strong>executes</strong> the actual context switch.</li>
@@ -2607,26 +3131,26 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Swapping (MTS) */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-2 flex items-center gap-2">
-            <FolderOpen className="text-indigo-400" /> Swapping & Memory Management
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
+            <FolderOpen className="text-indigo-600 dark:text-indigo-400" /> Swapping & Memory Management
           </h2>
-          <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+          <p className="text-tertiary text-sm mb-6 leading-relaxed">
             When Main Memory (RAM) becomes full (overcommitted), the OS must free up space by moving processes to disk. This is managed by the <strong>Medium-Term Scheduler (MTS)</strong>.
           </p>
 
           <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-slate-800/50 border border-slate-700 p-5 rounded-xl">
-              <span className="text-xs bg-red-950 text-red-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Swap-Out</span>
-              <h3 className="font-bold text-slate-200 text-base mb-1">RAM ➔ Secondary Storage (Disk)</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
+            <div className="bg-surface-muted/50 border border-strong p-5 rounded-xl">
+              <span className="text-xs bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Swap-Out</span>
+              <h3 className="font-bold text-primary text-base mb-1">RAM ➔ Secondary Storage (Disk)</h3>
+              <p className="text-tertiary text-xs leading-relaxed">
                 Kicks a partially executed, inactive process out of RAM to the hard drive, freeing up memory space for active or higher-priority processes. Directly decreases the degree of multi-programming.
               </p>
             </div>
-            <div className="bg-slate-800/50 border-l-4 border-indigo-500 p-5 rounded-r-xl">
-              <span className="text-xs bg-emerald-950 text-emerald-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Swap-In</span>
-              <h3 className="font-bold text-indigo-300 text-base mb-1">Secondary Storage (Disk) ➔ RAM</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
+            <div className="bg-surface-muted/50 border-l-4 border-indigo-500 p-5 rounded-r-xl">
+              <span className="text-xs bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider block w-fit mb-2">Swap-In</span>
+              <h3 className="font-bold text-indigo-600 dark:text-indigo-300 text-base mb-1">Secondary Storage (Disk) ➔ RAM</h3>
+              <p className="text-tertiary text-xs leading-relaxed">
                 Brings the swapped-out process back from disk into RAM when space becomes available, allowing it to resume execution exactly where it left off.
               </p>
             </div>
@@ -2634,16 +3158,16 @@ function NotesView({ module }) {
         </section>
 
         {/* Context Switching & Overhead */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Cpu className="text-rose-400" /> Context-Switching (Pure Overhead)
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Cpu className="text-rose-600 dark:text-rose-400" /> Context-Switching (Pure Overhead)
           </h2>
           
           <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-            <div className="flex-1 bg-slate-800/30 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+            <div className="flex-1 bg-surface-muted/30 border border-strong p-5 rounded-xl flex flex-col justify-between">
               <div>
-                <h3 className="font-bold text-slate-200 text-base mb-2">How Context-Switching Works:</h3>
-                <ol className="list-decimal list-inside text-xs text-slate-400 space-y-2 leading-relaxed">
+                <h3 className="font-bold text-primary text-base mb-2">How Context-Switching Works:</h3>
+                <ol className="list-decimal list-inside text-xs text-tertiary space-y-2 leading-relaxed">
                   <li>The CPU stops executing <strong>Process A</strong> due to an interrupt (e.g. time slice expiration).</li>
                   <li>The kernel copies CPU hardware register states and saves them into <strong>Process A's PCB</strong>.</li>
                   <li>The kernel selects <strong>Process B</strong> from the Ready Queue and loads its saved register values from its <strong>PCB</strong> back into CPU registers.</li>
@@ -2652,14 +3176,14 @@ function NotesView({ module }) {
               </div>
             </div>
 
-            <div className="w-full lg:w-80 bg-red-950/20 border border-red-900/50 p-6 rounded-xl flex flex-col justify-between">
+            <div className="w-full lg:w-80 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-6 rounded-xl flex flex-col justify-between">
               <div>
-                <strong className="text-red-400 text-sm block mb-1">Why is it "Pure Overhead"?</strong>
+                <strong className="text-red-600 dark:text-red-400 text-sm block mb-1">Why is it "Pure Overhead"?</strong>
                 <p className="text-red-200/80 text-xs leading-relaxed">
                   While context switching is happening, the CPU is not doing any actual application or user-facing workload. It is purely OS administrative task work.
                 </p>
               </div>
-              <div className="mt-4 text-[10px] text-red-300 font-mono italic">
+              <div className="mt-4 text-[10px] text-red-600 dark:text-red-300 font-mono italic">
                 *Switching speed depends on memory speed, number of registers, and hardware configurations.
               </div>
             </div>
@@ -2667,42 +3191,42 @@ function NotesView({ module }) {
         </section>
 
         {/* Orphan vs Zombie Process Comparison */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Activity className="text-amber-400" /> Orphan vs. Zombie Processes
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Activity className="text-amber-600 dark:text-amber-400" /> Orphan vs. Zombie Processes
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             
             {/* Orphan */}
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-bold text-slate-200 text-lg">Orphan Process</h3>
-                  <span className="text-[10px] bg-slate-950 text-sky-300 px-2 py-0.5 rounded font-mono font-bold">Parent Dead / Child Alive</span>
+                  <h3 className="font-bold text-primary text-lg">Orphan Process</h3>
+                  <span className="text-[10px] bg-background text-sky-600 dark:text-sky-300 px-2 py-0.5 rounded font-mono font-bold">Parent Dead / Child Alive</span>
                 </div>
-                <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                <p className="text-tertiary text-xs leading-relaxed mb-4">
                   Occurs when a parent process finishes executing or crashes, leaving its child process actively running.
                 </p>
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-[11px]">
-                  <strong className="text-sky-400 block mb-0.5">OS Remedy: Adoption</strong>
-                  Orphan processes are automatically adopted by the <code className="text-sky-300">init</code> process (PID 1, the root process of the OS).
+                <div className="bg-background p-3 rounded-lg border border-subtle text-[11px]">
+                  <strong className="text-sky-600 dark:text-sky-400 block mb-0.5">OS Remedy: Adoption</strong>
+                  Orphan processes are automatically adopted by the <code className="text-sky-600 dark:text-sky-300">init</code> process (PID 1, the root process of the OS).
                 </div>
               </div>
             </div>
 
             {/* Zombie */}
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-bold text-slate-200 text-lg">Zombie (Defunct) Process</h3>
-                  <span className="text-[10px] bg-slate-950 text-amber-300 px-2 py-0.5 rounded font-mono font-bold">Child Dead / Parent Alive</span>
+                  <h3 className="font-bold text-primary text-lg">Zombie (Defunct) Process</h3>
+                  <span className="text-[10px] bg-background text-amber-600 dark:text-amber-300 px-2 py-0.5 rounded font-mono font-bold">Child Dead / Parent Alive</span>
                 </div>
-                <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                <p className="text-tertiary text-xs leading-relaxed mb-4">
                   A child process that has finished execution but still takes up an entry (a "nametag" or PCB record) in the OS Process Table.
                 </p>
-                <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 text-[11px]">
-                  <strong className="text-amber-400 block mb-0.5">OS Remedy: Reaping</strong>
-                  The parent must read the child's exit status using <code className="text-amber-300">wait()</code>. Once completed, the zombie is deleted. This is known as **reaping the zombie**.
+                <div className="bg-background p-3 rounded-lg border border-subtle text-[11px]">
+                  <strong className="text-amber-600 dark:text-amber-400 block mb-0.5">OS Remedy: Reaping</strong>
+                  The parent must read the child's exit status using <code className="text-amber-600 dark:text-amber-300">wait()</code>. Once completed, the zombie is deleted. This is known as **reaping the zombie**.
                 </div>
               </div>
             </div>
@@ -2711,11 +3235,11 @@ function NotesView({ module }) {
         </section>
 
         {/* Analogy Section */}
-        <section className="bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
-          <h2 className="text-xl font-bold text-indigo-300 mb-6 flex items-center gap-2">
-            <BookOpen className="text-indigo-400" /> Mental Model: The Restaurant Kitchen Analogy
+        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mb-6 flex items-center gap-2">
+            <BookOpen className="text-indigo-600 dark:text-indigo-400" /> Mental Model: The Restaurant Kitchen Analogy
           </h2>
-          <div className="space-y-4 text-sm text-slate-300 leading-relaxed">
+          <div className="space-y-4 text-sm text-secondary leading-relaxed">
             <p className="text-base font-medium">Imagine your computer is a busy restaurant:</p>
             <ul className="list-disc pl-5 space-y-1 mb-6">
               <li><strong>The CPU</strong> is the <strong>Head Chef</strong>.</li>
@@ -2724,23 +3248,23 @@ function NotesView({ module }) {
               <li><strong>A Process</strong> is a <strong>Dish/Order</strong> being prepared.</li>
             </ul>
             
-            <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 hover:border-slate-600 transition-colors">
-              <strong className="text-rose-400 block mb-2 text-base">1. Context-Switching (Switching between orders)</strong>
+            <div className="bg-surface/60 p-4 rounded-xl border border-subtle hover:border-strong transition-colors">
+              <strong className="text-rose-600 dark:text-rose-400 block mb-2 text-base">1. Context-Switching (Switching between orders)</strong>
               The Chef is cooking a Burger. A VIP Pizza order comes in. The Chef writes down exactly what step they were on for the Burger on a sticky note (saving state), cooks the Pizza, and then resumes the Burger using the sticky note. That action of swapping notes is Context-Switching.
             </div>
 
-            <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 hover:border-slate-600 transition-colors">
-              <strong className="text-emerald-400 block mb-2 text-base">2. Swapping (Making room on the counter)</strong>
+            <div className="bg-surface/60 p-4 rounded-xl border border-subtle hover:border-strong transition-colors">
+              <strong className="text-emerald-600 dark:text-emerald-400 block mb-2 text-base">2. Swapping (Making room on the counter)</strong>
               The Counter (RAM) is full of ingredients. The manager moves ingredients for a non-urgent Soup to the Fridge (Hard Drive) to clear space (Swap-Out). Later, they bring the Soup ingredients back to the Counter when there is room (Swap-In).
             </div>
 
-            <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 hover:border-slate-600 transition-colors">
-              <strong className="text-sky-400 block mb-2 text-base">3. Orphan Process (Parent leaves)</strong>
+            <div className="bg-surface/60 p-4 rounded-xl border border-subtle hover:border-strong transition-colors">
+              <strong className="text-sky-600 dark:text-sky-400 block mb-2 text-base">3. Orphan Process (Parent leaves)</strong>
               A Master Chef hires an Assistant to chop onions, but then the Master Chef's shift ends and they go home. The Assistant is left chopping onions with no boss. The Restaurant Manager (OS 'init' process) steps in to adopt the Assistant.
             </div>
 
-            <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800 hover:border-slate-600 transition-colors">
-              <strong className="text-amber-400 block mb-2 text-base">4. Zombie Process (Parent ignores)</strong>
+            <div className="bg-surface/60 p-4 rounded-xl border border-subtle hover:border-strong transition-colors">
+              <strong className="text-amber-600 dark:text-amber-400 block mb-2 text-base">4. Zombie Process (Parent ignores)</strong>
               The Assistant finishes boiling water and says "I'm done!", but the Master Chef is busy and ignores them. The Assistant is dead (finished) but still standing there taking up space waiting to be acknowledged. Once acknowledged, the Zombie is "reaped".
             </div>
           </div>
@@ -2756,47 +3280,47 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro to Scheduling */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Activity className="text-indigo-400" /> Process Scheduling Fundamentals
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Activity className="text-indigo-600 dark:text-indigo-400" /> Process Scheduling Fundamentals
           </h2>
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             {module.notes.scheduling.map((item, idx) => (
-              <div key={idx} className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
-                <h3 className="font-bold text-slate-200 text-base mb-2">{item.term}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
+                <h3 className="font-bold text-primary text-base mb-2">{item.term}</h3>
+                <p className="text-tertiary text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
 
-          <h3 className="font-bold text-slate-100 mt-10 mb-6 flex items-center gap-2">
-            <BookOpen className="text-emerald-400" /> Preemptive vs. Non-Preemptive Scheduling
+          <h3 className="font-bold text-primary mt-10 mb-6 flex items-center gap-2">
+            <BookOpen className="text-emerald-600 dark:text-emerald-400" /> Preemptive vs. Non-Preemptive Scheduling
           </h3>
           
           <div className="grid md:grid-cols-2 gap-6 mb-2">
             {module.notes.types.map((type, idx) => {
               const isPreemptive = type.type.toLowerCase().includes('preemptive') && !type.type.toLowerCase().includes('non-');
               return (
-                <div key={idx} className={`bg-slate-800/40 border border-slate-700 p-6 rounded-xl flex flex-col justify-between ${isPreemptive ? 'hover:border-emerald-500' : 'hover:border-rose-500'} transition-colors`}>
+                <div key={idx} className={`bg-surface-muted/40 border border-strong p-6 rounded-xl flex flex-col justify-between ${isPreemptive ? 'hover:border-emerald-500' : 'hover:border-rose-500'} transition-colors`}>
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      {isPreemptive ? <CheckSquare className="text-emerald-400" size={20} /> : <Power className="text-rose-400" size={20} />}
-                      <h4 className={`font-bold text-xl ${isPreemptive ? 'text-emerald-400' : 'text-rose-400'}`}>{type.type}</h4>
+                      {isPreemptive ? <CheckSquare className="text-emerald-600 dark:text-emerald-400" size={20} /> : <Power className="text-rose-600 dark:text-rose-400" size={20} />}
+                      <h4 className={`font-bold text-xl ${isPreemptive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>{type.type}</h4>
                     </div>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-6">{type.desc}</p>
+                    <p className="text-secondary text-sm leading-relaxed mb-6">{type.desc}</p>
                   </div>
                   
-                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-sm mt-4">
-                    <strong className={`block mb-2 text-xs uppercase tracking-wider font-bold ${isPreemptive ? 'text-emerald-300' : 'text-rose-300'}`}>Mental Model (Analogy)</strong>
+                  <div className="bg-background p-4 rounded-lg border border-subtle text-sm mt-4">
+                    <strong className={`block mb-2 text-xs uppercase tracking-wider font-bold ${isPreemptive ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}`}>Mental Model (Analogy)</strong>
                     {isPreemptive ? (
-                      <span className="text-slate-400 leading-relaxed">
+                      <span className="text-tertiary leading-relaxed">
                         <strong>The "Fairness" Approach:</strong> You are reading a book, but your boss calls with an urgent task. You put a bookmark in the book (Save Context), handle the call, and resume reading later. 
-                        <br/><br/><span className="text-emerald-400/80 italic font-medium">The OS can forcefully pause the process if its time expires or a higher priority task arrives.</span>
+                        <br/><br/><span className="text-emerald-600 dark:text-emerald-400/80 italic font-medium">The OS can forcefully pause the process if its time expires or a higher priority task arrives.</span>
                       </span>
                     ) : (
-                      <span className="text-slate-400 leading-relaxed">
+                      <span className="text-tertiary leading-relaxed">
                         <strong>The "Do Not Disturb" Approach:</strong> You are in a public restroom. Even if someone outside has a massive emergency, they MUST wait until you unlock the door and come out. 
-                        <br/><br/><span className="text-rose-400/80 italic font-medium">The OS CANNOT pause the process. The process keeps the CPU until it voluntarily finishes.</span>
+                        <br/><br/><span className="text-rose-600 dark:text-rose-400/80 italic font-medium">The OS CANNOT pause the process. The process keeps the CPU until it voluntarily finishes.</span>
                       </span>
                     )}
                   </div>
@@ -2808,33 +3332,33 @@ function NotesView({ module }) {
 
         {/* Goals & Metrics */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 flex flex-col justify-between">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-                <CheckSquare className="text-rose-400" /> Goals of CPU Scheduling
+              <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+                <CheckSquare className="text-rose-600 dark:text-rose-400" /> Goals of CPU Scheduling
               </h2>
               <ul className="space-y-3">
                 {module.notes.goals.map((goal, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 bg-rose-900/50 text-rose-400 p-1 rounded-full shrink-0">
+                    <div className="mt-1 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 p-1 rounded-full shrink-0">
                       <CheckSquare size={14} />
                     </div>
-                    <span className="text-slate-300 font-medium text-sm">{goal}</span>
+                    <span className="text-secondary font-medium text-sm">{goal}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </section>
 
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-            <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-              <BookOpen className="text-sky-400" /> Key Scheduling Metrics
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+              <BookOpen className="text-sky-600 dark:text-sky-400" /> Key Scheduling Metrics
             </h2>
             <div className="space-y-3 text-sm">
               {module.notes.metrics.map((metric, idx) => (
-                <div key={idx} className="bg-slate-800/40 p-3 rounded-lg border border-slate-700">
-                  <strong className="text-sky-300">{metric.term}: </strong>
-                  <span className="text-slate-400">{metric.desc}</span>
+                <div key={idx} className="bg-surface-muted/40 p-3 rounded-lg border border-strong">
+                  <strong className="text-sky-600 dark:text-sky-300">{metric.term}: </strong>
+                  <span className="text-tertiary">{metric.desc}</span>
                 </div>
               ))}
             </div>
@@ -2842,16 +3366,16 @@ function NotesView({ module }) {
         </div>
 
         {/* FCFS & Convoy Effect */}
-        <section className="bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
-          <h2 className="text-xl font-bold text-indigo-300 mb-4 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> {module.notes.fcfs.title}
+        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mb-4 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.fcfs.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">
+          <p className="text-secondary text-sm leading-relaxed mb-6">
             {module.notes.fcfs.desc}
           </p>
-          <div className="bg-amber-950/40 border-l-4 border-amber-500 p-5 rounded-r-xl">
-            <h3 className="font-bold text-amber-400 text-lg mb-2">The Convoy Effect</h3>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.fcfs.convoyEffect}</p>
+          <div className="bg-amber-50 dark:bg-amber-950/40 border-l-4 border-amber-500 p-5 rounded-r-xl">
+            <h3 className="font-bold text-amber-600 dark:text-amber-400 text-lg mb-2">The Convoy Effect</h3>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.fcfs.convoyEffect}</p>
           </div>
         </section>
 
@@ -2865,29 +3389,29 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Shortest Job First (SJF) */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Activity className="text-indigo-400" /> Shortest Job First (SJF)
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Activity className="text-indigo-600 dark:text-indigo-400" /> Shortest Job First (SJF)
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-              <h3 className="font-bold text-slate-200 text-lg mb-3">Non-Preemptive</h3>
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+              <h3 className="font-bold text-primary text-lg mb-3">Non-Preemptive</h3>
               <ul className="space-y-2">
                 {module.notes.sjf.nonPreemptive.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 bg-slate-700 text-slate-300 p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
-                    <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                    <div className="mt-1 bg-surface-muted text-secondary p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
+                    <span className="text-secondary text-sm leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="bg-slate-800/40 border-l-4 border-emerald-500 p-5 rounded-r-xl">
-              <h3 className="font-bold text-emerald-400 text-lg mb-3">Preemptive</h3>
+            <div className="bg-surface-muted/40 border-l-4 border-emerald-500 p-5 rounded-r-xl">
+              <h3 className="font-bold text-emerald-600 dark:text-emerald-400 text-lg mb-3">Preemptive</h3>
               <ul className="space-y-2">
                 {module.notes.sjf.preemptive.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 bg-emerald-900 text-emerald-400 p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
-                    <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                    <div className="mt-1 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-400 p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
+                    <span className="text-secondary text-sm leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -2896,79 +3420,79 @@ function NotesView({ module }) {
         </section>
 
         {/* Priority Scheduling */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Layers className="text-rose-400" /> Priority Scheduling
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Layers className="text-rose-600 dark:text-rose-400" /> Priority Scheduling
           </h2>
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-              <h3 className="font-bold text-slate-200 text-lg mb-3">Non-Preemptive</h3>
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+              <h3 className="font-bold text-primary text-lg mb-3">Non-Preemptive</h3>
               <ul className="space-y-2">
                 {module.notes.priority.nonPreemptive.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 bg-slate-700 text-slate-300 p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
-                    <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                    <div className="mt-1 bg-surface-muted text-secondary p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
+                    <span className="text-secondary text-sm leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-              <h3 className="font-bold text-slate-200 text-lg mb-3">Preemptive</h3>
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+              <h3 className="font-bold text-primary text-lg mb-3">Preemptive</h3>
               <ul className="space-y-2">
                 {module.notes.priority.preemptive.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 bg-rose-900 text-rose-400 p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
-                    <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                    <div className="mt-1 bg-rose-100 dark:bg-rose-900 text-rose-600 dark:text-rose-400 p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
+                    <span className="text-secondary text-sm leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
-          <div className="bg-amber-950/40 border-l-4 border-amber-500 p-5 rounded-r-xl">
-            <h3 className="font-bold text-amber-400 text-lg mb-2">Solution to Starvation: {module.notes.priority.solution.title}</h3>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.priority.solution.desc}</p>
+          <div className="bg-amber-50 dark:bg-amber-950/40 border-l-4 border-amber-500 p-5 rounded-r-xl">
+            <h3 className="font-bold text-amber-600 dark:text-amber-400 text-lg mb-2">Solution to Starvation: {module.notes.priority.solution.title}</h3>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.priority.solution.desc}</p>
           </div>
         </section>
 
         {/* Round Robin (RR) */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <RotateCcw className="text-sky-400" /> Round Robin Scheduling (RR)
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <RotateCcw className="text-sky-600 dark:text-sky-400" /> Round Robin Scheduling (RR)
           </h2>
-          <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl mb-6">
+          <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl mb-6">
             <ul className="space-y-3">
               {module.notes.rr.features.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <div className="mt-1 bg-sky-900 text-sky-400 p-1 rounded-full shrink-0"><CheckSquare size={14} /></div>
-                  <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                  <div className="mt-1 bg-sky-100 dark:bg-sky-900 text-sky-600 dark:text-sky-400 p-1 rounded-full shrink-0"><CheckSquare size={14} /></div>
+                  <span className="text-secondary text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
           
-          <div className="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col items-center shadow-inner overflow-x-auto text-sm">
-             <h3 className="text-slate-400 font-bold tracking-widest uppercase mb-4">RR Execution Flow</h3>
+          <div className="bg-background p-6 rounded-xl border border-subtle flex flex-col items-center shadow-inner overflow-x-auto text-sm">
+             <h3 className="text-tertiary font-bold tracking-widest uppercase mb-4">RR Execution Flow</h3>
              <div className="flex flex-col items-center space-y-3 text-center">
-               <div className="bg-slate-800 border-2 border-sky-500 rounded-full px-6 py-2 font-bold text-sky-300">Ready Queue</div>
-               <ArrowDownUp size={20} className="text-slate-600" />
-               <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-300">Pick a process (FCFS)</div>
-               <ArrowDownUp size={20} className="text-slate-600" />
-               <div className="bg-indigo-900/40 border-2 border-indigo-500 rounded-lg px-6 py-3 font-bold text-indigo-300 transform rotate-45 flex items-center justify-center w-24 h-24">
+               <div className="bg-surface-muted border-2 border-sky-500 rounded-full px-6 py-2 font-bold text-sky-600 dark:text-sky-300">Ready Queue</div>
+               <ArrowDownUp size={20} className="text-tertiary" />
+               <div className="bg-surface-muted border border-strong rounded-lg px-4 py-2 text-secondary">Pick a process (FCFS)</div>
+               <ArrowDownUp size={20} className="text-tertiary" />
+               <div className="bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-500 rounded-lg px-6 py-3 font-bold text-indigo-600 dark:text-indigo-300 transform rotate-45 flex items-center justify-center w-24 h-24">
                  <span className="-rotate-45 font-bold tracking-widest">BT &lt; TQ?</span>
                </div>
                
                <div className="flex gap-16 mt-2 relative w-full justify-center">
                   <div className="flex flex-col items-center">
-                    <span className="text-emerald-400 font-bold mb-2">Yes</span>
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-300">Execute till termination</div>
-                    <ArrowDownUp size={20} className="text-slate-600 my-2" />
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-300">Terminate state</div>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold mb-2">Yes</span>
+                    <div className="bg-surface-muted border border-strong rounded-lg px-4 py-2 text-secondary">Execute till termination</div>
+                    <ArrowDownUp size={20} className="text-tertiary my-2" />
+                    <div className="bg-surface-muted border border-strong rounded-lg px-4 py-2 text-secondary">Terminate state</div>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-rose-400 font-bold mb-2">No</span>
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-300">Execute for TQ</div>
-                    <ArrowDownUp size={20} className="text-slate-600 my-2" />
-                    <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-300 text-xs">TQ expires &rarr; Back to Ready Queue</div>
+                    <span className="text-rose-600 dark:text-rose-400 font-bold mb-2">No</span>
+                    <div className="bg-surface-muted border border-strong rounded-lg px-4 py-2 text-secondary">Execute for TQ</div>
+                    <ArrowDownUp size={20} className="text-tertiary my-2" />
+                    <div className="bg-surface-muted border border-strong rounded-lg px-4 py-2 text-secondary text-xs">TQ expires &rarr; Back to Ready Queue</div>
                   </div>
                </div>
              </div>
@@ -2985,70 +3509,70 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* MLQ */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-              <Layers className="text-rose-400" /> {module.notes.mlq.title}
+            <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+              <Layers className="text-rose-600 dark:text-rose-400" /> {module.notes.mlq.title}
             </h2>
-            <p className="text-rose-400 text-sm font-medium italic mt-1">{module.notes.mlq.subtitle}</p>
+            <p className="text-rose-600 dark:text-rose-400 text-sm font-medium italic mt-1">{module.notes.mlq.subtitle}</p>
           </div>
           
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.mlq.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.mlq.desc}</p>
           
           <div className="space-y-4 mb-8">
             {module.notes.mlq.queues.map((q, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div key={idx} className="bg-surface-muted/40 border border-strong p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-bold text-slate-200 text-base">{q.name}</h3>
-                  <p className="text-slate-400 text-xs mt-1 leading-relaxed">{q.desc}</p>
+                  <h3 className="font-bold text-primary text-base">{q.name}</h3>
+                  <p className="text-tertiary text-xs mt-1 leading-relaxed">{q.desc}</p>
                 </div>
-                <div className="bg-slate-950 px-3 py-1 rounded text-xs font-mono text-rose-300 shrink-0 border border-slate-800">
+                <div className="bg-background px-3 py-1 rounded text-xs font-mono text-rose-600 dark:text-rose-300 shrink-0 border border-subtle">
                   Priority: {q.priority}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="bg-slate-800/50 p-5 rounded-xl border border-slate-700 mb-6">
-             <h3 className="font-bold text-slate-200 mb-3 text-sm uppercase tracking-wider">How it works:</h3>
+          <div className="bg-surface-muted/50 p-5 rounded-xl border border-strong mb-6">
+             <h3 className="font-bold text-primary mb-3 text-sm uppercase tracking-wider">How it works:</h3>
              <ul className="space-y-2">
                 {module.notes.mlq.rules.map((rule, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <div className="mt-1 bg-slate-700 text-slate-300 p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
-                    <span className="text-slate-300 text-sm leading-relaxed">{rule}</span>
+                    <div className="mt-1 bg-surface-muted text-secondary p-1 rounded-full shrink-0"><ChevronRight size={12} /></div>
+                    <span className="text-secondary text-sm leading-relaxed">{rule}</span>
                   </li>
                 ))}
               </ul>
           </div>
 
-          <div className="bg-red-950/20 border-l-4 border-red-500 p-5 rounded-r-xl">
-            <h3 className="font-bold text-red-400 text-lg mb-2">{module.notes.mlq.problem.title}</h3>
+          <div className="bg-red-50 dark:bg-red-950/20 border-l-4 border-red-500 p-5 rounded-r-xl">
+            <h3 className="font-bold text-red-600 dark:text-red-400 text-lg mb-2">{module.notes.mlq.problem.title}</h3>
             <p className="text-red-200/80 text-sm leading-relaxed">{module.notes.mlq.problem.desc}</p>
           </div>
         </section>
 
         {/* MLFQ */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-              <Activity className="text-emerald-400" /> {module.notes.mlfq.title}
+            <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+              <Activity className="text-emerald-600 dark:text-emerald-400" /> {module.notes.mlfq.title}
             </h2>
-            <p className="text-emerald-400 text-sm font-medium italic mt-1">{module.notes.mlfq.subtitle}</p>
+            <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium italic mt-1">{module.notes.mlfq.subtitle}</p>
           </div>
 
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.mlfq.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.mlfq.desc}</p>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             {module.notes.mlfq.features.map((feature, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-                <h3 className="font-bold text-emerald-300 text-base mb-2">{feature.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{feature.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+                <h3 className="font-bold text-emerald-600 dark:text-emerald-300 text-base mb-2">{feature.title}</h3>
+                <p className="text-tertiary text-sm leading-relaxed">{feature.desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
-            <h3 className="font-bold text-emerald-400 text-lg mb-2">Why MLFQ is the Ultimate Winner</h3>
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
+            <h3 className="font-bold text-emerald-600 dark:text-emerald-400 text-lg mb-2">Why MLFQ is the Ultimate Winner</h3>
             <p className="text-emerald-200/80 text-sm leading-relaxed">{module.notes.mlfq.summary}</p>
           </div>
         </section>
@@ -3063,58 +3587,58 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* What is Concurrency? */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
-          <div className="bg-indigo-950/30 border-l-4 border-indigo-500 p-5 rounded-r-xl">
-            <strong className="text-indigo-300 block mb-1 text-sm">Example: MS Word</strong>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.intro.example}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
+          <div className="bg-indigo-50 dark:bg-indigo-950/30 border-l-4 border-indigo-500 p-5 rounded-r-xl">
+            <strong className="text-indigo-600 dark:text-indigo-300 block mb-1 text-sm">Example: MS Word</strong>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.intro.example}</p>
           </div>
         </section>
 
         {/* TCB */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <Server className="text-emerald-400" /> {module.notes.tcb.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+            <Server className="text-emerald-600 dark:text-emerald-400" /> {module.notes.tcb.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.tcb.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.tcb.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-              <strong className="text-emerald-400 block mb-2 text-sm flex items-center gap-2"><CheckSquare size={16}/> Saved in TCB</strong>
-              <p className="text-slate-300 text-sm leading-relaxed">{module.notes.tcb.saved}</p>
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+              <strong className="text-emerald-600 dark:text-emerald-400 block mb-2 text-sm flex items-center gap-2"><CheckSquare size={16}/> Saved in TCB</strong>
+              <p className="text-secondary text-sm leading-relaxed">{module.notes.tcb.saved}</p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-              <strong className="text-rose-400 block mb-2 text-sm flex items-center gap-2"><Power size={16}/> NOT Saved in TCB</strong>
-              <p className="text-slate-300 text-sm leading-relaxed">{module.notes.tcb.notSaved}</p>
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+              <strong className="text-rose-600 dark:text-rose-400 block mb-2 text-sm flex items-center gap-2"><Power size={16}/> NOT Saved in TCB</strong>
+              <p className="text-secondary text-sm leading-relaxed">{module.notes.tcb.notSaved}</p>
             </div>
           </div>
         </section>
 
         {/* The Trick Question */}
-        <section className="bg-rose-950/20 border border-rose-900/50 rounded-2xl p-8 shadow-sm">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <Activity className="text-rose-400" /> {module.notes.trickQuestion.title}
+        <section className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-8 shadow-sm">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <Activity className="text-rose-600 dark:text-rose-400" /> {module.notes.trickQuestion.title}
           </h2>
-          <div className="bg-slate-900/80 p-5 rounded-xl border border-slate-800 mb-6 text-center">
-            <p className="text-slate-200 text-lg font-medium italic mb-4">"{module.notes.trickQuestion.question}"</p>
-            <span className="bg-rose-900 text-white font-bold tracking-widest uppercase px-6 py-2 rounded-lg text-xl">{module.notes.trickQuestion.answer}</span>
+          <div className="bg-surface/80 p-5 rounded-xl border border-subtle mb-6 text-center">
+            <p className="text-primary text-lg font-medium italic mb-4">"{module.notes.trickQuestion.question}"</p>
+            <span className="bg-rose-100 dark:bg-rose-900 text-white font-bold tracking-widest uppercase px-6 py-2 rounded-lg text-xl">{module.notes.trickQuestion.answer}</span>
           </div>
-          <p className="text-slate-300 text-sm leading-relaxed">{module.notes.trickQuestion.explanation}</p>
+          <p className="text-secondary text-sm leading-relaxed">{module.notes.trickQuestion.explanation}</p>
         </section>
 
         {/* Benefits */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <CheckSquare className="text-sky-400" /> Benefits of Multi-Threading (Even on a single CPU)
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <CheckSquare className="text-sky-600 dark:text-sky-400" /> Benefits of Multi-Threading (Even on a single CPU)
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.benefits.map((benefit, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-                <strong className="text-sky-300 block mb-2 text-sm">{idx + 1}. {benefit.title}</strong>
-                <p className="text-slate-400 text-xs leading-relaxed">{benefit.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+                <strong className="text-sky-600 dark:text-sky-300 block mb-2 text-sm">{idx + 1}. {benefit.title}</strong>
+                <p className="text-tertiary text-xs leading-relaxed">{benefit.desc}</p>
               </div>
             ))}
           </div>
@@ -3130,47 +3654,47 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Critical Section */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <Database className="text-indigo-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+            <Database className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
           <div className="space-y-3">
             {module.notes.intro.points.map((point, idx) => (
-              <div key={idx} className="bg-slate-800/40 p-4 rounded-xl border-l-2 border-indigo-500">
-                <strong className="text-indigo-300 block mb-1 text-sm">{point.label}</strong>
-                <span className="text-slate-400 text-sm block mt-1">{point.text}</span>
+              <div key={idx} className="bg-surface-muted/40 p-4 rounded-xl border-l-2 border-indigo-500">
+                <strong className="text-indigo-600 dark:text-indigo-300 block mb-1 text-sm">{point.label}</strong>
+                <span className="text-tertiary text-sm block mt-1">{point.text}</span>
               </div>
             ))}
           </div>
         </section>
 
         {/* Race Condition */}
-        <section className="bg-rose-950/20 border border-rose-900/50 rounded-2xl p-8 shadow-sm">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <AlertTriangle className="text-rose-400" /> {module.notes.raceCondition.title}
+        <section className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-8 shadow-sm">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <AlertTriangle className="text-rose-600 dark:text-rose-400" /> {module.notes.raceCondition.title}
           </h2>
           <p className="text-rose-200/90 text-sm leading-relaxed mb-4">{module.notes.raceCondition.desc}</p>
-          <div className="bg-slate-900/80 p-5 rounded-xl border border-rose-900 text-sm text-slate-300 italic">
+          <div className="bg-surface/80 p-5 rounded-xl border border-rose-200 dark:border-rose-900 text-sm text-secondary italic">
             "{module.notes.raceCondition.example}"
           </div>
         </section>
 
         {/* Solutions */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <ShieldCheck className="text-emerald-400" /> {module.notes.solutions.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <ShieldCheck className="text-emerald-600 dark:text-emerald-400" /> {module.notes.solutions.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.solutions.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.solutions.desc}</p>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.solutions.methods.map((method, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl flex flex-col justify-between">
+              <div key={idx} className="bg-surface-muted/40 border border-strong p-5 rounded-xl flex flex-col justify-between">
                 <div>
-                  <strong className="text-emerald-300 block mb-1 text-base">{method.name}</strong>
+                  <strong className="text-emerald-600 dark:text-emerald-300 block mb-1 text-base">{method.name}</strong>
                   {method.analogy && (
-                    <span className="text-emerald-500/80 font-mono text-xs italic block mb-3 border-b border-slate-700 pb-2">Analogy: {method.analogy}</span>
+                    <span className="text-emerald-500/80 font-mono text-xs italic block mb-3 border-b border-strong pb-2">Analogy: {method.analogy}</span>
                   )}
-                  <p className="text-slate-300 text-xs leading-relaxed">{method.desc}</p>
+                  <p className="text-secondary text-xs leading-relaxed">{method.desc}</p>
                 </div>
               </div>
             ))}
@@ -3178,18 +3702,18 @@ function NotesView({ module }) {
         </section>
 
         {/* Disadvantages */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <AlertOctagon className="text-amber-400" /> {module.notes.disadvantages.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <AlertOctagon className="text-amber-600 dark:text-amber-400" /> {module.notes.disadvantages.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.disadvantages.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.disadvantages.desc}</p>
           <div className="space-y-3">
             {module.notes.disadvantages.list.map((item, idx) => (
-              <div key={idx} className="flex gap-4 items-start bg-slate-800/40 p-4 rounded-xl border border-slate-700">
+              <div key={idx} className="flex gap-4 items-start bg-surface-muted/40 p-4 rounded-xl border border-strong">
                 <div className="mt-1"><Skull size={18} className="text-amber-500/70" /></div>
                 <div>
-                  <strong className="text-amber-300 block mb-1 text-sm">{item.name}</strong>
-                  <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                  <strong className="text-amber-600 dark:text-amber-300 block mb-1 text-sm">{item.name}</strong>
+                  <p className="text-tertiary text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -3198,41 +3722,41 @@ function NotesView({ module }) {
 
         {/* Global Var & Peterson Failures */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 flex flex-col justify-between">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
-              <h2 className="text-lg font-bold text-rose-400 mb-4 flex items-center gap-2">
-                <AlertTriangle size={20} className="text-rose-400" /> {module.notes.globalVarFail.title}
+              <h2 className="text-lg font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+                <AlertTriangle size={20} className="text-rose-600 dark:text-rose-400" /> {module.notes.globalVarFail.title}
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">{module.notes.globalVarFail.desc}</p>
+              <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.globalVarFail.desc}</p>
               <div className="space-y-2 mb-6">
                 {module.notes.globalVarFail.steps.map((step, idx) => (
-                  <div key={idx} className="bg-slate-800/50 p-3 rounded-lg border border-slate-700 text-sm">
-                    <span className="text-rose-300 font-mono text-xs block mb-1">{step.time}</span>
-                    <span className="text-slate-300">{step.event}</span>
+                  <div key={idx} className="bg-surface-muted/50 p-3 rounded-lg border border-strong text-sm">
+                    <span className="text-rose-600 dark:text-rose-300 font-mono text-xs block mb-1">{step.time}</span>
+                    <span className="text-secondary">{step.event}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="bg-rose-950/30 p-4 rounded-xl border border-rose-900/50 text-rose-200 text-sm font-medium italic">
+            <div className="bg-rose-50 dark:bg-rose-950/30 p-4 rounded-xl border border-rose-200 dark:border-rose-900/50 text-rose-200 text-sm font-medium italic">
               {module.notes.globalVarFail.takeaway}
             </div>
           </section>
 
-          <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 flex flex-col justify-between">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
-              <h2 className="text-lg font-bold text-amber-400 mb-4 flex items-center gap-2">
-                <Activity size={20} className="text-amber-400" /> {module.notes.petersonFail.title}
+              <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+                <Activity size={20} className="text-amber-600 dark:text-amber-400" /> {module.notes.petersonFail.title}
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">{module.notes.petersonFail.desc}</p>
-              <div className="bg-amber-950/20 p-4 rounded-xl border border-amber-900/50 mb-4">
-                <strong className="text-amber-400 block mb-1 text-sm">Why it fails:</strong>
-                <p className="text-slate-300 text-sm leading-relaxed">{module.notes.petersonFail.whyItFails}</p>
+              <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.petersonFail.desc}</p>
+              <div className="bg-amber-50 dark:bg-amber-950/20 p-4 rounded-xl border border-amber-200 dark:border-amber-900/50 mb-4">
+                <strong className="text-amber-600 dark:text-amber-400 block mb-1 text-sm">Why it fails:</strong>
+                <p className="text-secondary text-sm leading-relaxed">{module.notes.petersonFail.whyItFails}</p>
               </div>
-              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-sm text-slate-400 italic mb-6">
+              <div className="bg-surface-muted/50 p-4 rounded-xl border border-strong text-sm text-tertiary italic mb-6">
                 "{module.notes.petersonFail.example}"
               </div>
             </div>
-            <div className="bg-amber-950/30 p-4 rounded-xl border border-amber-900/50 text-amber-200 text-sm font-medium italic">
+            <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-xl border border-amber-200 dark:border-amber-900/50 text-amber-200 text-sm font-medium italic">
               {module.notes.petersonFail.takeaway}
             </div>
           </section>
@@ -3248,103 +3772,103 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Busy Waiting */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <AlertOctagon className="text-rose-400" /> {module.notes.busyWaiting.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.busyWaiting.title}
           </h2>
-          <div className="bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl mb-4">
+          <div className="bg-rose-50 dark:bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl mb-4">
             <p className="text-rose-200/90 text-sm leading-relaxed">{module.notes.busyWaiting.issue}</p>
           </div>
-          <div className="bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
             <p className="text-emerald-200/90 text-sm leading-relaxed">{module.notes.busyWaiting.solution}</p>
           </div>
         </section>
 
         {/* Condition Variables */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
-            <AppWindow className="text-indigo-400" /> {module.notes.conditionVars.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <AppWindow className="text-indigo-600 dark:text-indigo-400" /> {module.notes.conditionVars.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-4">{module.notes.conditionVars.desc}</p>
-          <div className="bg-indigo-950/30 p-5 rounded-xl border border-indigo-900/50 text-indigo-200/90 text-sm italic">
-            <strong className="text-indigo-300 block mb-2 text-sm not-italic">Analogy:</strong>
+          <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.conditionVars.desc}</p>
+          <div className="bg-indigo-50 dark:bg-indigo-950/30 p-5 rounded-xl border border-indigo-200 dark:border-indigo-900/50 text-indigo-200/90 text-sm italic">
+            <strong className="text-indigo-600 dark:text-indigo-300 block mb-2 text-sm not-italic">Analogy:</strong>
             {module.notes.conditionVars.analogy}
           </div>
         </section>
 
         {/* Semaphores */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <Layers className="text-amber-400" /> {module.notes.semaphoreTypes.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <Layers className="text-amber-600 dark:text-amber-400" /> {module.notes.semaphoreTypes.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.semaphoreTypes.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.semaphoreTypes.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-4 mb-8">
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-              <strong className="text-amber-300 block mb-2 text-sm flex items-center gap-2"><Power size={16}/> Binary Semaphore (0 or 1)</strong>
-              <p className="text-slate-400 text-xs leading-relaxed">{module.notes.semaphoreTypes.binary}</p>
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+              <strong className="text-amber-600 dark:text-amber-300 block mb-2 text-sm flex items-center gap-2"><Power size={16}/> Binary Semaphore (0 or 1)</strong>
+              <p className="text-tertiary text-xs leading-relaxed">{module.notes.semaphoreTypes.binary}</p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700 p-5 rounded-xl">
-              <strong className="text-amber-300 block mb-2 text-sm flex items-center gap-2"><Server size={16}/> Counting Semaphore (Any #)</strong>
-              <p className="text-slate-400 text-xs leading-relaxed">{module.notes.semaphoreTypes.counting}</p>
+            <div className="bg-surface-muted/40 border border-strong p-5 rounded-xl">
+              <strong className="text-amber-600 dark:text-amber-300 block mb-2 text-sm flex items-center gap-2"><Server size={16}/> Counting Semaphore (Any #)</strong>
+              <p className="text-tertiary text-xs leading-relaxed">{module.notes.semaphoreTypes.counting}</p>
             </div>
           </div>
 
-          <h3 className="font-bold text-slate-200 mb-4 text-base">{module.notes.howItWorks.title}</h3>
+          <h3 className="font-bold text-primary mb-4 text-base">{module.notes.howItWorks.title}</h3>
           <div className="space-y-3">
             {module.notes.howItWorks.points.map((point, idx) => (
-              <div key={idx} className="bg-slate-800/50 p-4 rounded-xl flex gap-4 items-start border border-slate-700 hover:border-amber-500/50 transition-colors">
-                <div className="bg-slate-950 px-3 py-1 rounded text-xs font-mono text-amber-400 shrink-0 border border-slate-800 mt-0.5">
+              <div key={idx} className="bg-surface-muted/50 p-4 rounded-xl flex gap-4 items-start border border-strong hover:border-amber-500/50 transition-colors">
+                <div className="bg-background px-3 py-1 rounded text-xs font-mono text-amber-600 dark:text-amber-400 shrink-0 border border-subtle mt-0.5">
                   {point.action}
                 </div>
-                <p className="text-slate-300 text-sm leading-relaxed">{point.desc}</p>
+                <p className="text-secondary text-sm leading-relaxed">{point.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Hardware Locks */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <Cpu className="text-emerald-400" /> {module.notes.atomicProtection.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <Cpu className="text-emerald-600 dark:text-emerald-400" /> {module.notes.atomicProtection.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.atomicProtection.desc}</p>
-          <div className="bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.atomicProtection.desc}</p>
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
             <p className="text-emerald-200/90 text-sm leading-relaxed">{module.notes.atomicProtection.hardware}</p>
           </div>
         </section>
 
         {/* Nested Locks */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-            <Layers className="text-sky-400" /> {module.notes.nestedLocks.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <Layers className="text-sky-600 dark:text-sky-400" /> {module.notes.nestedLocks.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.nestedLocks.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.nestedLocks.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-sky-950/20 border border-sky-900/50 p-4 rounded-xl">
-              <strong className="text-sky-300 block mb-1 text-sm">The Library</strong>
+            <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/50 p-4 rounded-xl">
+              <strong className="text-sky-600 dark:text-sky-300 block mb-1 text-sm">The Library</strong>
               <p className="text-sky-200/80 text-xs leading-relaxed">{module.notes.nestedLocks.analogy.library}</p>
             </div>
-            <div className="bg-sky-950/20 border border-sky-900/50 p-4 rounded-xl">
-              <strong className="text-sky-300 block mb-1 text-sm">The Stapler</strong>
+            <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/50 p-4 rounded-xl">
+              <strong className="text-sky-600 dark:text-sky-300 block mb-1 text-sm">The Stapler</strong>
               <p className="text-sky-200/80 text-xs leading-relaxed">{module.notes.nestedLocks.analogy.stapler}</p>
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="font-bold text-slate-200 mb-3 text-sm">{module.notes.nestedLocks.codeTitle}</h3>
-            <pre className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-sky-300 font-mono overflow-x-auto">
+            <h3 className="font-bold text-primary mb-3 text-sm">{module.notes.nestedLocks.codeTitle}</h3>
+            <pre className="bg-background p-4 rounded-xl border border-subtle text-xs text-sky-600 dark:text-sky-300 font-mono overflow-x-auto">
               {module.notes.nestedLocks.code}
             </pre>
           </div>
 
-          <div className="bg-slate-800/40 p-5 rounded-xl border border-slate-700">
-            <strong className="text-slate-200 block mb-3 text-sm">The Golden Rule to Remember:</strong>
+          <div className="bg-surface-muted/40 p-5 rounded-xl border border-strong">
+            <strong className="text-primary block mb-3 text-sm">The Golden Rule to Remember:</strong>
             <ul className="space-y-2">
               {module.notes.nestedLocks.rules.map((rule, idx) => (
-                <li key={idx} className="flex gap-2 text-sm text-slate-400 items-start">
-                  <span className="text-sky-400 font-bold mt-0.5">•</span>
+                <li key={idx} className="flex gap-2 text-sm text-tertiary items-start">
+                  <span className="text-sky-600 dark:text-sky-400 font-bold mt-0.5">•</span>
                   <span>{rule}</span>
                 </li>
               ))}
@@ -3362,85 +3886,85 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Dining Philosophers */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <User className="text-amber-400" /> {module.notes.diningPhilosophers.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <User className="text-amber-600 dark:text-amber-400" /> {module.notes.diningPhilosophers.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.diningPhilosophers.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.diningPhilosophers.desc}</p>
           
           <div className="grid md:grid-cols-3 gap-4 mb-6">
             {Object.entries(module.notes.diningPhilosophers.translation).map(([key, val], idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700 p-4 rounded-xl">
-                <strong className="text-amber-300 block mb-1 text-sm capitalize">{key}</strong>
-                <p className="text-slate-400 text-xs leading-relaxed">{val}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-strong p-4 rounded-xl">
+                <strong className="text-amber-600 dark:text-amber-300 block mb-1 text-sm capitalize">{key}</strong>
+                <p className="text-tertiary text-xs leading-relaxed">{val}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl mb-6">
-            <h3 className="font-bold text-rose-400 mb-2">{module.notes.diningPhilosophers.deadlock.title}</h3>
+          <div className="bg-rose-50 dark:bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl mb-6">
+            <h3 className="font-bold text-rose-600 dark:text-rose-400 mb-2">{module.notes.diningPhilosophers.deadlock.title}</h3>
             <p className="text-rose-200/90 text-sm mb-3">{module.notes.diningPhilosophers.deadlock.desc}</p>
-            <ol className="list-decimal list-inside text-rose-300/80 text-sm space-y-1">
+            <ol className="list-decimal list-inside text-rose-600 dark:text-rose-300/80 text-sm space-y-1">
               {module.notes.diningPhilosophers.deadlock.steps.map((step, idx) => (
                 <li key={idx}>{step}</li>
               ))}
             </ol>
           </div>
 
-          <h3 className="font-bold text-emerald-400 mb-4 flex items-center gap-2"><CheckSquare size={18}/> {module.notes.diningPhilosophers.enhancements.title}</h3>
+          <h3 className="font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2"><CheckSquare size={18}/> {module.notes.diningPhilosophers.enhancements.title}</h3>
           <div className="space-y-3">
             {module.notes.diningPhilosophers.enhancements.points.map((point, idx) => (
-              <div key={idx} className="bg-slate-800/50 p-4 rounded-xl border border-emerald-900/30">
-                <strong className="text-emerald-300 block mb-1 text-sm">{point.name}</strong>
-                <p className="text-slate-400 text-sm leading-relaxed">{point.desc}</p>
+              <div key={idx} className="bg-surface-muted/50 p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/30">
+                <strong className="text-emerald-600 dark:text-emerald-300 block mb-1 text-sm">{point.name}</strong>
+                <p className="text-tertiary text-sm leading-relaxed">{point.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Producer/Consumer */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-            <ArrowDownUp className="text-sky-400" /> {module.notes.producerConsumer.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <ArrowDownUp className="text-sky-600 dark:text-sky-400" /> {module.notes.producerConsumer.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.producerConsumer.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.producerConsumer.desc}</p>
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">
             {module.notes.producerConsumer.setup.map((item, idx) => (
-              <div key={idx} className="bg-sky-950/20 border border-sky-900/50 p-4 rounded-xl">
-                <strong className="text-sky-300 block mb-1 text-sm">{item.name}</strong>
+              <div key={idx} className="bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/50 p-4 rounded-xl">
+                <strong className="text-sky-600 dark:text-sky-300 block mb-1 text-sm">{item.name}</strong>
                 <p className="text-sky-200/80 text-xs leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
 
-          <h3 className="font-bold text-slate-200 mb-3 text-sm">The 3 Semaphores Used:</h3>
+          <h3 className="font-bold text-primary mb-3 text-sm">The 3 Semaphores Used:</h3>
           <div className="space-y-2 mb-6">
             {module.notes.producerConsumer.semaphores.map((sem, idx) => (
-              <div key={idx} className="bg-slate-800/40 p-3 rounded-lg border border-slate-700 text-sm flex gap-3">
-                <span className="text-sky-400 font-mono font-bold w-32 shrink-0">{sem.name}</span>
-                <span className="text-slate-300">{sem.desc}</span>
+              <div key={idx} className="bg-surface-muted/40 p-3 rounded-lg border border-strong text-sm flex gap-3">
+                <span className="text-sky-600 dark:text-sky-400 font-mono font-bold w-32 shrink-0">{sem.name}</span>
+                <span className="text-secondary">{sem.desc}</span>
               </div>
             ))}
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <h3 className="font-bold text-emerald-400 mb-2 text-sm">Producer Code</h3>
-              <pre className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-emerald-300 font-mono overflow-x-auto">
+              <h3 className="font-bold text-emerald-600 dark:text-emerald-400 mb-2 text-sm">Producer Code</h3>
+              <pre className="bg-background p-4 rounded-xl border border-subtle text-xs text-emerald-600 dark:text-emerald-300 font-mono overflow-x-auto">
                 {module.notes.producerConsumer.producerCode}
               </pre>
             </div>
             <div>
-              <h3 className="font-bold text-rose-400 mb-2 text-sm">Consumer Code</h3>
-              <pre className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-rose-300 font-mono overflow-x-auto">
+              <h3 className="font-bold text-rose-600 dark:text-rose-400 mb-2 text-sm">Consumer Code</h3>
+              <pre className="bg-background p-4 rounded-xl border border-subtle text-xs text-rose-600 dark:text-rose-300 font-mono overflow-x-auto">
                 {module.notes.producerConsumer.consumerCode}
               </pre>
             </div>
           </div>
 
-          <div className="bg-sky-950/30 p-5 rounded-xl border border-sky-900/50 text-sky-200 text-sm italic">
-            <strong className="text-sky-400 block mb-1 not-italic">Key Takeaway:</strong>
+          <div className="bg-sky-50 dark:bg-sky-950/30 p-5 rounded-xl border border-sky-200 dark:border-sky-900/50 text-sky-200 text-sm italic">
+            <strong className="text-sky-600 dark:text-sky-400 block mb-1 not-italic">Key Takeaway:</strong>
             {module.notes.producerConsumer.takeaway}
           </div>
         </section>
@@ -3455,47 +3979,47 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Definition */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <AlertTriangle className="text-rose-400" /> {module.notes.definition.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <AlertTriangle className="text-rose-600 dark:text-rose-400" /> {module.notes.definition.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-4">{module.notes.definition.desc}</p>
-          <div className="bg-rose-950/30 p-5 rounded-xl border border-rose-900/50 text-rose-200 text-sm italic">
-            <strong className="text-rose-300 block mb-1 not-italic">Example:</strong>
+          <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.definition.desc}</p>
+          <div className="bg-rose-50 dark:bg-rose-950/30 p-5 rounded-xl border border-rose-200 dark:border-rose-900/50 text-rose-200 text-sm italic">
+            <strong className="text-rose-600 dark:text-rose-300 block mb-1 not-italic">Example:</strong>
             {module.notes.definition.example}
           </div>
         </section>
 
         {/* 4 Conditions */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <ShieldCheck className="text-amber-400" /> {module.notes.conditions.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <ShieldCheck className="text-amber-600 dark:text-amber-400" /> {module.notes.conditions.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.conditions.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.conditions.desc}</p>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.conditions.list.map((cond, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-amber-900/30 p-5 rounded-xl hover:border-amber-500/50 transition-colors">
-                <strong className="text-amber-300 block mb-2 text-sm">{idx + 1}. {cond.name}</strong>
-                <p className="text-slate-400 text-xs leading-relaxed">{cond.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-amber-200 dark:border-amber-900/30 p-5 rounded-xl hover:border-amber-500/50 transition-colors">
+                <strong className="text-amber-600 dark:text-amber-300 block mb-2 text-sm">{idx + 1}. {cond.name}</strong>
+                <p className="text-tertiary text-xs leading-relaxed">{cond.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* How OS Handles */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-            <Settings className="text-sky-400" /> {module.notes.handling.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <Settings className="text-sky-600 dark:text-sky-400" /> {module.notes.handling.title}
           </h2>
           <div className="space-y-3">
             {module.notes.handling.methods.map((method, idx) => (
-              <div key={idx} className="bg-sky-950/10 p-4 rounded-xl border border-sky-900/30 flex flex-col md:flex-row gap-3 md:items-center">
-                <div className="bg-sky-950 px-3 py-1 rounded text-xs font-mono text-sky-400 shrink-0 border border-sky-900/50">
+              <div key={idx} className="bg-sky-50 dark:bg-sky-950/10 p-4 rounded-xl border border-sky-200 dark:border-sky-900/30 flex flex-col md:flex-row gap-3 md:items-center">
+                <div className="bg-sky-50 dark:bg-sky-950 px-3 py-1 rounded text-xs font-mono text-sky-600 dark:text-sky-400 shrink-0 border border-sky-200 dark:border-sky-900/50">
                   Method {idx + 1}
                 </div>
                 <div>
-                  <strong className="text-sky-300 block text-sm">{method.name}</strong>
-                  <p className="text-slate-400 text-sm leading-relaxed">{method.desc}</p>
+                  <strong className="text-sky-600 dark:text-sky-300 block text-sm">{method.name}</strong>
+                  <p className="text-tertiary text-sm leading-relaxed">{method.desc}</p>
                 </div>
               </div>
             ))}
@@ -3503,16 +4027,16 @@ function NotesView({ module }) {
         </section>
 
         {/* Prevention */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <CheckSquare className="text-emerald-400" /> {module.notes.prevention.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <CheckSquare className="text-emerald-600 dark:text-emerald-400" /> {module.notes.prevention.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.prevention.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.prevention.desc}</p>
           <div className="space-y-4">
             {module.notes.prevention.methods.map((method, idx) => (
-              <div key={idx} className="bg-emerald-950/10 border-l-4 border-emerald-500 p-5 rounded-r-xl">
-                <strong className="text-emerald-300 block mb-2 text-sm">{method.name}</strong>
-                <p className="text-slate-300 text-sm leading-relaxed">{method.desc}</p>
+              <div key={idx} className="bg-emerald-50 dark:bg-emerald-950/10 border-l-4 border-emerald-500 p-5 rounded-r-xl">
+                <strong className="text-emerald-600 dark:text-emerald-300 block mb-2 text-sm">{method.name}</strong>
+                <p className="text-secondary text-sm leading-relaxed">{method.desc}</p>
               </div>
             ))}
           </div>
@@ -3528,37 +4052,37 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Avoidance */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <CheckSquare className="text-emerald-400" /> {module.notes.avoidance.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <CheckSquare className="text-emerald-600 dark:text-emerald-400" /> {module.notes.avoidance.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.avoidance.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.avoidance.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             {module.notes.avoidance.states.map((state, idx) => (
-              <div key={idx} className="bg-emerald-950/20 border border-emerald-900/50 p-5 rounded-xl">
-                <strong className={`block mb-2 text-sm ${idx === 0 ? 'text-emerald-300' : 'text-amber-400'}`}>{state.name}</strong>
-                <p className="text-slate-400 text-xs leading-relaxed">{state.desc}</p>
+              <div key={idx} className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50 p-5 rounded-xl">
+                <strong className={`block mb-2 text-sm ${idx === 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-amber-600 dark:text-amber-400'}`}>{state.name}</strong>
+                <p className="text-tertiary text-xs leading-relaxed">{state.desc}</p>
               </div>
             ))}
           </div>
           
-          <div className="bg-emerald-950/40 p-5 rounded-xl border border-emerald-900/50 text-emerald-200 text-sm font-medium">
-            <span className="text-emerald-400 font-bold">The Golden Rule:</span> {module.notes.avoidance.goldenRule}
+          <div className="bg-emerald-50 dark:bg-emerald-950/40 p-5 rounded-xl border border-emerald-200 dark:border-emerald-900/50 text-emerald-200 text-sm font-medium">
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">The Golden Rule:</span> {module.notes.avoidance.goldenRule}
           </div>
         </section>
 
         {/* Banker's Algorithm */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-            <Settings className="text-sky-400" /> {module.notes.banker.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <Settings className="text-sky-600 dark:text-sky-400" /> {module.notes.banker.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.banker.desc}</p>
-          <div className="bg-sky-950/10 p-5 rounded-xl border border-sky-900/30">
-            <ol className="list-decimal list-inside space-y-3 text-slate-300 text-sm">
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.banker.desc}</p>
+          <div className="bg-sky-50 dark:bg-sky-950/10 p-5 rounded-xl border border-sky-200 dark:border-sky-900/30">
+            <ol className="list-decimal list-inside space-y-3 text-secondary text-sm">
               {module.notes.banker.steps.map((step, idx) => (
                 <li key={idx} className="pl-2">
-                  <span className={idx === 2 ? "text-sky-300 italic" : ""}>{step}</span>
+                  <span className={idx === 2 ? "text-sky-600 dark:text-sky-300 italic" : ""}>{step}</span>
                 </li>
               ))}
             </ol>
@@ -3566,43 +4090,43 @@ function NotesView({ module }) {
         </section>
 
         {/* Detection */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <Activity className="text-amber-400" /> {module.notes.detection.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <Activity className="text-amber-600 dark:text-amber-400" /> {module.notes.detection.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.detection.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.detection.desc}</p>
           <div className="space-y-4">
-            <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
-              <p className="text-slate-300 text-sm leading-relaxed"><span className="text-amber-300 font-bold">Single Instance:</span> {module.notes.detection.single.split(':')[1]}</p>
+            <div className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
+              <p className="text-secondary text-sm leading-relaxed"><span className="text-amber-600 dark:text-amber-300 font-bold">Single Instance:</span> {module.notes.detection.single.split(':')[1]}</p>
             </div>
-            <div className="bg-slate-800/40 p-4 rounded-xl border border-slate-700">
-              <p className="text-slate-300 text-sm leading-relaxed"><span className="text-amber-300 font-bold">Multiple Instance:</span> {module.notes.detection.multiple.split(':')[1]}</p>
+            <div className="bg-surface-muted/40 p-4 rounded-xl border border-strong">
+              <p className="text-secondary text-sm leading-relaxed"><span className="text-amber-600 dark:text-amber-300 font-bold">Multiple Instance:</span> {module.notes.detection.multiple.split(':')[1]}</p>
             </div>
           </div>
         </section>
 
         {/* Recovery */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <ShieldCheck className="text-rose-400" /> {module.notes.recovery.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <ShieldCheck className="text-rose-600 dark:text-rose-400" /> {module.notes.recovery.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.recovery.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.recovery.desc}</p>
           
           <div className="space-y-6">
             {module.notes.recovery.methods.map((method, idx) => (
-              <div key={idx} className="bg-rose-950/20 p-5 rounded-xl border border-rose-900/50">
-                <strong className="text-rose-300 block mb-3 text-sm">{method.name}</strong>
+              <div key={idx} className="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-xl border border-rose-200 dark:border-rose-900/50">
+                <strong className="text-rose-600 dark:text-rose-300 block mb-3 text-sm">{method.name}</strong>
                 {method.sub ? (
                   <div className="space-y-3">
                     {method.sub.map((subItem, sIdx) => (
-                      <div key={sIdx} className="bg-slate-950/50 p-3 rounded-lg border border-slate-800">
-                        <span className="text-rose-400 text-xs font-bold block mb-1">{subItem.type}</span>
-                        <p className="text-slate-400 text-xs leading-relaxed">{subItem.desc}</p>
+                      <div key={sIdx} className="bg-background/50 p-3 rounded-lg border border-subtle">
+                        <span className="text-rose-600 dark:text-rose-400 text-xs font-bold block mb-1">{subItem.type}</span>
+                        <p className="text-tertiary text-xs leading-relaxed">{subItem.desc}</p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-300 text-sm leading-relaxed bg-slate-950/50 p-4 rounded-lg border border-slate-800">{method.desc}</p>
+                  <p className="text-secondary text-sm leading-relaxed bg-background/50 p-4 rounded-lg border border-subtle">{method.desc}</p>
                 )}
               </div>
             ))}
@@ -3619,42 +4143,42 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
 
         {/* Intro */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-            <Database className="text-sky-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <Database className="text-sky-600 dark:text-sky-400" /> {module.notes.intro.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-4">{module.notes.intro.desc}</p>
-          <div className="bg-sky-950/30 border-l-4 border-sky-500 p-4 rounded-r-xl">
-            <p className="text-sky-200 text-sm"><span className="font-bold text-sky-300">The Goal:</span> {module.notes.intro.goal}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.intro.desc}</p>
+          <div className="bg-sky-50 dark:bg-sky-950/30 border-l-4 border-sky-500 p-4 rounded-r-xl">
+            <p className="text-sky-200 text-sm"><span className="font-bold text-sky-600 dark:text-sky-300">The Goal:</span> {module.notes.intro.goal}</p>
           </div>
         </section>
 
         {/* Logical vs Physical Address */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <ArrowDownUp className="text-amber-400" /> {module.notes.addresses.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <ArrowDownUp className="text-amber-600 dark:text-amber-400" /> {module.notes.addresses.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.addresses.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.addresses.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             {/* Logical */}
-            <div className="bg-amber-950/20 border border-amber-900/40 rounded-xl p-5">
-              <h3 className="text-amber-300 font-bold mb-3">{module.notes.addresses.logical.title}</h3>
+            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl p-5">
+              <h3 className="text-amber-600 dark:text-amber-300 font-bold mb-3">{module.notes.addresses.logical.title}</h3>
               <ul className="space-y-2">
                 {module.notes.addresses.logical.points.map((p, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-slate-300 items-start">
-                    <span className="text-amber-400 font-bold shrink-0 mt-0.5">▸</span><span>{p}</span>
+                  <li key={i} className="flex gap-2 text-sm text-secondary items-start">
+                    <span className="text-amber-600 dark:text-amber-400 font-bold shrink-0 mt-0.5">▸</span><span>{p}</span>
                   </li>
                 ))}
               </ul>
             </div>
             {/* Physical */}
-            <div className="bg-sky-950/20 border border-sky-900/40 rounded-xl p-5">
-              <h3 className="text-sky-300 font-bold mb-3">{module.notes.addresses.physical.title}</h3>
+            <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/40 rounded-xl p-5">
+              <h3 className="text-sky-600 dark:text-sky-300 font-bold mb-3">{module.notes.addresses.physical.title}</h3>
               <ul className="space-y-2">
                 {module.notes.addresses.physical.points.map((p, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-slate-300 items-start">
-                    <span className="text-sky-400 font-bold shrink-0 mt-0.5">▸</span><span>{p}</span>
+                  <li key={i} className="flex gap-2 text-sm text-secondary items-start">
+                    <span className="text-sky-600 dark:text-sky-400 font-bold shrink-0 mt-0.5">▸</span><span>{p}</span>
                   </li>
                 ))}
               </ul>
@@ -3662,154 +4186,154 @@ function NotesView({ module }) {
           </div>
 
           {/* MMU Box */}
-          <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-6">
-            <h3 className="text-emerald-400 font-bold mb-3 flex items-center gap-2"><Cpu size={18}/> {module.notes.addresses.mmu.title}</h3>
-            <p className="text-slate-300 text-sm leading-relaxed mb-4">{module.notes.addresses.mmu.desc}</p>
-            <div className="bg-slate-950 border border-emerald-900/50 rounded-xl p-4 mb-4">
-              <p className="text-emerald-400 font-mono text-center font-bold text-sm">{module.notes.addresses.mmu.formula}</p>
+          <div className="bg-surface-muted/60 border border-strong rounded-xl p-6">
+            <h3 className="text-emerald-600 dark:text-emerald-400 font-bold mb-3 flex items-center gap-2"><Cpu size={18}/> {module.notes.addresses.mmu.title}</h3>
+            <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.addresses.mmu.desc}</p>
+            <div className="bg-background border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-4 mb-4">
+              <p className="text-emerald-600 dark:text-emerald-400 font-mono text-center font-bold text-sm">{module.notes.addresses.mmu.formula}</p>
             </div>
-            <div className="flex items-center gap-3 bg-emerald-950/20 border border-emerald-900/30 rounded-xl p-4 overflow-x-auto">
-              <div className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-center shrink-0"><div className="text-slate-400 text-xs mb-1">CPU</div><div className="text-white font-mono font-bold">346</div></div>
-              <span className="text-slate-400 font-bold text-lg shrink-0">+</span>
-              <div className="bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 text-xs text-center shrink-0"><div className="text-amber-400 text-xs mb-1">Relocation Reg</div><div className="text-white font-mono font-bold">14000</div></div>
-              <span className="text-slate-400 font-bold text-lg shrink-0">=</span>
-              <div className="bg-sky-950/40 border border-sky-800 rounded-lg px-3 py-2 text-xs text-center shrink-0"><div className="text-sky-400 text-xs mb-1">Physical Addr</div><div className="text-white font-mono font-bold">14346</div></div>
-              <span className="text-slate-400 font-bold text-lg shrink-0">→</span>
-              <div className="bg-emerald-950/40 border border-emerald-800 rounded-lg px-4 py-2 text-xs text-center shrink-0"><div className="text-emerald-400 font-bold">RAM</div></div>
+            <div className="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 rounded-xl p-4 overflow-x-auto">
+              <div className="bg-surface-muted border border-strong rounded-lg px-3 py-2 text-xs text-center shrink-0"><div className="text-tertiary text-xs mb-1">CPU</div><div className="text-white font-mono font-bold">346</div></div>
+              <span className="text-tertiary font-bold text-lg shrink-0">+</span>
+              <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2 text-xs text-center shrink-0"><div className="text-amber-600 dark:text-amber-400 text-xs mb-1">Relocation Reg</div><div className="text-white font-mono font-bold">14000</div></div>
+              <span className="text-tertiary font-bold text-lg shrink-0">=</span>
+              <div className="bg-sky-50 dark:bg-sky-950/40 border border-sky-800 rounded-lg px-3 py-2 text-xs text-center shrink-0"><div className="text-sky-600 dark:text-sky-400 text-xs mb-1">Physical Addr</div><div className="text-white font-mono font-bold">14346</div></div>
+              <span className="text-tertiary font-bold text-lg shrink-0">→</span>
+              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-800 rounded-lg px-4 py-2 text-xs text-center shrink-0"><div className="text-emerald-600 dark:text-emerald-400 font-bold">RAM</div></div>
             </div>
           </div>
         </section>
 
         {/* Memory Protection */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <ShieldCheck className="text-rose-400" /> {module.notes.protection.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <ShieldCheck className="text-rose-600 dark:text-rose-400" /> {module.notes.protection.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.protection.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.protection.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             {module.notes.protection.registers.map((reg, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-rose-900/30 p-4 rounded-xl">
-                <strong className="text-rose-300 block mb-2 text-sm">{reg.name}</strong>
-                <p className="text-slate-400 text-xs leading-relaxed">{reg.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-rose-200 dark:border-rose-900/30 p-4 rounded-xl">
+                <strong className="text-rose-600 dark:text-rose-300 block mb-2 text-sm">{reg.name}</strong>
+                <p className="text-tertiary text-xs leading-relaxed">{reg.desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl mb-4">
+          <div className="bg-rose-50 dark:bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl mb-4">
             <p className="text-rose-200/90 text-sm leading-relaxed">
-              <strong className="text-rose-300 block mb-1">How it works (every single memory access):</strong>
+              <strong className="text-rose-600 dark:text-rose-300 block mb-1">How it works (every single memory access):</strong>
               {module.notes.protection.howItWorks}
             </p>
           </div>
-          <div className="bg-amber-950/20 border border-amber-900/30 p-4 rounded-xl text-amber-200/90 text-sm">
-            <span className="text-amber-400 font-bold">User Mode Rule:</span> {module.notes.protection.userModeRule}
+          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 p-4 rounded-xl text-amber-200/90 text-sm">
+            <span className="text-amber-600 dark:text-amber-400 font-bold">User Mode Rule:</span> {module.notes.protection.userModeRule}
           </div>
         </section>
 
         {/* Allocation Methods */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> {module.notes.allocationMethods.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.allocationMethods.title}
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-indigo-950/20 border border-indigo-900/40 p-5 rounded-xl">
-              <strong className="text-indigo-300 block mb-2 text-sm">Contiguous Allocation</strong>
-              <p className="text-slate-400 text-xs leading-relaxed">{module.notes.allocationMethods.contiguous}</p>
+            <div className="bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/40 p-5 rounded-xl">
+              <strong className="text-indigo-600 dark:text-indigo-300 block mb-2 text-sm">Contiguous Allocation</strong>
+              <p className="text-tertiary text-xs leading-relaxed">{module.notes.allocationMethods.contiguous}</p>
             </div>
             <div className="bg-violet-950/20 border border-violet-900/40 p-5 rounded-xl">
               <strong className="text-violet-300 block mb-2 text-sm">Non-Contiguous Allocation</strong>
-              <p className="text-slate-400 text-xs leading-relaxed">{module.notes.allocationMethods.nonContiguous}</p>
+              <p className="text-tertiary text-xs leading-relaxed">{module.notes.allocationMethods.nonContiguous}</p>
             </div>
           </div>
         </section>
 
         {/* Fixed Partitioning */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <FolderOpen className="text-amber-400" /> {module.notes.fixedPartition.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <FolderOpen className="text-amber-600 dark:text-amber-400" /> {module.notes.fixedPartition.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.fixedPartition.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.fixedPartition.desc}</p>
           
           {/* Visual Diagram */}
-          <div className="mb-6 bg-slate-950 border border-slate-800 rounded-xl p-4">
-            <p className="text-slate-500 text-xs text-center mb-3">Fixed Partitioning — Memory Layout</p>
+          <div className="mb-6 bg-background border border-subtle rounded-xl p-4">
+            <p className="text-tertiary text-xs text-center mb-3">Fixed Partitioning — Memory Layout</p>
             <div className="space-y-1 max-w-xs mx-auto">
-              <div className="bg-slate-700 rounded px-3 py-2 text-xs text-center text-slate-300">OS (Fixed)</div>
+              <div className="bg-surface-muted rounded px-3 py-2 text-xs text-center text-secondary">OS (Fixed)</div>
               {['P1 (3MB) → 5MB Partition', 'P2 (3MB) → 5MB Partition', 'P3 (3MB) → 5MB Partition', 'Free Space'].map((item, i) => (
                 <div key={i} className={`rounded px-3 py-2 text-xs text-center border ${
-                  i < 3 ? 'bg-amber-950/40 border-amber-900/50 text-amber-200' : 'bg-slate-800/40 border-dashed border-slate-700 text-slate-500'
+                  i < 3 ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/50 text-amber-200' : 'bg-surface-muted/40 border-dashed border-strong text-tertiary'
                 }`}>{item}</div>
               ))}
             </div>
-            <p className="text-rose-400 text-xs text-center mt-2 italic">2MB wasted inside EACH occupied partition (Internal Fragmentation)</p>
+            <p className="text-rose-600 dark:text-rose-400 text-xs text-center mt-2 italic">2MB wasted inside EACH occupied partition (Internal Fragmentation)</p>
           </div>
 
-          <h3 className="font-bold text-rose-400 mb-3 text-sm">Limitations:</h3>
+          <h3 className="font-bold text-rose-600 dark:text-rose-400 mb-3 text-sm">Limitations:</h3>
           <div className="space-y-3">
             {module.notes.fixedPartition.limitations.map((lim, idx) => (
-              <div key={idx} className="bg-rose-950/15 border-l-4 border-rose-700 p-4 rounded-r-xl">
-                <strong className="text-rose-300 block mb-1 text-sm">{lim.name}</strong>
-                <p className="text-slate-300 text-sm leading-relaxed">{lim.desc}</p>
+              <div key={idx} className="bg-rose-50 dark:bg-rose-950/15 border-l-4 border-rose-700 p-4 rounded-r-xl">
+                <strong className="text-rose-600 dark:text-rose-300 block mb-1 text-sm">{lim.name}</strong>
+                <p className="text-secondary text-sm leading-relaxed">{lim.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Dynamic Partitioning */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <Activity className="text-emerald-400" /> {module.notes.dynamicPartition.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <Activity className="text-emerald-600 dark:text-emerald-400" /> {module.notes.dynamicPartition.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.dynamicPartition.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.dynamicPartition.desc}</p>
 
           {/* Visual Diagram */}
-          <div className="mb-6 bg-slate-950 border border-slate-800 rounded-xl p-4">
-            <p className="text-slate-500 text-xs text-center mb-3">Dynamic Partitioning — Process Size = Partition Size</p>
+          <div className="mb-6 bg-background border border-subtle rounded-xl p-4">
+            <p className="text-tertiary text-xs text-center mb-3">Dynamic Partitioning — Process Size = Partition Size</p>
             <div className="space-y-1 max-w-xs mx-auto">
-              <div className="bg-slate-700 rounded px-3 py-2 text-xs text-center text-slate-300">OS</div>
+              <div className="bg-surface-muted rounded px-3 py-2 text-xs text-center text-secondary">OS</div>
               {['P1 Partition (5MB exact)', 'P2 Partition (2MB exact)', 'P3 Partition (3MB exact)', 'P4 Partition (4MB exact)'].map((item, i) => (
-                <div key={i} className="bg-emerald-950/40 border border-emerald-900/50 rounded px-3 py-2 text-xs text-center text-emerald-200">{item}</div>
+                <div key={i} className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded px-3 py-2 text-xs text-center text-emerald-200">{item}</div>
               ))}
             </div>
-            <p className="text-emerald-400 text-xs text-center mt-2 italic">Zero internal fragmentation — every byte is used!</p>
+            <p className="text-emerald-600 dark:text-emerald-400 text-xs text-center mt-2 italic">Zero internal fragmentation — every byte is used!</p>
           </div>
 
-          <h3 className="font-bold text-emerald-400 mb-3 text-sm">Advantages over Fixed Partitioning:</h3>
+          <h3 className="font-bold text-emerald-600 dark:text-emerald-400 mb-3 text-sm">Advantages over Fixed Partitioning:</h3>
           <div className="space-y-2 mb-6">
             {module.notes.dynamicPartition.advantages.map((adv, idx) => (
-              <div key={idx} className="flex gap-2 items-start text-sm text-slate-300 bg-emerald-950/10 border border-emerald-900/20 rounded-lg p-3">
-                <span className="text-emerald-400 font-bold shrink-0">✓</span><span>{adv}</span>
+              <div key={idx} className="flex gap-2 items-start text-sm text-secondary bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-200 dark:border-emerald-900/20 rounded-lg p-3">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓</span><span>{adv}</span>
               </div>
             ))}
           </div>
 
-          <div className="bg-amber-950/20 border-l-4 border-amber-500 p-5 rounded-r-xl mb-4">
-            <strong className="text-amber-300 block mb-2 text-sm">Limitation: External Fragmentation (Still!)</strong>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.dynamicPartition.limitation}</p>
+          <div className="bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 p-5 rounded-r-xl mb-4">
+            <strong className="text-amber-600 dark:text-amber-300 block mb-2 text-sm">Limitation: External Fragmentation (Still!)</strong>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.dynamicPartition.limitation}</p>
           </div>
 
-          <div className="bg-sky-950/20 border border-sky-900/30 p-5 rounded-xl">
-            <strong className="text-sky-300 block mb-2 text-sm">Solution: Compaction</strong>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.dynamicPartition.compaction}</p>
+          <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/30 p-5 rounded-xl">
+            <strong className="text-sky-600 dark:text-sky-300 block mb-2 text-sm">Solution: Compaction</strong>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.dynamicPartition.compaction}</p>
           </div>
         </section>
 
         {/* Quick Reference Card */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-slate-200 mb-6 flex items-center gap-2">
-            <CheckSquare className="text-slate-400" /> Quick Comparison: Fixed vs Dynamic
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <CheckSquare className="text-tertiary" /> Quick Comparison: Fixed vs Dynamic
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-2 pr-4 text-slate-400 font-semibold">Property</th>
-                  <th className="text-center py-2 px-4 text-amber-400 font-semibold">Fixed</th>
-                  <th className="text-center py-2 px-4 text-emerald-400 font-semibold">Dynamic</th>
+                <tr className="border-b border-strong">
+                  <th className="text-left py-2 pr-4 text-tertiary font-semibold">Property</th>
+                  <th className="text-center py-2 px-4 text-amber-600 dark:text-amber-400 font-semibold">Fixed</th>
+                  <th className="text-center py-2 px-4 text-emerald-600 dark:text-emerald-400 font-semibold">Dynamic</th>
                 </tr>
               </thead>
-              <tbody className="text-slate-300">
+              <tbody className="text-secondary">
                 {[
                   ['Internal Fragmentation', '❌ Yes (big problem)', '✅ No'],
                   ['External Fragmentation', '❌ Yes', '❌ Yes (still!)'],
@@ -3818,8 +4342,8 @@ function NotesView({ module }) {
                   ['Multiprogramming Degree', 'Limited by # of partitions', 'Better'],
                   ['Implementation Complexity', 'Simple', 'More complex'],
                 ].map(([prop, fixed, dynamic], i) => (
-                  <tr key={i} className="border-b border-slate-800 hover:bg-slate-800/30 transition-colors">
-                    <td className="py-3 pr-4 font-medium text-slate-300">{prop}</td>
+                  <tr key={i} className="border-b border-subtle hover:bg-surface-muted/30 transition-colors">
+                    <td className="py-3 pr-4 font-medium text-secondary">{prop}</td>
                     <td className="py-3 px-4 text-center text-xs">{fixed}</td>
                     <td className="py-3 px-4 text-center text-xs">{dynamic}</td>
                   </tr>
@@ -3838,45 +4362,45 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Defragmentation / Compaction */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
-            <Settings className="text-indigo-400" /> {module.notes.defragmentation.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <Settings className="text-indigo-600 dark:text-indigo-400" /> {module.notes.defragmentation.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.defragmentation.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.defragmentation.desc}</p>
           <ul className="space-y-3">
             {module.notes.defragmentation.points.map((point, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <div className="mt-1 bg-indigo-900/50 text-indigo-400 p-1 rounded-full shrink-0">
+                <div className="mt-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-1 rounded-full shrink-0">
                   <CheckSquare size={14} />
                 </div>
-                <span className="text-slate-300 text-sm">{point}</span>
+                <span className="text-secondary text-sm">{point}</span>
               </li>
             ))}
           </ul>
         </section>
 
         {/* Representation */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <Database className="text-emerald-400" /> {module.notes.representation.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <Database className="text-emerald-600 dark:text-emerald-400" /> {module.notes.representation.title}
           </h2>
-          <div className="bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.representation.desc}</p>
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl">
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.representation.desc}</p>
           </div>
         </section>
 
         {/* Satisfying Request */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <Layers className="text-amber-400" /> {module.notes.satisfyingRequest.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <Layers className="text-amber-600 dark:text-amber-400" /> {module.notes.satisfyingRequest.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.satisfyingRequest.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.satisfyingRequest.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.satisfyingRequest.algorithms.map((algo, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-amber-900/30 p-5 rounded-xl">
-                <strong className="text-amber-300 block mb-2 text-sm">{algo.name}</strong>
-                <p className="text-slate-400 text-xs leading-relaxed">{algo.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-amber-200 dark:border-amber-900/30 p-5 rounded-xl">
+                <strong className="text-amber-600 dark:text-amber-300 block mb-2 text-sm">{algo.name}</strong>
+                <p className="text-tertiary text-xs leading-relaxed">{algo.desc}</p>
               </div>
             ))}
           </div>
@@ -3890,33 +4414,33 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <AlertTriangle className="text-rose-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <AlertTriangle className="text-rose-600 dark:text-rose-400" /> {module.notes.intro.title}
           </h2>
           <ul className="space-y-3">
             {module.notes.intro.points.map((point, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <div className="mt-1 bg-rose-900/50 text-rose-400 p-1 rounded-full shrink-0">
+                <div className="mt-1 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 p-1 rounded-full shrink-0">
                   <CheckSquare size={14} />
                 </div>
-                <span className="text-slate-300 text-sm">{point}</span>
+                <span className="text-secondary text-sm">{point}</span>
               </li>
             ))}
           </ul>
         </section>
 
         {/* Concept */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> {module.notes.concept.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.concept.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.concept.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.concept.desc}</p>
           
           <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-indigo-950/20 border border-indigo-900/40 p-5 rounded-xl">
-              <strong className="text-indigo-300 block mb-2 text-sm">Frames vs Pages</strong>
-              <ul className="space-y-2 text-slate-400 text-xs">
+            <div className="bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/40 p-5 rounded-xl">
+              <strong className="text-indigo-600 dark:text-indigo-300 block mb-2 text-sm">Frames vs Pages</strong>
+              <ul className="space-y-2 text-tertiary text-xs">
                 {module.notes.concept.framesPages.map((item, idx) => (
                   <li key={idx}>• {item}</li>
                 ))}
@@ -3924,7 +4448,7 @@ function NotesView({ module }) {
             </div>
             <div className="bg-violet-950/20 border border-violet-900/40 p-5 rounded-xl">
               <strong className="text-violet-300 block mb-2 text-sm">Page Table</strong>
-              <ul className="space-y-2 text-slate-400 text-xs">
+              <ul className="space-y-2 text-tertiary text-xs">
                 {module.notes.concept.pageTable.map((item, idx) => (
                   <li key={idx}>• {item}</li>
                 ))}
@@ -3933,38 +4457,38 @@ function NotesView({ module }) {
           </div>
 
           <div className="space-y-4">
-            <div className="bg-slate-800/40 border border-slate-700/50 p-4 rounded-xl">
-              <strong className="text-sky-300 block mb-1 text-sm">Addressing:</strong>
-              <p className="text-slate-400 text-sm">{module.notes.concept.addressing}</p>
+            <div className="bg-surface-muted/40 border border-strong/50 p-4 rounded-xl">
+              <strong className="text-sky-600 dark:text-sky-300 block mb-1 text-sm">Addressing:</strong>
+              <p className="text-tertiary text-sm">{module.notes.concept.addressing}</p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 p-4 rounded-xl">
-              <strong className="text-sky-300 block mb-1 text-sm">PTBR:</strong>
-              <p className="text-slate-400 text-sm">{module.notes.concept.ptbr}</p>
+            <div className="bg-surface-muted/40 border border-strong/50 p-4 rounded-xl">
+              <strong className="text-sky-600 dark:text-sky-300 block mb-1 text-sm">PTBR:</strong>
+              <p className="text-tertiary text-sm">{module.notes.concept.ptbr}</p>
             </div>
           </div>
         </section>
 
         {/* TLB */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <Cpu className="text-emerald-400" /> {module.notes.tlb.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <Cpu className="text-emerald-600 dark:text-emerald-400" /> {module.notes.tlb.title}
           </h2>
           
-          <div className="bg-amber-950/20 border-l-4 border-amber-500 p-5 rounded-r-xl mb-6">
-            <strong className="text-amber-300 block mb-2 text-sm">The Problem</strong>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.tlb.problem}</p>
+          <div className="bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 p-5 rounded-r-xl mb-6">
+            <strong className="text-amber-600 dark:text-amber-300 block mb-2 text-sm">The Problem</strong>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.tlb.problem}</p>
           </div>
           
-          <div className="bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl mb-6">
-            <strong className="text-emerald-300 block mb-2 text-sm">The Solution (TLB)</strong>
-            <p className="text-slate-300 text-sm leading-relaxed mb-3">{module.notes.tlb.solution}</p>
-            <strong className="text-emerald-300 block mb-1 text-sm">How It Works:</strong>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.tlb.howItWorks}</p>
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl mb-6">
+            <strong className="text-emerald-600 dark:text-emerald-300 block mb-2 text-sm">The Solution (TLB)</strong>
+            <p className="text-secondary text-sm leading-relaxed mb-3">{module.notes.tlb.solution}</p>
+            <strong className="text-emerald-600 dark:text-emerald-300 block mb-1 text-sm">How It Works:</strong>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.tlb.howItWorks}</p>
           </div>
 
-          <div className="bg-sky-950/20 border border-sky-900/30 p-5 rounded-xl">
-            <strong className="text-sky-300 block mb-2 text-sm">ASID (Address Space Identifier)</strong>
-            <p className="text-slate-400 text-sm leading-relaxed">{module.notes.tlb.asid}</p>
+          <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/30 p-5 rounded-xl">
+            <strong className="text-sky-600 dark:text-sky-300 block mb-2 text-sm">ASID (Address Space Identifier)</strong>
+            <p className="text-tertiary text-sm leading-relaxed">{module.notes.tlb.asid}</p>
           </div>
         </section>
       </div>
@@ -3976,54 +4500,54 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-            <User className="text-amber-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <User className="text-amber-600 dark:text-amber-400" /> {module.notes.intro.title}
           </h2>
           <ul className="space-y-3">
             {module.notes.intro.points.map((point, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <div className="mt-1 bg-amber-900/50 text-amber-400 p-1 rounded-full shrink-0">
+                <div className="mt-1 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 p-1 rounded-full shrink-0">
                   <CheckSquare size={14} />
                 </div>
-                <span className="text-slate-300 text-sm">{point}</span>
+                <span className="text-secondary text-sm">{point}</span>
               </li>
             ))}
           </ul>
         </section>
 
         {/* Paging vs Segmentation */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
-            <ArrowDownUp className="text-indigo-400" /> {module.notes.pagingVsSegmentation.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <ArrowDownUp className="text-indigo-600 dark:text-indigo-400" /> {module.notes.pagingVsSegmentation.title}
           </h2>
           <ul className="space-y-3">
             {module.notes.pagingVsSegmentation.points.map((point, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <div className="mt-1 bg-indigo-900/50 text-indigo-400 p-1 rounded-full shrink-0">
+                <div className="mt-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-1 rounded-full shrink-0">
                   <CheckSquare size={14} />
                 </div>
-                <span className="text-slate-300 text-sm">{point}</span>
+                <span className="text-secondary text-sm">{point}</span>
               </li>
             ))}
           </ul>
         </section>
 
         {/* Logical Address & Hardware */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <Cpu className="text-emerald-400" /> Logical Address & Hardware
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <Cpu className="text-emerald-600 dark:text-emerald-400" /> Logical Address & Hardware
           </h2>
           
-          <div className="bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl mb-6">
-            <strong className="text-emerald-300 block mb-2 text-sm">{module.notes.addressing.title}</strong>
-            <p className="text-slate-300 text-sm leading-relaxed">{module.notes.addressing.desc}</p>
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 border-l-4 border-emerald-500 p-5 rounded-r-xl mb-6">
+            <strong className="text-emerald-600 dark:text-emerald-300 block mb-2 text-sm">{module.notes.addressing.title}</strong>
+            <p className="text-secondary text-sm leading-relaxed">{module.notes.addressing.desc}</p>
           </div>
           
-          <div className="bg-slate-800/40 border border-slate-700/50 p-5 rounded-xl">
-            <strong className="text-sky-300 block mb-3 text-sm">{module.notes.hardware.title}</strong>
-            <p className="text-slate-400 text-sm mb-3">{module.notes.hardware.desc}</p>
-            <ul className="space-y-2 text-slate-400 text-xs pl-4 border-l border-slate-700">
+          <div className="bg-surface-muted/40 border border-strong/50 p-5 rounded-xl">
+            <strong className="text-sky-600 dark:text-sky-300 block mb-3 text-sm">{module.notes.hardware.title}</strong>
+            <p className="text-tertiary text-sm mb-3">{module.notes.hardware.desc}</p>
+            <ul className="space-y-2 text-tertiary text-xs pl-4 border-l border-strong">
               {module.notes.hardware.points.map((point, idx) => (
                 <li key={idx}>• {point}</li>
               ))}
@@ -4032,15 +4556,15 @@ function NotesView({ module }) {
         </section>
 
         {/* Pros & Cons */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <CheckSquare className="text-rose-400" /> {module.notes.prosCons.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <CheckSquare className="text-rose-600 dark:text-rose-400" /> {module.notes.prosCons.title}
           </h2>
           
           <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div className="bg-emerald-950/20 border border-emerald-900/40 p-5 rounded-xl">
-              <strong className="text-emerald-400 block mb-3 text-sm flex items-center gap-2"><CheckSquare size={16}/> Advantages</strong>
-              <ul className="space-y-2 text-slate-300 text-sm">
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-5 rounded-xl">
+              <strong className="text-emerald-600 dark:text-emerald-400 block mb-3 text-sm flex items-center gap-2"><CheckSquare size={16}/> Advantages</strong>
+              <ul className="space-y-2 text-secondary text-sm">
                 {module.notes.prosCons.advantages.map((adv, idx) => (
                   <li key={idx} className="flex gap-2">
                     <span className="text-emerald-500">✓</span> <span>{adv}</span>
@@ -4049,9 +4573,9 @@ function NotesView({ module }) {
               </ul>
             </div>
             
-            <div className="bg-rose-950/20 border border-rose-900/40 p-5 rounded-xl">
-              <strong className="text-rose-400 block mb-3 text-sm flex items-center gap-2"><AlertTriangle size={16}/> Disadvantages</strong>
-              <ul className="space-y-2 text-slate-300 text-sm">
+            <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 p-5 rounded-xl">
+              <strong className="text-rose-600 dark:text-rose-400 block mb-3 text-sm flex items-center gap-2"><AlertTriangle size={16}/> Disadvantages</strong>
+              <ul className="space-y-2 text-secondary text-sm">
                 {module.notes.prosCons.disadvantages.map((dis, idx) => (
                   <li key={idx} className="flex gap-2">
                     <span className="text-rose-500">✗</span> <span>{dis}</span>
@@ -4061,9 +4585,9 @@ function NotesView({ module }) {
             </div>
           </div>
           
-          <div className="bg-indigo-950/20 border border-indigo-900/30 p-5 rounded-xl">
-            <strong className="text-indigo-300 block mb-2 text-sm">{module.notes.modern.title}</strong>
-            <p className="text-slate-400 text-sm leading-relaxed">{module.notes.modern.desc}</p>
+          <div className="bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/30 p-5 rounded-xl">
+            <strong className="text-indigo-600 dark:text-indigo-300 block mb-2 text-sm">{module.notes.modern.title}</strong>
+            <p className="text-tertiary text-sm leading-relaxed">{module.notes.modern.desc}</p>
           </div>
         </section>
       </div>
@@ -4075,38 +4599,38 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-            <AppWindow className="text-sky-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <AppWindow className="text-sky-600 dark:text-sky-400" /> {module.notes.intro.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
-          <strong className="text-sky-300 block mb-3 text-sm">Benefits:</strong>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
+          <strong className="text-sky-600 dark:text-sky-300 block mb-3 text-sm">Benefits:</strong>
           <ul className="space-y-3">
             {module.notes.intro.benefits.map((point, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <div className="mt-1 bg-sky-900/50 text-sky-400 p-1 rounded-full shrink-0">
+                <div className="mt-1 bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 p-1 rounded-full shrink-0">
                   <CheckSquare size={14} />
                 </div>
-                <span className="text-slate-300 text-sm">{point}</span>
+                <span className="text-secondary text-sm">{point}</span>
               </li>
             ))}
           </ul>
         </section>
 
         {/* Demand Paging */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
-            <Activity className="text-indigo-400" /> {module.notes.demandPaging.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <Activity className="text-indigo-600 dark:text-indigo-400" /> {module.notes.demandPaging.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.demandPaging.desc}</p>
-          <div className="bg-indigo-950/20 border-l-4 border-indigo-500 p-5 rounded-r-xl">
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.demandPaging.desc}</p>
+          <div className="bg-indigo-50 dark:bg-indigo-950/20 border-l-4 border-indigo-500 p-5 rounded-r-xl">
             <ul className="space-y-3">
               {module.notes.demandPaging.points.map((point, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <div className="mt-1 text-indigo-400 shrink-0">
+                  <div className="mt-1 text-indigo-600 dark:text-indigo-400 shrink-0">
                     <ChevronRight size={16} />
                   </div>
-                  <span className="text-slate-300 text-sm">{point}</span>
+                  <span className="text-secondary text-sm">{point}</span>
                 </li>
               ))}
             </ul>
@@ -4114,39 +4638,39 @@ function NotesView({ module }) {
         </section>
 
         {/* Valid-Invalid Bit Scheme */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <ShieldCheck className="text-emerald-400" /> {module.notes.validInvalid.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <ShieldCheck className="text-emerald-600 dark:text-emerald-400" /> {module.notes.validInvalid.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.validInvalid.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.validInvalid.desc}</p>
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="bg-emerald-950/20 border border-emerald-900/40 p-4 rounded-xl flex flex-col gap-2">
-              <strong className="text-emerald-400 text-lg">{module.notes.validInvalid.bits[0].bit}</strong>
-              <span className="text-slate-400 text-sm">{module.notes.validInvalid.bits[0].meaning}</span>
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-4 rounded-xl flex flex-col gap-2">
+              <strong className="text-emerald-600 dark:text-emerald-400 text-lg">{module.notes.validInvalid.bits[0].bit}</strong>
+              <span className="text-tertiary text-sm">{module.notes.validInvalid.bits[0].meaning}</span>
             </div>
-            <div className="bg-rose-950/20 border border-rose-900/40 p-4 rounded-xl flex flex-col gap-2">
-              <strong className="text-rose-400 text-lg">{module.notes.validInvalid.bits[1].bit}</strong>
-              <span className="text-slate-400 text-sm">{module.notes.validInvalid.bits[1].meaning}</span>
+            <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 p-4 rounded-xl flex flex-col gap-2">
+              <strong className="text-rose-600 dark:text-rose-400 text-lg">{module.notes.validInvalid.bits[1].bit}</strong>
+              <span className="text-tertiary text-sm">{module.notes.validInvalid.bits[1].meaning}</span>
             </div>
           </div>
         </section>
 
         {/* Page Faults & Pure Demand Paging */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <AlertOctagon className="text-rose-400" /> {module.notes.pageFault.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.pageFault.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.pageFault.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.pageFault.desc}</p>
           
-          <div className="bg-slate-800/40 border border-slate-700/50 p-5 rounded-xl mb-6">
-            <strong className="text-rose-300 block mb-4 text-sm flex items-center gap-2"><Settings size={16}/> Steps in Handling a Page Fault:</strong>
+          <div className="bg-surface-muted/40 border border-strong/50 p-5 rounded-xl mb-6">
+            <strong className="text-rose-600 dark:text-rose-300 block mb-4 text-sm flex items-center gap-2"><Settings size={16}/> Steps in Handling a Page Fault:</strong>
             <ol className="space-y-4 relative before:absolute before:inset-0 before:ml-[13px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
               {module.notes.pageFault.steps.map((step, idx) => (
                 <li key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-7 h-7 rounded-full border border-slate-700 bg-slate-800 text-slate-300 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 text-xs font-bold z-10">
+                  <div className="flex items-center justify-center w-7 h-7 rounded-full border border-strong bg-surface-muted text-secondary shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 text-xs font-bold z-10">
                     {idx + 1}
                   </div>
-                  <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-slate-800/80 p-3 rounded border border-slate-700/50 text-slate-300 text-xs shadow">
+                  <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-surface-muted/80 p-3 rounded border border-strong/50 text-secondary text-xs shadow">
                     {step}
                   </div>
                 </li>
@@ -4154,9 +4678,9 @@ function NotesView({ module }) {
             </ol>
           </div>
 
-          <div className="bg-amber-950/20 border-l-4 border-amber-500 p-5 rounded-r-xl">
-            <strong className="text-amber-300 block mb-3 text-sm">{module.notes.pureDemandPaging.title}</strong>
-            <ul className="space-y-2 text-slate-400 text-xs">
+          <div className="bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 p-5 rounded-r-xl">
+            <strong className="text-amber-600 dark:text-amber-300 block mb-3 text-sm">{module.notes.pureDemandPaging.title}</strong>
+            <ul className="space-y-2 text-tertiary text-xs">
               {module.notes.pureDemandPaging.points.map((point, idx) => (
                 <li key={idx}>• {point}</li>
               ))}
@@ -4165,15 +4689,15 @@ function NotesView({ module }) {
         </section>
 
         {/* Pros & Cons */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-violet-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-violet-400" /> {module.notes.prosCons.title}
           </h2>
           
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-emerald-950/20 border border-emerald-900/40 p-5 rounded-xl">
-              <strong className="text-emerald-400 block mb-3 text-sm flex items-center gap-2"><CheckSquare size={16}/> Advantages</strong>
-              <ul className="space-y-2 text-slate-300 text-sm">
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-5 rounded-xl">
+              <strong className="text-emerald-600 dark:text-emerald-400 block mb-3 text-sm flex items-center gap-2"><CheckSquare size={16}/> Advantages</strong>
+              <ul className="space-y-2 text-secondary text-sm">
                 {module.notes.prosCons.advantages.map((adv, idx) => (
                   <li key={idx} className="flex gap-2">
                     <span className="text-emerald-500">✓</span> <span>{adv}</span>
@@ -4182,9 +4706,9 @@ function NotesView({ module }) {
               </ul>
             </div>
             
-            <div className="bg-rose-950/20 border border-rose-900/40 p-5 rounded-xl">
-              <strong className="text-rose-400 block mb-3 text-sm flex items-center gap-2"><Skull size={16}/> Disadvantages</strong>
-              <ul className="space-y-2 text-slate-300 text-sm">
+            <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 p-5 rounded-xl">
+              <strong className="text-rose-600 dark:text-rose-400 block mb-3 text-sm flex items-center gap-2"><Skull size={16}/> Disadvantages</strong>
+              <ul className="space-y-2 text-secondary text-sm">
                 {module.notes.prosCons.disadvantages.map((dis, idx) => (
                   <li key={idx} className="flex gap-2">
                     <span className="text-rose-500">✗</span> <span>{dis}</span>
@@ -4203,38 +4727,38 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-4 flex items-center gap-2">
-            <AppWindow className="text-emerald-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <AppWindow className="text-emerald-600 dark:text-emerald-400" /> {module.notes.intro.title}
           </h2>
           <ul className="space-y-3">
             {module.notes.intro.points.map((point, idx) => (
               <li key={idx} className="flex items-start gap-3">
-                <div className="mt-1 bg-emerald-900/50 text-emerald-400 p-1 rounded-full shrink-0">
+                <div className="mt-1 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 p-1 rounded-full shrink-0">
                   <CheckSquare size={14} />
                 </div>
-                <span className="text-slate-300 text-sm">{point}</span>
+                <span className="text-secondary text-sm">{point}</span>
               </li>
             ))}
           </ul>
         </section>
 
         {/* Algorithms */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-indigo-400 mb-6 flex items-center gap-2">
-            <Layers className="text-indigo-400" /> {module.notes.algorithms.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-6 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.algorithms.title}
           </h2>
           
           <div className="space-y-6">
             {module.notes.algorithms.types.map((algo, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl">
-                <h3 className="text-lg font-bold text-indigo-300 mb-3">{algo.name}</h3>
-                <p className="text-slate-300 text-sm leading-relaxed mb-4">{algo.desc}</p>
+              <div key={idx} className="bg-surface-muted/40 border border-strong/50 p-6 rounded-xl">
+                <h3 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-3">{algo.name}</h3>
+                <p className="text-secondary text-sm leading-relaxed mb-4">{algo.desc}</p>
                 
                 {algo.points && (
                   <ul className="space-y-2 mb-4">
                     {algo.points.map((point, pIdx) => (
-                      <li key={pIdx} className="flex items-start gap-2 text-slate-400 text-sm">
+                      <li key={pIdx} className="flex items-start gap-2 text-tertiary text-sm">
                         <span className="text-indigo-500 mt-1"><ChevronRight size={14}/></span>
                         <span>{point}</span>
                       </li>
@@ -4243,7 +4767,7 @@ function NotesView({ module }) {
                 )}
                 
                 {algo.belady && (
-                  <div className="bg-rose-950/20 border-l-4 border-rose-500 p-4 rounded-r-xl mt-4">
+                  <div className="bg-rose-50 dark:bg-rose-950/20 border-l-4 border-rose-500 p-4 rounded-r-xl mt-4">
                     <p className="text-rose-200 text-sm leading-relaxed">{algo.belady}</p>
                   </div>
                 )}
@@ -4251,9 +4775,9 @@ function NotesView({ module }) {
                 {algo.implementations && (
                   <div className="grid md:grid-cols-2 gap-4 mt-4">
                     {algo.implementations.map((impl, iIdx) => (
-                      <div key={iIdx} className="bg-slate-900/50 border border-slate-700 p-4 rounded-lg">
-                        <strong className="text-emerald-300 block mb-2 text-sm">{impl.method}</strong>
-                        <p className="text-slate-400 text-xs leading-relaxed">{impl.details}</p>
+                      <div key={iIdx} className="bg-surface/50 border border-strong p-4 rounded-lg">
+                        <strong className="text-emerald-600 dark:text-emerald-300 block mb-2 text-sm">{impl.method}</strong>
+                        <p className="text-tertiary text-xs leading-relaxed">{impl.details}</p>
                       </div>
                     ))}
                   </div>
@@ -4262,16 +4786,16 @@ function NotesView({ module }) {
                 {algo.subTypes && (
                   <div className="grid md:grid-cols-2 gap-4 mt-4">
                     {algo.subTypes.map((sub, sIdx) => (
-                      <div key={sIdx} className="bg-slate-900/50 border border-slate-700 p-4 rounded-lg">
-                        <strong className="text-sky-300 block mb-2 text-sm">{sub.subName}</strong>
-                        <p className="text-slate-400 text-xs leading-relaxed">{sub.subDesc}</p>
+                      <div key={sIdx} className="bg-surface/50 border border-strong p-4 rounded-lg">
+                        <strong className="text-sky-600 dark:text-sky-300 block mb-2 text-sm">{sub.subName}</strong>
+                        <p className="text-tertiary text-xs leading-relaxed">{sub.subDesc}</p>
                       </div>
                     ))}
                   </div>
                 )}
                 
                 {algo.note && (
-                  <div className="mt-4 text-slate-500 text-xs italic">
+                  <div className="mt-4 text-tertiary text-xs italic">
                     Note: {algo.note}
                   </div>
                 )}
@@ -4288,16 +4812,16 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-rose-400 mb-4 flex items-center gap-2">
-            <AlertOctagon className="text-rose-400" /> {module.notes.intro.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.intro.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
-          <div className="bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl">
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.intro.desc}</p>
+          <div className="bg-rose-50 dark:bg-rose-950/20 border-l-4 border-rose-500 p-5 rounded-r-xl">
             <ul className="space-y-3">
               {module.notes.intro.points.map((point, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <div className="mt-1 text-rose-400 shrink-0">
+                  <div className="mt-1 text-rose-600 dark:text-rose-400 shrink-0">
                     <AlertTriangle size={16} />
                   </div>
                   <strong className="text-rose-200 text-sm">{point}</strong>
@@ -4308,18 +4832,18 @@ function NotesView({ module }) {
         </section>
 
         {/* Graph */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-sky-400 mb-4 flex items-center gap-2">
-            <Activity className="text-sky-400" /> {module.notes.graph.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <Activity className="text-sky-600 dark:text-sky-400" /> {module.notes.graph.title}
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed mb-8">{module.notes.graph.desc}</p>
+          <p className="text-secondary text-sm leading-relaxed mb-8">{module.notes.graph.desc}</p>
           
           {/* Custom CSS representation of the graph */}
-          <div className="relative w-full max-w-lg mx-auto h-64 border-l-2 border-b-2 border-slate-600 mb-10 mt-10">
-            <div className="absolute -left-16 top-1/2 -translate-y-1/2 -rotate-90 text-xs text-slate-400 font-bold uppercase tracking-wider whitespace-nowrap">
+          <div className="relative w-full max-w-lg mx-auto h-64 border-l-2 border-b-2 border-strong mb-10 mt-10">
+            <div className="absolute -left-16 top-1/2 -translate-y-1/2 -rotate-90 text-xs text-tertiary font-bold uppercase tracking-wider whitespace-nowrap">
               CPU Utilization
             </div>
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-slate-400 font-bold uppercase tracking-wider whitespace-nowrap">
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-tertiary font-bold uppercase tracking-wider whitespace-nowrap">
               Degree of Multiprogramming
             </div>
             
@@ -4340,23 +4864,23 @@ function NotesView({ module }) {
         </section>
 
         {/* Techniques */}
-        <section className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800">
-          <h2 className="text-xl font-bold text-emerald-400 mb-6 flex items-center gap-2">
-            <ShieldCheck className="text-emerald-400" /> {module.notes.techniques.title}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
+            <ShieldCheck className="text-emerald-600 dark:text-emerald-400" /> {module.notes.techniques.title}
           </h2>
           
           <div className="grid md:grid-cols-2 gap-6">
             {module.notes.techniques.methods.map((method, idx) => (
-              <div key={idx} className="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl flex flex-col h-full hover:border-emerald-500/30 transition-colors">
+              <div key={idx} className="bg-surface-muted/40 border border-strong/50 p-6 rounded-xl flex flex-col h-full hover:border-emerald-500/30 transition-colors">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-emerald-900/30 p-2 rounded-lg text-emerald-400">
+                  <div className="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg text-emerald-600 dark:text-emerald-400">
                     {idx === 0 ? <AppWindow size={20} /> : <Activity size={20} />}
                   </div>
-                  <h3 className="text-lg font-bold text-emerald-300">{method.name}</h3>
+                  <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-300">{method.name}</h3>
                 </div>
-                <p className="text-slate-300 text-sm leading-relaxed mb-4">{method.desc}</p>
-                <div className="mt-auto bg-slate-900/50 p-4 rounded-lg border-l-2 border-emerald-500/50">
-                  <p className="text-slate-400 text-xs leading-relaxed">{method.details}</p>
+                <p className="text-secondary text-sm leading-relaxed mb-4">{method.desc}</p>
+                <div className="mt-auto bg-surface/50 p-4 rounded-lg border-l-2 border-emerald-500/50">
+                  <p className="text-tertiary text-xs leading-relaxed">{method.details}</p>
                 </div>
               </div>
             ))}
@@ -4366,7 +4890,750 @@ function NotesView({ module }) {
     );
   }
 
+  if (module.id === 'dbms_arch') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Three Schema Architecture */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.threeSchema.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.threeSchema.intro}</p>
+          <div className="bg-indigo-50 dark:bg-indigo-950/30 border-l-4 border-indigo-500 p-4 rounded-r-xl mb-6">
+            <strong className="text-indigo-200">Objective:</strong> <span className="text-secondary text-sm">{module.notes.threeSchema.objective}</span>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-4">
+            {module.notes.threeSchema.levels.map((level, idx) => (
+              <div key={idx} className="bg-surface-muted/40 border border-strong/50 p-5 rounded-xl hover:border-indigo-500/30 transition-colors flex flex-col h-full">
+                <h3 className="text-md font-bold text-indigo-600 dark:text-indigo-300 mb-2">{level.name}</h3>
+                <p className="text-tertiary text-xs mb-3 flex-grow">{level.desc}</p>
+                <ul className="space-y-2 mt-auto">
+                  {level.details.map((detail, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-secondary">
+                      <ChevronRight size={14} className="text-indigo-500 mt-0.5 shrink-0" />
+                      <span>{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Simple Architecture Diagram */}
+          <div className="mt-8 flex flex-col items-center">
+            <div className="flex gap-4 mb-2">
+              <div className="px-4 py-2 bg-surface-muted border border-strong rounded shadow text-xs font-semibold text-primary">External Schema</div>
+              <div className="px-4 py-2 bg-surface-muted border border-strong rounded shadow text-xs font-semibold text-primary">External Schema</div>
+            </div>
+            <ArrowDownUp size={16} className="text-tertiary my-1" />
+            <div className="px-6 py-2 bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-500 rounded shadow text-sm font-bold text-indigo-200">Conceptual Level</div>
+            <ArrowDownUp size={16} className="text-tertiary my-1" />
+            <div className="px-8 py-2 bg-surface-muted border border-strong rounded shadow text-sm font-bold text-primary">Internal Level</div>
+            <ArrowDownUp size={16} className="text-tertiary my-1" />
+            <Database size={28} className="text-tertiary mt-1" />
+          </div>
+        </section>
+
+        {/* Instances & Schemas / Data Models */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
+              <Code className="text-amber-600 dark:text-amber-400" /> {module.notes.instancesSchemas.title}
+            </h2>
+            <ul className="space-y-4">
+              {module.notes.instancesSchemas.points.map((pt, idx) => (
+                <li key={idx} className="bg-surface-muted/40 p-3 rounded-lg border border-strong/50">
+                  <span className="font-bold text-amber-600 dark:text-amber-300 text-sm block mb-1">{pt.term}</span>
+                  <span className="text-secondary text-xs">{pt.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col">
+            <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
+              <FolderOpen className="text-emerald-600 dark:text-emerald-400" /> {module.notes.dataModels.title}
+            </h2>
+            <ul className="space-y-3 flex-grow">
+              {module.notes.dataModels.points.map((pt, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <div className="mt-1 text-emerald-600 dark:text-emerald-400 shrink-0"><CheckSquare size={16} /></div>
+                  <span className="text-secondary text-sm leading-relaxed">{pt}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 border-t border-strong/50 pt-6">
+              <h2 className="text-lg font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+                 <AppWindow size={18} /> {module.notes.appAccess.title}
+              </h2>
+              <p className="text-secondary text-sm leading-relaxed">{module.notes.appAccess.desc}</p>
+            </div>
+          </section>
+        </div>
+
+        {/* DB Languages & DBA */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col">
+            <h2 className="text-xl font-bold text-pink-400 mb-6 flex items-center gap-2">
+              <Terminal className="text-pink-400" /> {module.notes.databaseLanguages.title}
+            </h2>
+            <div className="space-y-4 flex-grow">
+              <div className="bg-surface-muted/60 p-5 rounded-xl border-l-4 border-pink-500">
+                <h3 className="font-bold text-pink-300 text-sm mb-2">{module.notes.databaseLanguages.ddl.name}</h3>
+                <p className="text-tertiary text-sm leading-relaxed">{module.notes.databaseLanguages.ddl.desc}</p>
+              </div>
+              <div className="bg-surface-muted/60 p-5 rounded-xl border-l-4 border-purple-500 mt-4">
+                <h3 className="font-bold text-purple-300 text-sm mb-2">{module.notes.databaseLanguages.dml.name}</h3>
+                <p className="text-tertiary text-sm leading-relaxed mb-3">{module.notes.databaseLanguages.dml.desc}</p>
+                <div className="text-xs font-mono text-purple-200 bg-purple-900/30 p-3 rounded-lg border border-purple-800/50">
+                  {module.notes.databaseLanguages.dml.query}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+              <User className="text-rose-600 dark:text-rose-400" /> {module.notes.dba.title}
+            </h2>
+            <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.dba.desc}</p>
+            <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 p-5 rounded-xl">
+              <h3 className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Settings size={14} /> Key Functions
+              </h3>
+              <ul className="grid grid-cols-1 gap-3">
+                {module.notes.dba.functions.map((fn, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm text-secondary">
+                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                    <span>{fn}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        </div>
+
+        {/* Architectures */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-cyan-400 mb-6 flex items-center gap-2">
+            <Server className="text-cyan-400" /> {module.notes.architectures.title}
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {module.notes.architectures.types.map((type, idx) => (
+              <div key={idx} className="bg-surface-muted/40 border border-strong/50 p-6 rounded-xl flex flex-col hover:bg-surface-muted/60 transition-colors">
+                <h3 className="text-lg font-bold text-cyan-300 mb-3">{type.name}</h3>
+                <p className="text-secondary text-sm leading-relaxed mb-6">{type.desc}</p>
+                
+                {type.advantages && (
+                  <div className="mt-auto bg-cyan-950/30 p-4 rounded-lg border border-cyan-900/50">
+                    <h4 className="text-xs font-bold text-cyan-400 mb-3 uppercase tracking-wider">Advantages</h4>
+                    <ul className="space-y-2">
+                      {type.advantages.map((adv, i) => (
+                        <li key={i} className="text-xs text-cyan-200 flex items-start gap-2">
+                          <CheckSquare size={14} className="shrink-0 mt-0.5 text-cyan-500" /> 
+                          <span className="leading-relaxed">{adv}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'er_model') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro to ER Model */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <BookOpen className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
+          </h2>
+          <div className="bg-indigo-50 dark:bg-indigo-950/30 border-l-4 border-indigo-500 p-4 rounded-r-xl mb-6">
+            <strong className="text-indigo-200">Data Model:</strong> <span className="text-secondary text-sm leading-relaxed">{module.notes.intro.dataModel}</span>
+          </div>
+          <ul className="space-y-3 pl-4 list-disc list-inside md:list-outside text-sm text-secondary marker:text-indigo-500">
+            {module.notes.intro.erModel.map((pt, idx) => (
+              <li key={idx} className="leading-relaxed">{pt}</li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Entities */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <AppWindow className="text-emerald-600 dark:text-emerald-400" /> {module.notes.entities.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.entities.entityDef}</p>
+          
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
+            {module.notes.entities.entityTypes.map((type, idx) => (
+              <div key={idx} className={`p-5 rounded-xl border ${idx === 0 ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50' : 'bg-surface-muted/40 border-strong/50'}`}>
+                <h3 className={`text-md font-bold mb-2 ${idx === 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-secondary'}`}>{type.name}</h3>
+                <p className="text-tertiary text-xs leading-relaxed">{type.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-surface-muted/50 p-5 rounded-lg flex items-start gap-4">
+            <div className="mt-1 text-emerald-500"><FolderOpen size={18} /></div>
+            <div>
+              <strong className="text-emerald-600 dark:text-emerald-300 text-sm block mb-1">Entity Set</strong>
+              <p className="text-tertiary text-xs leading-relaxed">{module.notes.entities.entitySet}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Attributes */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+            <CheckSquare className="text-sky-600 dark:text-sky-400" /> {module.notes.attributes.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.attributes.attributeDef}</p>
+          
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {module.notes.attributes.types.map((type, idx) => (
+              <div key={idx} className="bg-surface-muted/40 border border-strong/50 p-5 rounded-xl hover:border-sky-500/30 transition-colors">
+                <h3 className="text-sm font-bold text-sky-600 dark:text-sky-300 mb-2">{type.name}</h3>
+                <p className="text-tertiary text-xs leading-relaxed">{type.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Relationships */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <Activity className="text-amber-600 dark:text-amber-400" /> {module.notes.relationships.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.relationships.relationshipDef}</p>
+          <ul className="list-disc list-inside md:list-outside pl-0 md:pl-4 space-y-2 mb-6 text-sm text-secondary marker:text-amber-500">
+            {module.notes.relationships.relationshipTypes.map((pt, idx) => (
+              <li key={idx} className="leading-relaxed">{pt}</li>
+            ))}
+            <li className="leading-relaxed"><strong className="text-amber-200">Degree:</strong> {module.notes.relationships.degree}</li>
+          </ul>
+
+          <div className="grid md:grid-cols-2 gap-6 mt-6 border-t border-strong/50 pt-6">
+            {/* Cardinality */}
+            <div>
+              <h3 className="text-lg font-bold text-orange-300 mb-3">{module.notes.relationships.cardinality.title}</h3>
+              <p className="text-tertiary text-xs mb-4 leading-relaxed">{module.notes.relationships.cardinality.desc}</p>
+              <div className="space-y-3">
+                {module.notes.relationships.cardinality.types.map((type, idx) => (
+                  <div key={idx} className="bg-orange-950/20 p-4 rounded-xl border border-orange-900/30">
+                    <strong className="text-orange-300 text-sm block mb-1">{type.name}</strong>
+                    <span className="text-secondary text-xs leading-relaxed">{type.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Participation */}
+            <div>
+              <h3 className="text-lg font-bold text-yellow-600 dark:text-yellow-300 mb-3">{module.notes.relationships.participation.title}</h3>
+              <p className="text-tertiary text-xs mb-4 leading-relaxed">{module.notes.relationships.participation.desc}</p>
+              <div className="space-y-3">
+                {module.notes.relationships.participation.types.map((type, idx) => (
+                  <div key={idx} className="bg-yellow-50 dark:bg-yellow-950/20 p-4 rounded-xl border border-yellow-200 dark:border-yellow-900/30">
+                    <strong className="text-yellow-600 dark:text-yellow-300 text-sm block mb-1">{type.name}</strong>
+                    <span className="text-secondary text-xs leading-relaxed">{type.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Notations */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-6 flex items-center gap-2">
+            <Layers className="text-rose-600 dark:text-rose-400" /> {module.notes.notations.title}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+            {module.notes.notations.symbols.map((sym, idx) => (
+              <div key={idx} className="bg-surface-muted/60 border border-strong p-6 rounded-xl flex flex-col items-center justify-center text-center h-full hover:bg-surface-muted hover:border-rose-500/30 transition-colors">
+                <div className="mb-4">
+                  <ErSymbol type={sym.symbol} />
+                </div>
+                <span className="text-sm font-bold text-rose-600 dark:text-rose-300 mb-1">{sym.meaning}</span>
+                <span className="text-[10px] text-tertiary uppercase tracking-wider leading-snug">{sym.symbol}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* The Classic Trap */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-fuchsia-400 mb-4 flex items-center gap-2">
+            <AlertTriangle className="text-fuchsia-400" /> {module.notes.trap.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6 bg-fuchsia-950/20 p-5 rounded-xl border border-fuchsia-900/30">
+            {module.notes.trap.desc}
+          </p>
+
+          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+            {/* Identity */}
+            <div className="bg-surface-muted/40 border border-strong/50 p-6 rounded-xl">
+              <h3 className="text-lg font-bold text-fuchsia-300 mb-3">{module.notes.trap.identity.title}</h3>
+              <p className="text-tertiary text-xs leading-relaxed mb-4">{module.notes.trap.identity.desc}</p>
+              <div className="space-y-4">
+                <div className="bg-surface/50 p-4 rounded-lg border-l-2 border-emerald-500">
+                  <strong className="text-emerald-600 dark:text-emerald-400 text-sm block mb-1">Strong Entity</strong>
+                  <span className="text-secondary text-xs leading-relaxed">{module.notes.trap.identity.strong}</span>
+                </div>
+                <div className="bg-surface/50 p-4 rounded-lg border-l-2 border-rose-500">
+                  <strong className="text-rose-600 dark:text-rose-400 text-sm block mb-1">Weak Entity</strong>
+                  <span className="text-secondary text-xs leading-relaxed">{module.notes.trap.identity.weak}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rules */}
+            <div className="bg-surface-muted/40 border border-strong/50 p-6 rounded-xl">
+              <h3 className="text-lg font-bold text-fuchsia-300 mb-3">{module.notes.trap.rules.title}</h3>
+              <p className="text-tertiary text-xs leading-relaxed mb-4">{module.notes.trap.rules.desc}</p>
+              <div className="space-y-4">
+                <div className="bg-surface/50 p-4 rounded-lg border-l-2 border-yellow-500">
+                  <strong className="text-yellow-600 dark:text-yellow-400 text-sm block mb-1">Total Participation</strong>
+                  <span className="text-secondary text-xs leading-relaxed">{module.notes.trap.rules.total}</span>
+                </div>
+                <div className="bg-surface/50 p-4 rounded-lg border-l-2 border-sky-500">
+                  <strong className="text-sky-600 dark:text-sky-400 text-sm block mb-1">Partial Participation</strong>
+                  <span className="text-secondary text-xs leading-relaxed">{module.notes.trap.rules.partial}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* The Overlap */}
+          <div className="bg-background p-6 rounded-xl border border-subtle">
+            <h3 className="text-lg font-bold text-white mb-3">{module.notes.trap.overlap.title}</h3>
+            <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.trap.overlap.desc}</p>
+            <p className="text-secondary text-sm leading-relaxed mb-6 whitespace-pre-line bg-surface p-4 rounded-lg">
+              {module.notes.trap.overlap.difference}
+            </p>
+            <div className="bg-fuchsia-900/20 p-5 rounded-lg border border-fuchsia-500/30">
+              <strong className="text-fuchsia-300 text-sm block mb-3 uppercase tracking-wider">The Golden Summary</strong>
+              <ul className="space-y-3 list-disc list-outside pl-4 text-sm text-fuchsia-100 marker:text-fuchsia-500">
+                {module.notes.trap.overlap.summary.map((pt, idx) => (
+                  <li key={idx} className="leading-relaxed">{pt}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'extended_er') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro to Extended ER */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <BookOpen className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6 bg-indigo-50 dark:bg-indigo-950/30 border-l-4 border-indigo-500 p-5 rounded-r-xl">
+            {module.notes.intro.desc}
+          </p>
+        </section>
+
+        {/* Blank Spaces Problem */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.blankSpaces.title}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-surface-muted/40 p-5 rounded-xl border border-strong/50 flex flex-col">
+              <strong className="text-rose-600 dark:text-rose-300 text-sm mb-2 block">The Setup</strong>
+              <span className="text-tertiary text-xs leading-relaxed">{module.notes.blankSpaces.problem}</span>
+            </div>
+            <div className="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-xl border border-rose-200 dark:border-rose-900/50 flex flex-col">
+              <strong className="text-rose-600 dark:text-rose-400 text-sm mb-2 block flex items-center gap-2"><Skull size={14}/> The Disaster</strong>
+              <span className="text-rose-200/80 text-xs leading-relaxed">{module.notes.blankSpaces.disaster}</span>
+            </div>
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 p-5 rounded-xl border border-emerald-200 dark:border-emerald-900/50 flex flex-col">
+              <strong className="text-emerald-600 dark:text-emerald-400 text-sm mb-2 block flex items-center gap-2"><CheckSquare size={14}/> The Fix</strong>
+              <span className="text-emerald-200/80 text-xs leading-relaxed">{module.notes.blankSpaces.fix}</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Specialisation & Generalisation */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Specialisation */}
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
+              <ArrowDownUp className="text-sky-600 dark:text-sky-400" /> {module.notes.specialisation.title}
+            </h2>
+            <div className="space-y-4 text-sm text-secondary">
+              <div className="bg-surface-muted/50 p-4 rounded-xl border-l-2 border-sky-500">
+                <strong className="text-sky-600 dark:text-sky-300 block mb-1">The Setup</strong>
+                <span className="text-tertiary text-xs leading-relaxed">{module.notes.specialisation.setup}</span>
+              </div>
+              <div className="bg-surface-muted/50 p-4 rounded-xl border-l-2 border-sky-500">
+                <strong className="text-sky-600 dark:text-sky-300 block mb-1">The Split</strong>
+                <span className="text-tertiary text-xs leading-relaxed">{module.notes.specialisation.split}</span>
+              </div>
+              <p className="leading-relaxed"><strong className="text-sky-200">The "Is-A" Relationship:</strong> {module.notes.specialisation.isA}</p>
+              <div className="mt-4 bg-sky-50 dark:bg-sky-950/30 p-4 rounded-lg border border-sky-200 dark:border-sky-900/50">
+                <strong className="text-sky-600 dark:text-sky-400 text-xs uppercase tracking-wider block mb-1">Why use it?</strong>
+                <span className="text-sky-200/80 text-xs leading-relaxed">{module.notes.specialisation.reason}</span>
+              </div>
+            </div>
+
+            {/* Visual Diagram */}
+            <div className="mt-8 flex justify-center border-t border-strong/50 pt-6">
+              <svg viewBox="0 0 200 160" className="w-full max-w-[240px] drop-shadow-md">
+                {/* Person Rectangle */}
+                <rect x="60" y="10" width="80" height="30" className="fill-slate-800 stroke-sky-400 stroke-2" />
+                <text x="100" y="30" textAnchor="middle" className="fill-sky-200 text-xs font-bold font-sans">PERSON</text>
+                
+                {/* Line down to triangle */}
+                <line x1="100" y1="40" x2="100" y2="60" className="stroke-sky-400 stroke-2" />
+                
+                {/* Is-A Triangle */}
+                <polygon points="100,60 120,90 80,90" className="fill-slate-800 stroke-sky-400 stroke-2" />
+                <text x="100" y="82" textAnchor="middle" className="fill-sky-200 text-[10px] font-bold font-sans">Is-A</text>
+                
+                {/* Lines splitting out */}
+                <line x1="100" y1="90" x2="100" y2="100" className="stroke-sky-400 stroke-2" />
+                <line x1="40" y1="100" x2="160" y2="100" className="stroke-sky-400 stroke-2" />
+                <line x1="40" y1="100" x2="40" y2="120" className="stroke-sky-400 stroke-2" />
+                <line x1="160" y1="100" x2="160" y2="120" className="stroke-sky-400 stroke-2" />
+                
+                {/* Subclass Rectangles */}
+                <rect x="0" y="120" width="80" height="30" className="fill-slate-800 stroke-sky-400 stroke-2" />
+                <text x="40" y="140" textAnchor="middle" className="fill-sky-200 text-[10px] font-bold font-sans">STUDENT</text>
+                
+                <rect x="120" y="120" width="80" height="30" className="fill-slate-800 stroke-sky-400 stroke-2" />
+                <text x="160" y="140" textAnchor="middle" className="fill-sky-200 text-[10px] font-bold font-sans">PROFESSOR</text>
+                
+                {/* Arrows pointing down representing Top-Down */}
+                <path d="M 40 115 L 35 110 L 45 110 Z" className="fill-sky-400" />
+                <path d="M 160 115 L 155 110 L 165 110 Z" className="fill-sky-400" />
+              </svg>
+            </div>
+          </section>
+
+          {/* Generalisation */}
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+              <ArrowDownUp className="text-emerald-600 dark:text-emerald-400 rotate-180" /> {module.notes.generalisation.title}
+            </h2>
+            <p className="text-secondary text-sm leading-relaxed mb-4">{module.notes.generalisation.desc}</p>
+            <div className="space-y-4 text-sm text-secondary">
+              <div className="bg-surface-muted/50 p-4 rounded-xl border-l-2 border-emerald-500">
+                <strong className="text-emerald-600 dark:text-emerald-300 block mb-1">The Setup</strong>
+                <span className="text-tertiary text-xs leading-relaxed">{module.notes.generalisation.setup}</span>
+              </div>
+              <div className="bg-surface-muted/50 p-4 rounded-xl border-l-2 border-emerald-500">
+                <strong className="text-emerald-600 dark:text-emerald-300 block mb-1">The Grouping</strong>
+                <span className="text-tertiary text-xs leading-relaxed">{module.notes.generalisation.grouping}</span>
+              </div>
+              <div className="mt-4 bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200 dark:border-emerald-900/50">
+                <strong className="text-emerald-600 dark:text-emerald-400 text-xs uppercase tracking-wider block mb-1">Why use it?</strong>
+                <span className="text-emerald-200/80 text-xs leading-relaxed">{module.notes.generalisation.reason}</span>
+              </div>
+            </div>
+
+            {/* Visual Diagram */}
+            <div className="mt-8 flex justify-center border-t border-strong/50 pt-6">
+              <svg viewBox="0 0 200 160" className="w-full max-w-[240px] drop-shadow-md">
+                {/* Vehicle Rectangle (Top) */}
+                <rect x="60" y="10" width="80" height="30" className="fill-slate-800 stroke-emerald-400 stroke-2" />
+                <text x="100" y="30" textAnchor="middle" className="fill-emerald-200 text-xs font-bold font-sans">VEHICLE</text>
+                
+                {/* Line up to triangle */}
+                <line x1="100" y1="40" x2="100" y2="60" className="stroke-emerald-400 stroke-2" />
+                
+                {/* Is-A Triangle */}
+                <polygon points="100,60 120,90 80,90" className="fill-slate-800 stroke-emerald-400 stroke-2" />
+                <text x="100" y="82" textAnchor="middle" className="fill-emerald-200 text-[10px] font-bold font-sans">Is-A</text>
+                
+                {/* Lines merging in from bottom */}
+                <line x1="100" y1="90" x2="100" y2="100" className="stroke-emerald-400 stroke-2" />
+                <line x1="40" y1="100" x2="160" y2="100" className="stroke-emerald-400 stroke-2" />
+                <line x1="40" y1="100" x2="40" y2="120" className="stroke-emerald-400 stroke-2" />
+                <line x1="160" y1="100" x2="160" y2="120" className="stroke-emerald-400 stroke-2" />
+                
+                {/* Subclass Rectangles (Bottom) */}
+                <rect x="0" y="120" width="80" height="30" className="fill-slate-800 stroke-emerald-400 stroke-2" />
+                <text x="40" y="140" textAnchor="middle" className="fill-emerald-200 text-[10px] font-bold font-sans">CAR</text>
+                
+                <rect x="120" y="120" width="80" height="30" className="fill-slate-800 stroke-emerald-400 stroke-2" />
+                <text x="160" y="140" textAnchor="middle" className="fill-emerald-200 text-[10px] font-bold font-sans">BUS</text>
+                
+                {/* Arrows pointing UP representing Bottom-Up */}
+                <path d="M 100 45 L 95 50 L 105 50 Z" className="fill-emerald-400" />
+                <path d="M 40 105 L 35 110 L 45 110 Z" className="fill-emerald-400" />
+                <path d="M 160 105 L 155 110 L 165 110 Z" className="fill-emerald-400" />
+              </svg>
+            </div>
+          </section>
+        </div>
+
+        {/* Inheritance */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <Terminal className="text-amber-600 dark:text-amber-400" /> {module.notes.inheritance.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.inheritance.desc}</p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-surface-muted/60 border border-strong/50 p-5 rounded-xl">
+              <strong className="text-amber-600 dark:text-amber-300 text-sm mb-2 block">Attribute Inheritance</strong>
+              <span className="text-tertiary text-xs leading-relaxed">{module.notes.inheritance.attribute}</span>
+            </div>
+            <div className="bg-surface-muted/60 border border-strong/50 p-5 rounded-xl">
+              <strong className="text-amber-600 dark:text-amber-300 text-sm mb-2 block">Participation Inheritance</strong>
+              <span className="text-tertiary text-xs leading-relaxed">{module.notes.inheritance.participation}</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Aggregation */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-fuchsia-400 mb-4 flex items-center gap-2">
+            <AppWindow className="text-fuchsia-400" /> {module.notes.aggregation.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.aggregation.desc}</p>
+          
+          <div className="flex flex-col gap-4">
+            <div className="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-xl border border-rose-200 dark:border-rose-900/30 border-l-4 border-l-rose-500">
+              <strong className="text-rose-600 dark:text-rose-400 text-sm mb-2 block flex items-center gap-2"><AlertTriangle size={14} /> The Problem</strong>
+              <span className="text-secondary text-sm leading-relaxed">{module.notes.aggregation.problem}</span>
+            </div>
+            
+            <div className="bg-fuchsia-950/20 p-5 rounded-xl border border-fuchsia-900/30 border-l-4 border-l-fuchsia-500">
+              <strong className="text-fuchsia-400 text-sm mb-2 block flex items-center gap-2"><CheckSquare size={14} /> The Solution</strong>
+              <span className="text-secondary text-sm leading-relaxed">{module.notes.aggregation.solution}</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'relational_model') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <BookOpen className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6 bg-indigo-50 dark:bg-indigo-950/30 border-l-4 border-indigo-500 p-5 rounded-r-xl">
+            {module.notes.intro.desc}
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            {module.notes.intro.definitions.map((def, idx) => (
+              <div key={idx} className="bg-surface-muted/40 border border-strong/50 p-5 rounded-xl hover:border-indigo-500/30 transition-colors">
+                <strong className="text-indigo-600 dark:text-indigo-300 text-sm block mb-1">{def.term}</strong>
+                <span className="text-tertiary text-xs leading-relaxed">{def.meaning}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Properties */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+            <CheckSquare className="text-emerald-600 dark:text-emerald-400" /> {module.notes.properties.title}
+          </h2>
+          <ul className="grid sm:grid-cols-2 gap-4 text-sm text-secondary">
+            {module.notes.properties.list.map((prop, idx) => (
+              <li key={idx} className="bg-emerald-50 dark:bg-emerald-950/10 p-5 rounded-xl border border-emerald-200 dark:border-emerald-900/30 flex items-start gap-3">
+                <div className="mt-1 min-w-[16px] text-emerald-500"><CheckSquare size={16}/></div>
+                <span className="leading-relaxed text-xs">{prop}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Keys */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
+            <Settings className="text-amber-600 dark:text-amber-400" /> {module.notes.keys.title}
+          </h2>
+          <div className="space-y-4">
+            {module.notes.keys.list.map((keyObj, idx) => (
+              <div key={idx} className="bg-surface-muted/60 p-5 rounded-xl border border-strong/50 flex flex-col md:flex-row md:items-start gap-3 md:gap-6 hover:bg-surface-muted hover:border-amber-500/30 transition-all">
+                <div className="md:w-1/4">
+                  <strong className="text-amber-600 dark:text-amber-300 text-sm">{keyObj.name}</strong>
+                </div>
+                <div className="md:w-3/4">
+                  <span className="text-tertiary text-sm leading-relaxed">{keyObj.desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Integrity Constraints */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
+            <ShieldCheck className="text-rose-600 dark:text-rose-400" /> {module.notes.integrity.title}
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed mb-6">{module.notes.integrity.desc}</p>
+          <div className="grid md:grid-cols-2 gap-6">
+            {module.notes.integrity.types.map((type, idx) => (
+              <div key={idx} className={`bg-rose-50 dark:bg-rose-950/20 p-6 rounded-xl border border-rose-200 dark:border-rose-900/50 ${type.list ? 'md:col-span-2' : ''}`}>
+                <strong className="text-rose-600 dark:text-rose-300 text-sm block mb-3 uppercase tracking-wider">{type.name}</strong>
+                <span className="text-rose-800 dark:text-rose-200 text-xs leading-relaxed block">{type.desc}</span>
+                {type.list && (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+                    {type.list.map((item, i) => (
+                      <div key={i} className="bg-rose-100/50 dark:bg-rose-900/30 p-3.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 hover:border-rose-300 dark:hover:border-rose-700 transition-colors">
+                        <strong className="text-rose-700 dark:text-rose-300 text-xs block mb-1.5">{item.name}</strong>
+                        <span className="text-rose-900 dark:text-rose-200/80 text-xs leading-relaxed">{item.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'er_to_relational') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <AppWindow className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
+          </h2>
+          <div className="space-y-3">
+            {module.notes.intro.points.map((pt, idx) => (
+              <p key={idx} className="text-secondary text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-indigo-600 dark:text-indigo-400 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* Notations / Rules */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
+            <Layers className="text-emerald-600 dark:text-emerald-400" /> {module.notes.notations.title}
+          </h2>
+          <div className="space-y-6">
+            {module.notes.notations.rules.map((rule, idx) => (
+              <div key={idx} className="bg-emerald-50 dark:bg-emerald-950/20 p-5 rounded-xl border border-emerald-200 dark:border-emerald-900/50">
+                <strong className="text-emerald-700 dark:text-emerald-300 text-base block mb-4 border-b border-emerald-200 dark:border-emerald-800/50 pb-2">{rule.entity}</strong>
+                <div className="space-y-4">
+                  {rule.steps.map((step, sIdx) => (
+                    <div key={sIdx} className="text-sm text-emerald-900 dark:text-emerald-100/90 leading-relaxed pl-3 whitespace-pre-line border-l-2 border-emerald-300 dark:border-emerald-700/50">
+                      {step}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
   return <div>Module content not found.</div>;
+}
+
+function ErSymbol({ type }) {
+  const commonClasses = "w-16 h-12 stroke-rose-400 fill-slate-900 stroke-2 drop-shadow-md";
+  switch(type) {
+    case "Rectangle":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <rect x="5" y="5" width="90" height="50" />
+        </svg>
+      );
+    case "Double Rectangle":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <rect x="5" y="5" width="90" height="50" />
+          <rect x="12" y="12" width="76" height="36" />
+        </svg>
+      );
+    case "Oval":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <ellipse cx="50" cy="30" rx="45" ry="25" />
+        </svg>
+      );
+    case "Double Oval":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <ellipse cx="50" cy="30" rx="45" ry="25" />
+          <ellipse cx="50" cy="30" rx="38" ry="18" />
+        </svg>
+      );
+    case "Oval with underline":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <ellipse cx="50" cy="30" rx="45" ry="25" />
+          <line x1="30" y1="35" x2="70" y2="35" />
+        </svg>
+      );
+    case "Oval with dashed underline":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <ellipse cx="50" cy="30" rx="45" ry="25" />
+          <line x1="30" y1="35" x2="70" y2="35" strokeDasharray="4,4" />
+        </svg>
+      );
+    case "Dashed Oval":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses} strokeDasharray="5,5">
+          <ellipse cx="50" cy="30" rx="45" ry="25" />
+        </svg>
+      );
+    case "Diamond":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <polygon points="50,5 95,30 50,55 5,30" strokeLinejoin="round" />
+        </svg>
+      );
+    case "Double Diamond":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <polygon points="50,5 95,30 50,55 5,30" strokeLinejoin="round" />
+          <polygon points="50,13 83,30 50,47 17,30" strokeLinejoin="round" />
+        </svg>
+      );
+    case "Double Line":
+      return (
+        <svg viewBox="0 0 100 60" className={commonClasses}>
+          <line x1="5" y1="25" x2="95" y2="25" />
+          <line x1="5" y1="35" x2="95" y2="35" />
+        </svg>
+      );
+    default:
+      return null;
+  }
 }
 
 function FlashcardsView({ cards }) {
@@ -4379,7 +5646,7 @@ function FlashcardsView({ cards }) {
     setIsFlipped(false);
   }, [cards]);
 
-  if (!cards || cards.length === 0) return <div className="text-center p-10 text-slate-500">No flashcards for this module yet.</div>;
+  if (!cards || cards.length === 0) return <div className="text-center p-10 text-tertiary">No flashcards for this module yet.</div>;
 
   const nextCard = () => {
     setIsFlipped(false);
@@ -4393,7 +5660,7 @@ function FlashcardsView({ cards }) {
 
   return (
     <div className="flex flex-col items-center justify-center py-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="text-slate-400 mb-4 font-medium">Card {currentIndex + 1} of {cards.length}</div>
+      <div className="text-tertiary mb-4 font-medium">Card {currentIndex + 1} of {cards.length}</div>
       
       <div 
         className="relative w-full max-w-lg h-80 perspective-1000 cursor-pointer group"
@@ -4401,21 +5668,21 @@ function FlashcardsView({ cards }) {
       >
         <div className={`w-full h-full transition-transform duration-500 transform-style-3d relative ${isFlipped ? 'rotate-y-180' : ''}`}>
           {/* Front */}
-          <div className="absolute inset-0 backface-hidden bg-slate-800 border-2 border-slate-700 rounded-3xl p-8 flex flex-col items-center justify-center text-center shadow-lg group-hover:border-indigo-500/50 transition-colors">
-            <p className="text-sm text-indigo-400 font-bold tracking-widest uppercase mb-4">Question</p>
-            <h3 className="text-2xl font-semibold text-slate-100">{cards[currentIndex].front}</h3>
-            <p className="text-slate-500 mt-8 text-sm flex items-center gap-1"><RotateCcw size={14}/> Click to flip</p>
+          <div className="absolute inset-0 backface-hidden bg-surface-muted border-2 border-strong rounded-3xl p-8 flex flex-col items-center justify-center text-center shadow-lg group-hover:border-indigo-500/50 transition-colors">
+            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-bold tracking-widest uppercase mb-4">Question</p>
+            <h3 className="text-2xl font-semibold text-primary">{cards[currentIndex].front}</h3>
+            <p className="text-tertiary mt-8 text-sm flex items-center gap-1"><RotateCcw size={14}/> Click to flip</p>
           </div>
           {/* Back */}
           <div className="absolute inset-0 backface-hidden bg-indigo-700 rounded-3xl p-8 flex flex-col items-center justify-center text-center shadow-lg rotate-y-180">
-            <p className="text-sm text-indigo-300 font-bold tracking-widest uppercase mb-4">Answer</p>
+            <p className="text-sm text-indigo-600 dark:text-indigo-300 font-bold tracking-widest uppercase mb-4">Answer</p>
             <p className="text-xl font-medium text-white whitespace-pre-line leading-relaxed">{cards[currentIndex].back}</p>
           </div>
         </div>
       </div>
 
       <div className="flex gap-4 mt-8">
-        <button onClick={prevCard} className="px-6 py-3 bg-slate-800 border border-slate-700 rounded-xl text-slate-300 font-medium hover:bg-slate-700 transition-colors">
+        <button onClick={prevCard} className="px-6 py-3 bg-surface-muted border border-strong rounded-xl text-secondary font-medium hover:bg-surface-muted transition-colors">
           Previous
         </button>
         <button onClick={nextCard} className="px-6 py-3 bg-indigo-600 rounded-xl text-white font-medium hover:bg-indigo-500 transition-colors">
@@ -4442,7 +5709,7 @@ function QuizView({ questions }) {
   const [score, setScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
 
-  if (!questions || questions.length === 0) return <div className="text-center p-10 text-slate-500">No quiz questions for this module yet.</div>;
+  if (!questions || questions.length === 0) return <div className="text-center p-10 text-tertiary">No quiz questions for this module yet.</div>;
 
   const handleSelect = (idx) => {
     if (showResult) return;
@@ -4471,14 +5738,14 @@ function QuizView({ questions }) {
 
   if (quizFinished) {
     return (
-      <div className="bg-slate-900 rounded-2xl p-10 shadow-sm border border-slate-800 text-center animate-in fade-in duration-500 max-w-2xl mx-auto">
-        <div className="w-20 h-20 bg-indigo-900/50 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="bg-surface rounded-2xl p-10 shadow-sm border border-subtle text-center animate-in fade-in duration-500 max-w-2xl mx-auto">
+        <div className="w-20 h-20 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckSquare size={40} />
         </div>
-        <h2 className="text-3xl font-bold text-slate-100 mb-2">Quiz Complete!</h2>
-        <p className="text-slate-400 mb-8 text-lg">You scored {score} out of {questions.length}</p>
+        <h2 className="text-3xl font-bold text-primary mb-2">Quiz Complete!</h2>
+        <p className="text-tertiary mb-8 text-lg">You scored {score} out of {questions.length}</p>
         
-        <div className="w-full bg-slate-800 rounded-full h-4 mb-8 overflow-hidden">
+        <div className="w-full bg-surface-muted rounded-full h-4 mb-8 overflow-hidden">
           <div 
             className="bg-indigo-500 h-4 rounded-full transition-all duration-1000" 
             style={{ width: (score / questions.length) * 100 + '%' }}
@@ -4495,22 +5762,22 @@ function QuizView({ questions }) {
   const q = questions[currentQ];
 
   return (
-    <div className="bg-slate-900 rounded-2xl p-8 shadow-sm border border-slate-800 max-w-2xl mx-auto text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle max-w-2xl mx-auto text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex justify-between items-center mb-8">
-        <span className="text-sm font-bold text-slate-500 tracking-wider uppercase">Question {currentQ + 1} of {questions.length}</span>
-        <span className="text-sm font-medium text-indigo-400 bg-indigo-900/30 px-3 py-1 rounded-full">Score: {score}</span>
+        <span className="text-sm font-bold text-tertiary tracking-wider uppercase">Question {currentQ + 1} of {questions.length}</span>
+        <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">Score: {score}</span>
       </div>
 
-      <h2 className="text-xl font-bold text-slate-100 mb-6">{q.question}</h2>
+      <h2 className="text-xl font-bold text-primary mb-6">{q.question}</h2>
 
       <div className="space-y-3">
         {q.options.map((opt, idx) => {
           let btnClass = "w-full text-left p-4 rounded-xl border-2 transition-all ";
-          if (!showResult) btnClass += "border-slate-700 hover:border-indigo-500 hover:bg-slate-800 text-slate-300";
+          if (!showResult) btnClass += "border-strong hover:border-indigo-500 hover:bg-surface-muted text-secondary";
           else {
-            if (idx === q.answer) btnClass += "border-emerald-500 bg-emerald-900/30 text-emerald-400";
-            else if (idx === selectedOpt) btnClass += "border-red-500 bg-red-900/30 text-red-400";
-            else btnClass += "border-slate-800 bg-slate-800/50 text-slate-500 opacity-50";
+            if (idx === q.answer) btnClass += "border-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400";
+            else if (idx === selectedOpt) btnClass += "border-red-500 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400";
+            else btnClass += "border-subtle bg-surface-muted/50 text-tertiary opacity-50";
           }
           return (
             <button key={idx} onClick={() => handleSelect(idx)} disabled={showResult} className={btnClass}>

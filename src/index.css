@@ -1,1 +1,36 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: var(--bg-background);
+  --color-surface: var(--bg-surface);
+  --color-surface-muted: var(--bg-surface-muted);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-subtle: var(--border-subtle);
+  --color-strong: var(--border-strong);
+}
+
+:root {
+  /* Light mode (default) */
+  --bg-background: #f8fafc; /* slate-50 */
+  --bg-surface: #ffffff; /* white */
+  --bg-surface-muted: #f1f5f9; /* slate-100 */
+  --text-primary: #0f172a; /* slate-900 */
+  --text-secondary: #334155; /* slate-700 */
+  --text-tertiary: #475569; /* slate-600 */
+  --border-subtle: #e2e8f0; /* slate-200 */
+  --border-strong: #cbd5e1; /* slate-300 */
+}
+
+.dark {
+  /* Dark mode */
+  --bg-background: #020617; /* slate-950 */
+  --bg-surface: #0f172a; /* slate-900 */
+  --bg-surface-muted: #1e293b; /* slate-800 */
+  --text-primary: #f1f5f9; /* slate-100 */
+  --text-secondary: #cbd5e1; /* slate-300 */
+  --text-tertiary: #94a3b8; /* slate-400 */
+  --border-subtle: #1e293b; /* slate-800 */
+  --border-strong: #334155; /* slate-700 */
+}
