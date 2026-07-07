@@ -2526,6 +2526,193 @@ const courseModules = [
       { question: "Which database type uses a Graph structure and allows multiple parent records for a single child?", options: ["Network Database", "Hierarchical Database", "Relational Database", "Document Database"], answer: 0 },
       { question: "Which of the following is a disadvantage of a Hierarchical Database?", options: ["It requires an ORM to interact with code.", "It cannot describe relationships where a child has multiple parents.", "Traversing a single branch is extremely slow.", "It does not support the concept of a 'root' parent."], answer: 1 }
     ]
+  },
+  {
+    id: 'partitioning_sharding',
+    title: 'LEC-18: Partitioning & Sharding in DBMS',
+    notes: {
+      intro: "A big problem can be solved easily when it is chopped into several smaller sub-problems. This is exactly what the partitioning technique does for large databases.",
+      concept: {
+        title: "1. What is Partitioning?",
+        points: [
+          "It divides a big database containing data metrics and indexes into smaller and handy slices of data called partitions.",
+          "The partitioned tables are directly used by SQL queries without any alteration.",
+          "Data Definition Language (DDL) can easily work on the smaller partitioned slices instead of handling the giant database altogether.",
+          "Partitioning divides stored database objects into separate servers. This increases performance and controllability of the data.",
+          "It helps manage huge chunks of data optimally when horizontally scaling relational databases across multiple servers."
+        ]
+      },
+      verticalHorizontal: {
+        title: "2. Vertical vs Horizontal Partitioning",
+        points: [
+          "Vertical Partitioning: Slicing relation vertically / column-wise. Need to access different servers to get complete tuples.",
+          "Horizontal Partitioning: Slicing relation horizontally / row-wise. Independent chunks of data tuples are stored in different servers."
+        ]
+      },
+      whenToApply: {
+        title: "3. When is Partitioning Applied?",
+        points: [
+          "When the dataset becomes so huge that managing and dealing with it becomes a tedious task.",
+          "When the number of requests is large enough that single DB server access is taking huge time, leading to high system response time."
+        ]
+      },
+      advantages: {
+        title: "4. Advantages of Partitioning",
+        points: [
+          "Parallelism: Multiple servers process queries simultaneously.",
+          "Availability: If one partition fails, others remain accessible.",
+          "Performance: Queries run faster on smaller datasets.",
+          "Manageability: Smaller chunks are easier to maintain and backup.",
+          "Reduce Cost: Scaling-out (horizontal) with commodity hardware is often cheaper than scaling-up (vertical) with a massive supercomputer."
+        ]
+      },
+      sharding: {
+        title: "5. Sharding & Distributed Databases",
+        points: [
+          "Distributed Database: A single logical database that is spread across multiple locations (servers) and logically interconnected by network. It is the product of optimization techniques like Clustering, Partitioning, and Sharding.",
+          "Sharding: A technique to implement Horizontal Partitioning.",
+          "The fundamental idea of Sharding is that instead of having all data sit on one DB instance, we split it up and introduce a Routing layer to forward requests to the right instances that actually contain the data.",
+          "Pros: Massive Scalability and high Availability.",
+          "Cons: Increased Complexity (mapping partitions, implementing routing layers), Non-uniformity (might require Re-Sharding), and it is not well suited for Analytical queries (the Scatter-Gather problem)."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is the main goal of Database Partitioning?", back: "To divide a large database into smaller, manageable slices (partitions) across servers to increase performance and data controllability." },
+      { front: "What is the difference between Vertical and Horizontal Partitioning?", back: "Vertical Partitioning slices relations column-wise. Horizontal Partitioning slices relations row-wise, storing independent tuples on different servers." },
+      { front: "What is Sharding?", back: "A specific technique to implement Horizontal Partitioning, where data is split across instances and a Routing layer forwards requests to the correct instance." },
+      { front: "What is the 'Scatter-Gather problem' in Sharding?", back: "A disadvantage where analytical queries spanning the entire dataset are slow, because the system must scatter the query to all shards and gather/merge the results." },
+      { front: "Why can Partitioning reduce costs?", back: "Because scaling-out (adding cheaper commodity servers) is often less expensive than scaling-up (buying a single massive super-server)." }
+    ],
+    quiz: [
+      { question: "Which partitioning technique slices relations row-wise?", options: ["Vertical Partitioning", "Horizontal Partitioning", "Diagonal Partitioning", "Clustering"], answer: 1 },
+      { question: "What is introduced in Sharding to forward requests to the correct database instance?", options: ["A Load Balancer", "A Routing Layer", "A Caching Layer", "A Master Node"], answer: 1 },
+      { question: "Which of the following is considered a CON (disadvantage) of Sharding?", options: ["Decreased availability", "Higher hardware costs", "Complexity and the need for Re-Sharding", "Inability to perform fast single-record lookups"], answer: 2 },
+      { question: "A Distributed Database is the product of applying which optimization techniques?", options: ["Normalisation and Indexing", "Clustering, Partitioning, and Sharding", "Vertical Scaling and Upgrading", "Caching and Spooling"], answer: 1 }
+    ]
+  },
+  {
+    id: 'cap_theorem',
+    title: 'LEC-20: CAP Theorem',
+    notes: {
+      intro: "The CAP Theorem is one of the most important concepts in Distributed Databases. It is essential for designing efficient distributed systems tailored to your business logic.",
+      consistency: {
+        title: "1. Consistency",
+        points: [
+          "In a consistent system, all nodes see the same data simultaneously.",
+          "If a read operation is performed, it should return the value of the most recent write operation.",
+          "All users see the same data at the same time, regardless of the node they connect to.",
+          "When data is written to a single node, it is then replicated across the other nodes in the system."
+        ]
+      },
+      availability: {
+        title: "2. Availability",
+        points: [
+          "The system remains operational all of the time.",
+          "Every request will get a response regardless of the individual state of the nodes.",
+          "Unlike a consistent system, there's no guarantee that the response will be the most recent write operation."
+        ]
+      },
+      partitionTolerance: {
+        title: "3. Partition Tolerance",
+        points: [
+          "A partition means there's a break in communication between nodes.",
+          "If a system is partition-tolerant, the system does not fail regardless of whether messages are dropped or delayed between nodes.",
+          "To achieve this, the system must replicate records across combinations of nodes and networks."
+        ]
+      },
+      theorem: {
+        title: "4. What does the CAP Theorem say?",
+        points: [
+          "The CAP theorem states that a distributed system can only provide two of three properties simultaneously: consistency, availability, and partition tolerance.",
+          "The theorem formalises the tradeoff between consistency and availability when there's a partition."
+        ]
+      },
+      caDatabases: {
+        title: "5. CA Databases (Consistency & Availability)",
+        points: [
+          "Enables consistency and availability, but cannot deliver fault (partition) tolerance.",
+          "Since partitions are bound to happen in distributed systems, CA databases aren't a practical choice for distributed networks.",
+          "Some relational databases (MySQL, PostgreSQL) allow for CA. You can deploy them to nodes using replication."
+        ]
+      },
+      cpDatabases: {
+        title: "6. CP Databases (Consistency & Partition Tolerance)",
+        points: [
+          "Enables consistency and partition tolerance, but not availability.",
+          "When a partition occurs, the system has to turn off inconsistent nodes until the partition can be fixed.",
+          "Structured so there is only one primary node that receives all write requests in a replica set.",
+          "Example: MongoDB. In a banking system where Availability is not as important as strict consistency, CP is ideal."
+        ]
+      },
+      apDatabases: {
+        title: "7. AP Databases (Availability & Partition Tolerance)",
+        points: [
+          "Enables availability and partition tolerance, but not strict consistency.",
+          "In a partition, all nodes are available but they may not be updated (Eventual Consistency).",
+          "Example: Apache Cassandra or Amazon DynamoDB. Has no primary node.",
+          "For apps like Facebook, we value availability more than consistency, making AP databases the best choice."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What are the three properties of the CAP Theorem?", back: "Consistency, Availability, and Partition Tolerance." },
+      { front: "According to the CAP Theorem, how many properties can a distributed system guarantee simultaneously?", back: "Only two out of the three (e.g., CA, CP, or AP)." },
+      { front: "What does Consistency mean in the CAP Theorem?", back: "All nodes see the same data simultaneously; any read operation returns the most recent write." },
+      { front: "Why are CA databases not practical for distributed systems?", back: "Because network partitions (communication breaks) are inevitable in distributed systems, so a system must have Partition Tolerance (P)." },
+      { front: "Is MongoDB a CP or AP database, and why?", back: "MongoDB is a CP database. It uses a single primary node for writes to guarantee consistency, but sacrifices availability if the primary node goes down during a partition." },
+      { front: "What type of database is best for Facebook: CP or AP?", back: "AP (Availability and Partition Tolerance), because it's better to show an older version of data than to have the app be unavailable." }
+    ],
+    quiz: [
+      { question: "What does the 'P' stand for in the CAP Theorem?", options: ["Performance", "Partition Tolerance", "Primary Node", "Parallelism"], answer: 1 },
+      { question: "Which of the following database types provides Eventual Consistency rather than Strict Consistency?", options: ["CA Databases", "CP Databases", "AP Databases", "Relational Databases"], answer: 2 },
+      { question: "If a banking application requires that a user's balance is perfectly accurate at all times, which CAP property MUST it guarantee?", options: ["Availability", "Consistency", "Partition Tolerance", "Latency"], answer: 1 },
+      { question: "Which NoSQL database is famously known as a CP database?", options: ["Apache Cassandra", "Amazon DynamoDB", "MongoDB", "MySQL"], answer: 2 },
+      { question: "In a CP database, what happens when a network partition occurs?", options: ["The system keeps all nodes available but out of sync.", "The system turns off inconsistent nodes, sacrificing availability.", "The system disables partition tolerance.", "The system switches to an AP model automatically."], answer: 1 }
+    ]
+  },
+  {
+    id: 'master_slave_db',
+    title: 'LEC-21: The Master-Slave Database Concept',
+    notes: {
+      intro: "Master-Slave is a general architectural pattern to optimise I/O in a system where the number of requests goes so high that a single DB server cannot handle it efficiently.",
+      concept: {
+        title: "1. The Core Concept (CQRS)",
+        points: [
+          "This architecture is a Database Scaling Pattern often related to Command Query Responsibility Segregation (CQRS).",
+          "The true or latest data is kept in the Master DB. Therefore, all write operations (Commands) are directed strictly to the Master.",
+          "Reading operations (Queries) are done entirely from the Slave databases."
+        ]
+      },
+      whyItsNeeded: {
+        title: "2. Why is this Architecture Needed?",
+        points: [
+          "If a site receives a lot of traffic and relies on a single master database, it will be rapidly overloaded with both reading and writing requests.",
+          "This overload makes the entire system slow for everyone on the site.",
+          "By separating reads and writes, this architecture safeguards site reliability and availability while significantly reducing latency."
+        ]
+      },
+      replication: {
+        title: "3. Database Replication",
+        points: [
+          "DB replication is the mechanism that takes care of distributing the newly written data from the Master machine to the Slave machines.",
+          "Replication can be synchronous (blocking until slaves update) or asynchronous (updating in the background), depending on the system's strictness needs."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "In a Master-Slave Database architecture, which database handles the write operations?", back: "The Master Database handles all write operations to ensure a single source of truth." },
+      { front: "Where are read operations directed in a Master-Slave architecture?", back: "Read operations are directed to the Slave databases." },
+      { front: "What does CQRS stand for in database patterns?", back: "Command Query Responsibility Segregation (separating read and write workloads)." },
+      { front: "What is the primary benefit of a Master-Slave database architecture?", back: "It optimizes I/O by preventing a single database from being overloaded with simultaneous read and write requests, thus safeguarding availability and reducing latency." },
+      { front: "What mechanism is used to distribute data from the Master to the Slaves?", back: "Database Replication (which can be synchronous or asynchronous)." }
+    ],
+    quiz: [
+      { question: "If a system uses a Master-Slave architecture and a user updates their profile picture, which database receives that specific request?", options: ["The Slave Database", "The Master Database", "Both simultaneously", "The Routing Layer"], answer: 1 },
+      { question: "What is the primary reason for routing all 'read' requests to Slave databases?", options: ["To prevent the Master database from being overloaded by massive amounts of site traffic.", "To ensure data is always strictly consistent.", "Because Slave databases are inherently faster at processing writes.", "To satisfy the rules of the CAP Theorem."], answer: 0 },
+      { question: "Database replication between Master and Slave nodes can be performed in two ways. What are they?", options: ["Vertical and Horizontal", "Synchronous and Asynchronous", "Sharded and Partitioned", "Relational and NoSQL"], answer: 1 },
+      { question: "CQRS is a database scaling pattern that is closely related to Master-Slave architecture. What does it stand for?", options: ["Common Query Routing System", "Command Query Responsibility Segregation", "Consistent Query Replication Server", "Centralized Query Routing Segregation"], answer: 1 }
+    ]
   }
 ];
 
@@ -2577,8 +2764,8 @@ export default function App() {
   };
   
   const courseGroups = {
-    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases'].includes(m.id)),
-    'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases'].includes(m.id)),
+    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases', 'partitioning_sharding', 'cap_theorem', 'master_slave_db'].includes(m.id)),
+    'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases', 'partitioning_sharding', 'cap_theorem', 'master_slave_db'].includes(m.id)),
     'Revision': [{ id: 'revision', title: 'Starred Flashcards', flashcards: starredCards }]
   };
   
@@ -2868,15 +3055,16 @@ function NotesView({ module, user, starredCards }) {
     );
   }
 
-  if (module.id === 'types_of_databases') {
-    const colors = {
-      relational: { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500' },
-      objectOriented: { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-900/50', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500' },
-      nosql: { bg: 'bg-emerald-50 dark:bg-emerald-950/20', border: 'border-emerald-200 dark:border-emerald-900/50', text: 'text-emerald-600 dark:text-emerald-400', icon: 'text-emerald-500' },
-      hierarchical: { bg: 'bg-rose-50 dark:bg-rose-950/20', border: 'border-rose-200 dark:border-rose-900/50', text: 'text-rose-600 dark:text-rose-400', icon: 'text-rose-500' },
-      network: { bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/20', border: 'border-fuchsia-200 dark:border-fuchsia-900/50', text: 'text-fuchsia-600 dark:text-fuchsia-400', icon: 'text-fuchsia-500' },
-      summary: { bg: 'bg-slate-50 dark:bg-slate-900/40', border: 'border-slate-200 dark:border-slate-800', text: 'text-slate-700 dark:text-slate-300', icon: 'text-slate-500' }
-    };
+  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db') {
+    const colorPalette = [
+      { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500' },
+      { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-900/50', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500' },
+      { bg: 'bg-emerald-50 dark:bg-emerald-950/20', border: 'border-emerald-200 dark:border-emerald-900/50', text: 'text-emerald-600 dark:text-emerald-400', icon: 'text-emerald-500' },
+      { bg: 'bg-rose-50 dark:bg-rose-950/20', border: 'border-rose-200 dark:border-rose-900/50', text: 'text-rose-600 dark:text-rose-400', icon: 'text-rose-500' },
+      { bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/20', border: 'border-fuchsia-200 dark:border-fuchsia-900/50', text: 'text-fuchsia-600 dark:text-fuchsia-400', icon: 'text-fuchsia-500' },
+      { bg: 'bg-cyan-50 dark:bg-cyan-950/20', border: 'border-cyan-200 dark:border-cyan-900/50', text: 'text-cyan-600 dark:text-cyan-400', icon: 'text-cyan-500' },
+      { bg: 'bg-slate-50 dark:bg-slate-900/40', border: 'border-slate-200 dark:border-slate-800', text: 'text-slate-700 dark:text-slate-300', icon: 'text-slate-500' }
+    ];
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -2886,9 +3074,9 @@ function NotesView({ module, user, starredCards }) {
           </div>
         </StarableBlock>
 
-        {Object.entries(module.notes).map(([key, section]) => {
+        {Object.entries(module.notes).map(([key, section], index) => {
           if (key === 'intro') return null;
-          const style = colors[key] || colors.summary;
+          const style = colorPalette[(index - 1) % colorPalette.length];
           
           return (
             <StarableBlock key={key} moduleTitle={module.title} user={user} starredCards={starredCards} blockId={`${module.id}-${key}`}>
