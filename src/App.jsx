@@ -2713,6 +2713,249 @@ const courseModules = [
       { question: "Database replication between Master and Slave nodes can be performed in two ways. What are they?", options: ["Vertical and Horizontal", "Synchronous and Asynchronous", "Sharded and Partitioned", "Relational and NoSQL"], answer: 1 },
       { question: "CQRS is a database scaling pattern that is closely related to Master-Slave architecture. What does it stand for?", options: ["Common Query Routing System", "Command Query Responsibility Segregation", "Consistent Query Replication Server", "Centralized Query Routing Segregation"], answer: 1 }
     ]
+  },
+  {
+    id: 'oop_blueprint',
+    title: 'The Object-Oriented Programming Blueprint: A Step-by-Step Guide',
+    notes: {
+      intro: "To understand Object-Oriented Programming, we must first look at what came before it: Procedural Programming. In procedural programming, code is written like a linear recipe. OOP flips this paradigm completely by binding data and functions together into a single, self-contained package called an Object.",
+      chapter1: {
+        title: "Chapter 1: What is Object-Oriented Programming (OOP)?",
+        points: [
+          "In procedural programming, code is a linear list of step-by-step instructions. As programs grow, tracking which function is modifying which data becomes chaotic.",
+          "OOP flips this paradigm by binding data and functions together into a single, self-contained package called an Object.",
+          "Data (Attributes / Properties): The variables that store information about the object (what the object knows).",
+          "Functions (Methods): The code block that defines what actions the object can perform (what the object does).",
+          "A Class acts as the blueprint, and the Object is the physical house built from that blueprint."
+        ]
+      },
+      chapter2: {
+        title: "Chapter 2: The Real-World Connection",
+        points: [
+          "Human beings do not naturally think in terms of linear computer logic; we think in terms of physical objects. OOP bridges this gap by allowing code structures to map directly onto real-world entities.",
+          "Example (Application Blocker): The Class Blueprint is 'FocusProfile'.",
+          "Data it holds: allowedScreenTime, listOfBlockedApps, isActive.",
+          "Functions it performs: blockApp(), trackTime(), toggleStatus().",
+          "Instead of managing floating arrays across millions of lines, you create independent Profile objects (e.g., AlexProfile, SamProfile) that manage themselves."
+        ]
+      },
+      chapter3: {
+        title: "Chapter 3: Why Study OOP? (The Core Benefits)",
+        points: [
+          "Modularity: An object's data and methods are bundled together. You can fix the internals of one object without breaking a separate part of the system.",
+          "Code Reusability: Through Inheritance, you can write a base class once and extend it to create specialized classes without rewriting boilerplate code.",
+          "Easier Maintenance: If a bug surfaces, a developer knows exactly which class to fix, without hunting through millions of lines of procedural script."
+        ]
+      },
+      chapter4: {
+        title: "Chapter 4: Limitations of OOP",
+        points: [
+          "Size and Memory Overhead: OOP requires more lines of boilerplate code, resulting in larger file sizes and increased memory overhead compared to lean, procedural scripts.",
+          "Performance Overhead: Objects reference memory dynamically and frequently pass messages, which can run slightly slower than direct, low-level procedural calculations.",
+          "Over-Engineering (Complexity): It is easy to over-complicate simple problems with massive inheritance chains and deep hierarchies."
+        ]
+      },
+      chapter5: {
+        title: "Chapter 5: What Makes a Language \"Object-Oriented\"?",
+        points: [
+          "Encapsulation: Hiding internal data via private keywords (restricting direct access to object states).",
+          "Abstraction: Exposing simple controls while masking deep mechanics (via interfaces or abstract classes).",
+          "Inheritance: Deriving new classes from existing ones (adopting and expanding the DNA of a parent class).",
+          "Polymorphism: Allowing one method to take on many forms (different objects respond to the exact same method call in their own custom way)."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is the difference between a Class and an Object in OOP?", back: "A Class acts as the blueprint, and the Object is the physical instance (the house) built from that blueprint." },
+      { front: "What are the two core components of an Object?", back: "Data (Attributes/Properties) and Functions (Methods)." },
+      { front: "How does Modularity benefit OOP?", back: "It bundles data and methods together, allowing you to fix or alter the internals of one object without breaking separate parts of the system." },
+      { front: "What is Encapsulation?", back: "Hiding internal data via private keywords to restrict direct access to object states." },
+      { front: "What is Abstraction?", back: "Exposing simple controls while masking deep mechanics (e.g., using interfaces or abstract classes)." },
+      { front: "What is Polymorphism?", back: "The ability for different objects to respond to the exact same method call in their own custom way (method overriding and overloading)." }
+    ],
+    quiz: [
+      { question: "Which of the following is NOT one of the Four Pillars of OOP?", options: ["Encapsulation", "Polymorphism", "Compilation", "Inheritance"], answer: 2 },
+      { question: "What is a known limitation of Object-Oriented Programming?", options: ["It forces all data to be strictly global.", "It has higher memory and performance overhead compared to low-level procedural scripts.", "It does not allow for code reusability.", "It is impossible to use in large enterprise systems."], answer: 1 },
+      { question: "If you define a 'FocusProfile' that contains 'allowedScreenTime' and 'toggleStatus()', what do these represent?", options: ["Inheritance and Polymorphism", "Data (Attributes) and Functions (Methods)", "Classes and Arrays", "Abstract Classes and Interfaces"], answer: 1 },
+      { question: "What does the pillar of 'Inheritance' allow you to do?", options: ["Hide variables using private keywords.", "Derive a new class from an existing parent class to reuse code.", "Execute multiple forms of a single method.", "Directly manipulate raw memory addresses."], answer: 1 }
+    ]
+  },
+  {
+    id: 'cpp_fundamentals',
+    title: 'Chapter 1: Diving into C++ Fundamentals',
+    notes: {
+      intro: "Welcome to the next phase of our journey! Let's step straight into the mechanics of C++. We will cover its core philosophy and break down its memory management tools step-by-step.",
+      philosophy: {
+        title: "1. The Design Philosophy of C++",
+        points: [
+          "Before writing code, it helps to understand why a language was built. C++ is a powerful language because it doesn't force you into a single way of thinking.",
+          "C++ was intended to support four distinct programming styles: Procedural programming, Data abstraction, Object-oriented programming, and Generic programming.",
+          "The creators had several strict design goals:",
+          "Maintain C compatibility to a large extent.",
+          "Make C programming safer without losing performance.",
+          "Treat user-defined data types as standard library components.",
+          "Provide generalized support for objects, classes, and access control."
+        ]
+      },
+      scope: {
+        title: "2. Explicit Scope Resolution",
+        points: [
+          "In C++, having a global variable and a local variable with the exact same name creates a conflict. By default, the local variable takes precedence.",
+          "If you want to explicitly tell the compiler, \"No, I want the global version,\" you use the scope resolution operator `::` to access global variables.",
+          "```cpp\n#include <iostream>\nusing namespace std;\nint a = 10;\n\nint main()\n{\n    int a = 15;\n    cout << a << ::a;\n    ::a = 20;\n    cout << a << ::a;\n    return 0;\n}\n```",
+          "Output:\n15101520",
+          "Explanation:\n1. The first `cout` prints the local `a` (which is 15), followed immediately by the global `::a` (which is 10).\n2. The line `::a = 20;` targets the global variable and updates it. The local variable `a` remains 15.\n3. The second `cout` prints the local `a` (still 15) and the newly updated global `::a` (now 20)."
+        ]
+      },
+      pointers: {
+        title: "3. Demystifying Pointers",
+        points: [
+          "Pointers are variables, but instead of holding a standard value like 10, pointers contain addresses of variables in memory.",
+          "Unlike the older C language, pointers and integers are NOT interchangeable in C++.",
+          "To retrieve the actual value stored at the memory address the pointer is holding, a pointer needs to be \"de-referenced\" (e.g., `*p`) to get the variable.",
+          "```cpp\n#include <iostream>\nusing namespace std;\n\nint main()\n{\n    int i = 10;\n    int *j;\n    int **k;\n    j = &i;\n    k = &j;\n    cout << i << *j << **k;\n}\n```",
+          "Output:\n101010",
+          "Explanation:\n1. `i` holds the value 10.\n2. `j` is a pointer holding the memory address of `i` (`&i`). To get the value, we de-reference it once: `*j`.\n3. `k` is a \"pointer to a pointer\" (`**k`), holding the address of `j`. To get all the way back to the original value, we have to de-reference it twice: `**k`."
+        ]
+      },
+      references: {
+        title: "4. The Power of References",
+        points: [
+          "A reference is an alias for an existing variable. Unlike pointers, you don't have to use special syntax (`*`) to get the value out of it; a reference is automatically dereferenced on use.",
+          "Because it is a direct alias, changing a reference changes the variable itself.",
+          "```cpp\nint i = 10; // declare variable i of type int and initialize to 10\nint &j = i; // j is declared as a reference and initialized to variable i\n\ncout << i << \" \" << j; // j is automatically dereferenced on use\n\nj = 20; // changing a reference changes the variable i itself\ncout << \"\\n\" << i << \" \" << j; \n\ni = 30; // changing the variable value\ncout << \"\\n\" << i << \" \" << j; \n```",
+          "Output:\n10 10\n20 20\n30 30",
+          "Explanation:\n`i` and `j` are permanently linked. Changing `j` to 20 automatically alters `i`. Changing `i` to 30 automatically alters `j`."
+        ]
+      },
+      functionCalls: {
+        title: "5. Function Calls: Putting it all Together",
+        points: [
+          "How you pass data to a function dictates whether the function can permanently change your original data. C++ gives you three distinct ways to handle this.",
+          "```cpp\n#include <iostream>\nusing namespace std;\n\n// 1. Pass by Value\nvoid swapv(int x, int y) {\n    int t;\n    t = x; x = y; y = t;\n}\n\n// 2. Pass by Address (Pointers)\nvoid swapa(int *x, int *y) {\n    int t;\n    t = *x; *x = *y; *y = t;\n}\n\n// 3. Pass by Reference\nvoid swapr(int &x, int &y) {\n    int t;\n    t = x; x = y; y = t;\n}\n\nint main() {\n    int a = 10, b = 20;\n    \n    swapv(a, b);\n    cout << a << \" \" << b << \"\\n\";  \n    \n    swapa(&a, &b);\n    cout << a << \" \" << b << \"\\n\";  \n    \n    swapr(a, b);\n    cout << a << \" \" << b << \"\\n\"; \n}\n```",
+          "Output:\n10 20\n20 10\n10 20",
+          "Explanation:\n1. swapv (Value): The function receives copies of `a` and `b`. It swaps the copies, but the original variables in main are untouched. The output remains `10 20`.\n2. swapa (Address): We pass the memory addresses (`&a`, `&b`). The function uses pointers to reach into memory and physically swap the original values. The output is successfully swapped to `20 10`.\n3. swapr (Reference): The variables are now 20 and 10 from the previous step. We pass them by reference. The function acts directly on the originals (no * syntax needed) and swaps them back. The output is `10 20`."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is the purpose of the scope resolution operator (::) in C++?", back: "It allows you to explicitly access a global variable when a local variable with the exact same name exists and is taking precedence." },
+      { front: "What is the difference between a pointer and a reference in C++?", back: "A pointer holds a memory address and must be explicitly de-referenced (using *) to access the value. A reference is an alias that is automatically dereferenced upon use." },
+      { front: "In C++, what does a 'pointer to a pointer' (e.g. int **k) store?", back: "It stores the memory address of another pointer. To access the actual underlying value, it must be double de-referenced (**k)." },
+      { front: "What happens to the original variables when you pass arguments to a function 'by value' in C++?", back: "Nothing. The function receives only copies of the variables, so any changes made inside the function do not affect the original variables." },
+      { front: "If int i = 10; and int &j = i; are declared, what happens to i when you set j = 20?", back: "Because j is a reference (an alias) to i, changing j automatically changes i to 20 as well." }
+    ],
+    quiz: [
+      { question: "Which of the following is NOT a design goal of C++?", options: ["Maintain C compatibility to a large extent.", "Make C programming safer without losing performance.", "Provide generalized support for objects and classes.", "Force developers strictly into an Object-Oriented programming style."], answer: 3 },
+      { question: "If you have a global int a = 5; and inside main() you declare int a = 10;, what will cout << ::a; print?", options: ["10", "5", "Compilation Error", "Undefined Behavior"], answer: 1 },
+      { question: "Which syntax is used to correctly declare a Reference in C++?", options: ["int *ref = x;", "int &ref = x;", "int @ref = x;", "int #ref = x;"], answer: 1 },
+      { question: "When swapping variables, which method requires you to pass the memory addresses (e.g. &a, &b) in the function call?", options: ["Pass by Value", "Pass by Address (Pointers)", "Pass by Reference", "Pass by Global Scope"], answer: 1 }
+    ]
+  },
+  {
+    id: 'cpp_architecture',
+    title: 'Chapter 2: Architecting C++ Applications',
+    notes: {
+      intro: "When transitioning from writing single-file competitive programming scripts to building robust, large-scale applications, the organization of your code becomes just as critical as the logic itself. This chapter explores how C++ structures and breathes life into objects.",
+      interfaces: {
+        title: "1. Organizing Code: Interfaces and Implementation",
+        points: [
+          "A fundamental principle of C++ software design is the separation of what a class does from how it actually does it.",
+          "Interface vs. Implementation:",
+          "The interface of a class defines the organization of objects of that class. This interface acts similarly to a type definition (typedef).",
+          "The class interface is explicitly specified in a class header file (ending in .h).",
+          "Conversely, the member functions that are declared in this interface are actually defined within the implementation. This implementation is specified in the source file (ending in .cpp).",
+          "Separating the implementation from the interface is highly recommended because it provides better readability, allows for easier maintenance, and enables the separate compilation of the implementation and the user code.",
+          "Real-World Example:",
+          "Each of our standard examples has included the iostream interface from iostream.h by utilizing the `#include <iostream>` directive.",
+          "This inclusion allows us to use standard input and output objects (like `cin` and `cout`) and operators (`<<` and `>>`) without needing to know the underlying implementation of those input/output streams.",
+          "The source files containing the actual implementation are pre-compiled and included directly in the C++ standard library.",
+          "Namespaces: To prevent naming conflicts across massive codebases, C++ uses namespaces. Namespaces can be nested inside one another and can span across multiple source files.",
+          "```cpp\n#include <iostream>\n\n// Defining namespaces\nnamespace my_namespace1 {\n    class My_class {\n    public:\n        void display() { std::cout << \"Inside My_class\\n\"; }\n    };\n    \n    namespace my_namespace2 {\n        void my_func() { std::cout << \"Inside nested namespace\\n\"; }\n    }\n}\n\n// Using namespaces\nusing namespace my_namespace1;\n\nint main() {\n    My_class obj;\n    obj.display();\n    \n    // Accessing a nested namespace\n    my_namespace1::my_namespace2::my_func(); \n    return 0;\n}\n```",
+          "Output:\nInside My_class\nInside nested namespace",
+          "Explanation:\nWe define a primary namespace `my_namespace1` and a nested namespace `my_namespace2`. By declaring `using namespace my_namespace1;`, we can instantiate `My_class` directly, but we must use the scope resolution operator `::` to reach into the nested namespace."
+        ]
+      },
+      constructors: {
+        title: "2. The Birth of an Object: Initialization and Constructors",
+        points: [
+          "When an object is brought into existence, it needs starting data.",
+          "Object Initialization:",
+          "Initialization can happen at the time of declaration, for example: `Sample s1 {10, 3.14};` (this works if the data members are public and the types match).",
+          "It can also happen using initialization methods, such as `Sample s1; s1.setData(10, 3.14);`, which works with private data as well.",
+          "However, relying on methods creates a problem: what if the user forgets to initialize the object? To prevent this, developers establish and maintain 'invariants' for a class of objects by setting default values directly in the class.",
+          "Constructors: For more complex initialization, C++ uses Constructors. Constructors are functions that share the exact same name as the class names.",
+          "They initialize objects of the class immediately upon creation.",
+          "A default constructor is automatically provided by the compiler if no constructors are defined.",
+          "Constructor functions within a class can be overloaded. All object creation attempts must match one of the defined constructors.",
+          "Function Overloading Rules: Function overloading in C++ means the same function name can have different signatures. A signature must differ in the number, the order, or the type of arguments. The return value is not considered part of the function signature.",
+          "```cpp\n#include <iostream>\nusing namespace std; \n\nclass Sample { \n    private: \n        int age; \n    public:\n        // Constructor\n        Sample (int y) { \n            if (y > 0) age = y; \n            cout << \"Object created with age: \" << age << \"\\n\";\n        }\n};\n\nint main() { \n    int x = 21; \n    Sample s1(x); \n    return 0;\n}\n```",
+          "Output:\nObject created with age: 21",
+          "Explanation:\nWhen `Sample s1(x);` is executed, the `Sample` constructor is automatically triggered, verifying the input `y` is greater than `0` and assigning it to the private `age` variable immediately upon creation."
+        ]
+      },
+      thispointer: {
+        title: "3. The Internal Compass: The `this` Pointer",
+        points: [
+          "When an object is executing one of its own methods, it sometimes needs a way to refer to itself.",
+          "The `this` pointer disambiguates references to members of the class from methods of the same class.",
+          "It is available to all the methods in a class via an implicit declaration. It always points to the current object.",
+          "The `this` pointer is a constant pointer, meaning you cannot modify it during the execution of the method.",
+          "It dies once control returns from the method. Usage of the `this` pointer is generally optional.",
+          "```cpp\n#include <iostream>\n\nclass Ex {\n    private:\n        int i; float a;\n    public:\n        // Implicit declaration is: void setData (Ex* const this, int x, float y)\n        void setData (int x, float y) {\n            this->i = x; // Or simply: i = x;\n            this->a = y; // Or simply: a = y;\n            std::cout << \"Data set: i=\" << this->i << \", a=\" << this->a << \"\\n\";\n        }\n};\n\nint main() {\n    Ex e1, e2;\n    e1.setData (5, 5.5f);\n    e2.setData (10, 10.5f);\n    return 0;\n}\n```",
+          "Output:\nData set: i=5, a=5.5\nData set: i=10, a=10.5",
+          "Explanation:\nEven though we only typed `int x, float y` as arguments, C++ secretly passes the `this` pointer in the background. The pointer guarantees that when `e1` calls `setData`, the data is saved specifically into `e1`'s memory space, and not `e2`'s space."
+        ]
+      },
+      destructors: {
+        title: "4. The End of an Object: Destructors",
+        points: [
+          "Just as constructors build objects, destructors tear them down. Memory management is critical because C++ does not have its own garbage collector.",
+          "A destructor is a member function that is invoked implicitly when the object goes out of scope (such as the end of a function or program), or when it is explicitly destroyed by a call to `delete`.",
+          "A destructor has the exact same name as the class, preceded by a tilde (`~`).",
+          "A default destructor is provided by the compiler if none is explicitly defined.",
+          "As a standard good practice, you should write destructors in case of the use of pointers within classes.",
+          "If there are pointers in the class members that point to other objects, one needs to explicitly delete them inside the destructor to free up the memory."
+        ]
+      },
+      destructors_extension: {
+        title: "5. Destructors vs. Garbage Collection (The Stack vs. The Heap)",
+        points: [
+          "It might sound like a contradiction at first glance: if C++ doesn't clean up after itself, why is the compiler automatically giving you a default destructor? They actually tackle two completely different types of memory.",
+          "1. The Stack vs. The Heap:",
+          "The Stack (Automatic Memory): This is where normal, everyday variables live (like `int x = 10;`). When a function finishes running, the computer automatically erases the Stack.",
+          "The Heap (Dynamic Memory): This is a massive free-for-all space. If you want a massive amount of memory to hold a huge array, you specifically ask for it using the `new` keyword. The computer will never automatically erase the Heap.",
+          "2. What a Garbage Collector Does:",
+          "Languages like Java or Python have a Garbage Collector. This is literally a background program that constantly runs while your app is open, scanning the Heap for old data that you aren't using anymore and deleting it for you.",
+          "C++ does not have its own garbage collector. If you put something on the Heap, it stays there forever until you specifically type `delete`.",
+          "3. What the Default Destructor Actually Does:",
+          "A destructor is a member function that is invoked implicitly when an object goes out of scope. If you don't write one, the compiler provides a default destructor.",
+          "However, the default destructor is very lazy. All it does is destroy the normal variables living on the Stack.",
+          "If your object has a normal `int age;`, the default destructor deletes it. But, if your object has a pointer that points to massive data on the Heap, the default destructor will only destroy the tiny pointer itself. It completely ignores the massive data the pointer was pointing at!",
+          "The Rented Apartment Analogy:",
+          "Imagine your C++ Object is a rented apartment. The Default Destructor is the landlord. When your lease is up (the object goes out of scope), the landlord comes in and throws away all the standard furniture (standard variables).",
+          "The Problem: What if you rented a massive TV from a third-party company (Dynamic Heap memory via a pointer)? The landlord (default destructor) throws away your TV remote (the pointer), but leaves the massive TV sitting in the living room forever. You are now still being charged for that TV, but you have no remote to control it. This is a Memory Leak.",
+          "The Custom Destructor: This is why if there are pointers in class members pointing to other objects, you need to explicitly delete them to free memory. You have to write your own custom destructor (using a `~`) to explicitly return the TV before the landlord locks the door.",
+          "In short: The default destructor only cleans up the simple, automatic stuff. Because C++ has no garbage collector, the responsibility of cleaning up the complex, dynamically allocated stuff falls entirely on your shoulders!"
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is the primary difference between a class interface and its implementation in C++?", back: "The interface (.h file) defines the organization of objects (what the class does), while the implementation (.cpp file) contains the actual defined member functions (how the class does it)." },
+      { front: "What is a C++ constructor?", back: "A constructor is a special function with the exact same name as the class that is automatically called to initialize an object immediately upon its creation." },
+      { front: "What defines a function's 'signature' for function overloading in C++?", back: "A function signature is defined by the number, order, and type of arguments. The return value is NOT part of the signature." },
+      { front: "What is the 'this' pointer in C++?", back: "The 'this' pointer is an implicitly declared constant pointer available to all methods in a class that always points to the current object executing the method." },
+      { front: "When is a destructor called and what is its naming convention?", back: "A destructor is invoked implicitly when an object goes out of scope or is explicitly deleted. It shares the exact name as the class but is preceded by a tilde (~)." },
+      { front: "What is the difference between The Stack and The Heap in C++ memory management?", back: "The Stack is automatic memory where standard variables are stored and erased automatically when a function finishes. The Heap is dynamic memory (allocated with 'new') that stays forever until explicitly deleted." },
+      { front: "Why does C++ experience Memory Leaks if a default destructor is used on a class containing pointers to Heap memory?", back: "The default destructor only deletes the pointer itself (which lives on the Stack), completely ignoring the massive Heap memory it was pointing at. You lose the 'remote' but the 'TV' is left turned on forever." }
+    ],
+    quiz: [
+      { question: "Why is separating a class's interface from its implementation considered a best practice?", options: ["It makes the program run significantly faster.", "It provides better readability, easier maintenance, and allows for separate compilation of the implementation and user code.", "It forces developers to use Object-Oriented principles.", "It eliminates the need for pointers."], answer: 1 },
+      { question: "In C++, how does the compiler distinguish between overloaded functions?", options: ["By their return type.", "By the order in which they are defined in the file.", "By checking if the number, order, or type of arguments differ.", "Overloaded functions cannot be distinguished."], answer: 2 },
+      { question: "Which characteristic is TRUE about the 'this' pointer?", options: ["It is a constant pointer, meaning it cannot be modified during the execution of the method.", "It is a standard global variable.", "It must always be manually declared in every class.", "It can point to multiple objects simultaneously."], answer: 0 },
+      { question: "If a C++ class creates objects dynamically using pointers, what must be done to prevent memory leaks?", options: ["The memory will be handled by the garbage collector automatically.", "You must restart the program.", "The class must explicitly delete the pointers inside its destructor.", "You must pass the objects by value instead of reference."], answer: 2 },
+      { question: "What is the difference between how the compiler handles the Stack and the Heap?", options: ["The compiler automatically erases the Stack, but the Heap is never automatically erased.", "The compiler automatically erases the Heap, but the Stack is never automatically erased.", "They are both automatically erased by the garbage collector.", "The Stack and the Heap are the exact same thing."], answer: 0 }
+    ]
   }
 ];
 
@@ -2764,8 +3007,9 @@ export default function App() {
   };
   
   const courseGroups = {
-    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases', 'partitioning_sharding', 'cap_theorem', 'master_slave_db'].includes(m.id)),
+    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases', 'partitioning_sharding', 'cap_theorem', 'master_slave_db', 'oop_blueprint', 'cpp_fundamentals', 'cpp_architecture'].includes(m.id)),
     'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases', 'partitioning_sharding', 'cap_theorem', 'master_slave_db'].includes(m.id)),
+    'OOPS': courseModules.filter(m => ['oop_blueprint', 'cpp_fundamentals', 'cpp_architecture'].includes(m.id)),
     'Revision': [{ id: 'revision', title: 'Starred Flashcards', flashcards: starredCards }]
   };
   
@@ -3055,7 +3299,7 @@ function NotesView({ module, user, starredCards }) {
     );
   }
 
-  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db') {
+  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db' || module.id === 'oop_blueprint' || module.id === 'cpp_fundamentals' || module.id === 'cpp_architecture') {
     const colorPalette = [
       { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500' },
       { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-900/50', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500' },
@@ -3085,12 +3329,40 @@ function NotesView({ module, user, starredCards }) {
                   <Database className={style.icon} size={24} /> {section.title}
                 </h2>
                 <ul className="space-y-4">
-                  {section.points.map((pt, idx) => (
-                    <li key={idx} className="text-secondary text-sm md:text-base leading-relaxed flex items-start gap-3">
-                      <span className={`font-bold mt-1 ${style.icon}`}>•</span>
-                      {pt}
-                    </li>
-                  ))}
+                  {section.points.map((pt, idx) => {
+                    if (pt.startsWith("```")) {
+                      return (
+                        <div key={idx} className="w-full my-4 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-sm">
+                          <pre className="p-4 text-sm text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap">
+                            {pt.replace(/```(cpp|java)?\n?/g, '').replace(/```$/, '')}
+                          </pre>
+                        </div>
+                      );
+                    }
+                    if (pt.startsWith("Output:")) {
+                      return (
+                        <div key={idx} className="w-full my-2 bg-emerald-50 dark:bg-emerald-950/30 border-l-4 border-emerald-500 p-4 rounded-r-xl">
+                          <span className="font-bold text-emerald-700 dark:text-emerald-400">Output:</span>
+                          <pre className="mt-2 text-sm font-mono text-emerald-800 dark:text-emerald-300">{pt.replace("Output:\n", "").replace(/`/g, "")}</pre>
+                        </div>
+                      );
+                    }
+                    if (pt.startsWith("Explanation:")) {
+                       return (
+                         <div key={idx} className="w-full my-2 bg-sky-50 dark:bg-sky-950/30 p-4 rounded-xl border border-sky-100 dark:border-sky-900/50">
+                           <span className="font-bold text-sky-700 dark:text-sky-400 block mb-2">Explanation:</span>
+                           <p className="text-sky-900 dark:text-sky-300 text-sm whitespace-pre-line">{pt.replace("Explanation:\n", "")}</p>
+                         </div>
+                       );
+                    }
+                    
+                    return (
+                      <li key={idx} className="text-secondary text-sm md:text-base leading-relaxed flex items-start gap-3">
+                        <span className={`font-bold mt-1 ${style.icon}`}>•</span>
+                        {pt}
+                      </li>
+                    );
+                  })}
                 </ul>
               </section>
             </StarableBlock>
@@ -7842,7 +8114,7 @@ function FlashcardsView({ cards, moduleTitle, user, starredCards }) {
     if (isCurrentlyStarred) {
       await deleteDoc(docRef);
     } else {
-      await setDoc(docRef, { ...currentCard, moduleTitle: moduleTitle || 'Revision' });
+      await setDoc(docRef, { ...currentCard, type: 'flashcard', moduleTitle: moduleTitle || 'Revision' });
     }
   };
 
