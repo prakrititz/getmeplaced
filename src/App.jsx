@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Layers, CheckSquare, User, AppWindow, Settings, Cpu, ChevronRight, RotateCcw, Server, Activity, FolderOpen, Terminal, ArrowDownUp, Code, Power, HardDrive, Database, AlertTriangle, ShieldCheck, AlertOctagon, Skull, Sun, Moon, Menu, X } from 'lucide-react';
+import { BookOpen, Layers, CheckSquare, User, AppWindow, Settings, Cpu, ChevronRight, RotateCcw, Server, Activity, FolderOpen, Terminal, ArrowDownUp, Code, Power, HardDrive, Database, AlertTriangle, ShieldCheck, AlertOctagon, Skull, Sun, Moon, Menu, X, Clock, Layout, Star, LogIn, LogOut } from 'lucide-react';
+import { auth, googleProvider, db } from './firebase';
+import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { collection, query, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
 
 // --- DATA STRUCTURE ---
 const courseModules = [
@@ -1854,6 +1857,590 @@ const courseModules = [
       { question: "What is a drawback of Method-2 in Generalisation (creating tables only for lower-level entities)?", options: ["It requires too many tables.", "It cannot handle disjoint generalisation.", "If it's overlapping, values might be stored twice unnecessarily.", "It violates domain constraints."], answer: 2 },
       { question: "When handling a multivalued attribute like 'dependent-name' for 'Employee', what is the Primary Key of the newly created table?", options: ["emp-id", "dependent-name", "A surrogate key", "{emp-id, dependent-name}"], answer: 3 }
     ]
+  },
+  {
+    id: 'normalisation',
+    title: '22. Normalisation',
+    notes: {
+      intro: {
+        title: "What is Normalisation?",
+        points: [
+          "Normalisation is a step towards DB optimisation.",
+          "Normalisation is used to minimise the redundancy from relations. It is also used to eliminate undesirable characteristics like Insertion, Update, and Deletion Anomalies.",
+          "Normalisation divides the composite attributes into individual attributes OR larger table into smaller and links them using relationships.",
+          "The normal form is used to reduce redundancy from the database table."
+        ]
+      },
+      whyNormalise: {
+        title: "Why Normalisation?",
+        reason: "To avoid redundancy in the DB, not to store redundant data.",
+        redundancyEffect: "When we have redundant data: Insertion, deletion and updation anomalies arise."
+      },
+      anomalies: {
+        title: "Anomalies",
+        intro: "Anomalies means abnormalities. There are three types of anomalies introduced by data redundancy.",
+        types: [
+          { name: "Insertion Anomaly", desc: "When certain data (attribute) can not be inserted into the DB without the presence of other data." },
+          { name: "Deletion Anomaly", desc: "The delete anomaly refers to the situation where the deletion of data results in the unintended loss of some other important data." },
+          { name: "Updation Anomaly (Modification Anomaly)", desc: "The update anomaly is when an update of a single data value requires multiple rows of data to be updated. Due to updation to many places, may be Data inconsistency arises, if one forgets to update the data at all the intended places." }
+        ],
+        consequences: [
+          "Due to these anomalies, DB size increases and DB performance become very slow.",
+          "To rectify these anomalies and the effect of these on DB, we use Database optimisation technique called NORMALISATION."
+        ]
+      },
+      functionalDependency: {
+        title: "Functional Dependency (FD)",
+        definition: "It's a relationship between the primary key attribute (usually) of the relation to that of the other attribute of the relation.",
+        notation: "X → Y means the left side of FD is known as a Determinant, the right side of the production is known as a Dependent.",
+        types: [
+          {
+            name: "Trivial FD",
+            desc: "A → B has trivial functional dependency if B is a subset of A. A→A, B→B are also Trivial FD.",
+            rule: "If B ⊆ A then A → B holds — this is a trivial (and complete non-trivial) FD."
+          },
+          {
+            name: "Non-trivial FD",
+            desc: "A → B has a non-trivial functional dependency if B is not a subset of A. [A intersection B is NULL]."
+          }
+        ]
+      },
+      armstrongs: {
+        title: "Rules of FD (Armstrong's Axioms)",
+        rules: [
+          {
+            name: "Reflexive",
+            points: [
+              "If 'A' is a set of attributes and 'B' is a subset of 'A'. Then, A→ B holds.",
+              "If A ⊇ B then A → B."
+            ]
+          },
+          {
+            name: "Augmentation",
+            points: [
+              "If B can be determined from A, then adding an attribute to this functional dependency won't change anything.",
+              "If A→ B holds, then AX→ BX holds too. 'X' being a set of attributes."
+            ]
+          },
+          {
+            name: "Transitivity",
+            points: [
+              "If A determines B and B determines C, we can say that A determines C.",
+              "If A→ B and B→ C then A→ C."
+            ]
+          }
+        ]
+      },
+      normalForms: {
+        title: "Types of Normal Forms",
+        forms: [
+          {
+            name: "1NF (First Normal Form)",
+            rules: [
+              "Every relation cell must have atomic value.",
+              "Relation must not have multi-valued attributes."
+            ],
+            color: "blue"
+          },
+          {
+            name: "2NF (Second Normal Form)",
+            rules: [
+              "Relation must be in 1NF.",
+              "There should not be any partial dependency.",
+              "All non-prime attributes must be fully dependent on PK.",
+              "Non prime attribute can not depend on the part of the PK."
+            ],
+            color: "indigo"
+          },
+          {
+            name: "3NF (Third Normal Form)",
+            rules: [
+              "Relation must be in 2NF.",
+              "No transitivity dependency exists.",
+              "Non-prime attribute should not find a non-prime attribute."
+            ],
+            color: "violet"
+          },
+          {
+            name: "BCNF (Boyce-Codd Normal Form)",
+            rules: [
+              "Relation must be in 3NF.",
+              "FD: A -> B, A must be a super key.",
+              "We must not derive prime attribute from any prime or non-prime attribute."
+            ],
+            color: "emerald"
+          }
+        ]
+      },
+      advantages: {
+        title: "Advantages of Normalisation",
+        points: [
+          "Normalisation helps to minimise data redundancy.",
+          "Greater overall database organisation.",
+          "Data consistency is maintained in DB."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is Normalisation and why do we need it?", back: "Normalisation is a DB optimisation technique to minimise redundancy and eliminate Insertion, Deletion, and Updation anomalies. Without it, DB size increases and performance degrades." },
+      { front: "What are the 3 types of anomalies caused by data redundancy?", back: "1. Insertion Anomaly — can't insert data without other data.\n2. Deletion Anomaly — deleting data causes unintended loss of other data.\n3. Updation Anomaly — updating one value requires changing multiple rows, risking data inconsistency." },
+      { front: "What is Functional Dependency (FD) and what does X → Y mean?", back: "FD is a relationship between attributes. X → Y means X (Determinant) functionally determines Y (Dependent). Knowing the value of X uniquely identifies the value of Y." },
+      { front: "What is the difference between Trivial and Non-trivial FD?", back: "Trivial FD: B is a subset of A (e.g., A→A). Non-trivial FD: B is NOT a subset of A (A ∩ B = NULL)." },
+      { front: "State Armstrong's 3 axioms for FD.", back: "1. Reflexivity: If B ⊆ A, then A → B.\n2. Augmentation: If A → B, then AX → BX.\n3. Transitivity: If A → B and B → C, then A → C." },
+      { front: "What are the requirements for 1NF?", back: "1. Every cell must have an atomic (indivisible) value.\n2. No multi-valued attributes are allowed." },
+      { front: "What is Partial Dependency and which Normal Form removes it?", back: "Partial Dependency occurs when a non-prime attribute is functionally dependent on a proper subset of any candidate key. 2NF removes Partial Dependencies." },
+      { front: "What is Transitive Dependency and which Normal Form removes it?", back: "Transitive Dependency occurs when a non-prime attribute determines another non-prime attribute (A→B→C where A is PK). 3NF removes Transitive Dependencies." },
+      { front: "What is the key difference between 3NF and BCNF?", back: "In 3NF, a non-prime attribute can appear on the right side of FD if the left side is a Super Key. In BCNF, for EVERY FD X→Y, X must be a Super Key — no exceptions." }
+    ],
+    quiz: [
+      { question: "What is the primary goal of Normalisation?", options: ["To increase the number of tables.", "To minimise redundancy and eliminate anomalies.", "To increase DB performance by adding indexes.", "To combine multiple tables into one."], answer: 1 },
+      { question: "Which anomaly describes the scenario where deleting one record causes unintended loss of other important data?", options: ["Insertion Anomaly", "Updation Anomaly", "Deletion Anomaly", "Redundancy Anomaly"], answer: 2 },
+      { question: "In X → Y, what is 'X' called?", options: ["Dependent", "Attribute", "Determinant", "Candidate Key"], answer: 2 },
+      { question: "Which of Armstrong's Axioms states: 'If A → B and B → C, then A → C'?", options: ["Reflexivity", "Augmentation", "Transitivity", "Decomposition"], answer: 2 },
+      { question: "A → B is a Trivial FD when:", options: ["A ∩ B = NULL", "B is not a subset of A", "B is a subset of A", "A determines a primary key"], answer: 2 },
+      { question: "Which Normal Form specifically eliminates Partial Dependencies?", options: ["1NF", "2NF", "3NF", "BCNF"], answer: 1 },
+      { question: "For BCNF, which of the following must be true for every FD X → Y?", options: ["Y must be a prime attribute.", "X must be a Super Key.", "X must be a Foreign Key.", "Y must be a non-prime attribute."], answer: 1 }
+    ]
+  },
+  {
+    id: 'transaction',
+    title: '23. Transaction',
+    notes: {
+      intro: {
+        title: "Transaction",
+        points: [
+          "A unit of work done against the DB in a logical sequence.",
+          "Sequence is very important in transaction.",
+          "It is a logical unit of work that contains one or more SQL statements. The result of all these statements in a transaction either gets completed successfully (all the changes made to the database are permanent) or if at any point any failure happens it gets rollbacked (all the changes being done are undone.)"
+        ]
+      },
+      acid: {
+        title: "ACID Properties",
+        intro: "To ensure integrity of the data, we require that the DB system maintain the following properties of the transaction.",
+        properties: [
+          { name: "Atomicity", desc: "Either all operations of transaction are reflected properly in the DB, or none are." },
+          { name: "Consistency", desc: "Integrity constraints must be maintained before and after transaction.\nDB must be consistent after transaction happens." },
+          { name: "Isolation", desc: "Even though multiple transactions may execute concurrently, the system guarantees that, for every pair of transactions Ti and Tj, it appears to Ti that either Tj finished execution before Ti started, or Tj started execution after Ti finished. Thus, each transaction is unaware of other transactions executing concurrently in the system.\nMultiple transactions can happen in the system in isolation, without interfering each other." },
+          { name: "Durability", desc: "After transaction completes successfully, the changes it has made to the database persist, even if there are system failures." }
+        ]
+      },
+      states: {
+        title: "Transaction States in DBMS",
+        list: [
+          { name: "Active state", desc: "The very first state of the life cycle of the transaction, all the read and write operations are being performed. If they execute without any error the T comes to Partially committed state. Although if any error occurs then it leads to a Failed state." },
+          { name: "Partially committed state", desc: "After transaction is executed the changes are saved in the buffer in the main memory. If the changes made are permanent on the DB then the state will transfer to the committed state and if there is any failure, the T will go to Failed state." },
+          { name: "Committed state", desc: "When updates are made permanent on the DB. Then the T is said to be in the committed state. Rollback can't be done from the committed states. New consistent state is achieved at this stage." },
+          { name: "Failed state", desc: "When T is being executed and some failure occurs. Due to this it is impossible to continue the execution of the T." },
+          { name: "Aborted state", desc: "When T reaches the failed state, all the changes made in the buffer are reversed. After that the T rollback completely. T reaches abort state after rollback. DB's state prior to the T is achieved." },
+          { name: "Terminated state", desc: "A transaction is said to have terminated if has either committed or aborted." }
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is a Transaction?", back: "A logical unit of work done against the DB in a logical sequence. It contains one or more SQL statements that either complete fully or rollback entirely." },
+      { front: "What does Atomicity mean in ACID?", back: "Either all operations of a transaction are reflected properly in the DB, or none are. (All or nothing)" },
+      { front: "What does Isolation mean in ACID?", back: "Multiple transactions can execute concurrently in isolation without interfering with each other. Each transaction appears to run independently." },
+      { front: "When does a transaction enter the 'Partially committed state'?", back: "After the transaction is executed and changes are saved in the buffer in the main memory (but not yet permanently on the DB)." },
+      { front: "What happens when a transaction reaches the 'Aborted state'?", back: "All changes made in the buffer are reversed (rollback completely), and the DB is restored to its state prior to the transaction." }
+    ],
+    quiz: [
+      { question: "Which ACID property ensures that once a transaction completes successfully, its changes persist even in the event of system failures?", options: ["Atomicity", "Consistency", "Isolation", "Durability"], answer: 3 },
+      { question: "What is the very first state of the life cycle of a transaction where read and write operations are performed?", options: ["Partially committed state", "Active state", "Initiated state", "Started state"], answer: 1 },
+      { question: "If a transaction is in the partially committed state and a failure occurs, to which state does it transition next?", options: ["Aborted state", "Terminated state", "Failed state", "Active state"], answer: 2 },
+      { question: "Which of the following is true about the 'Committed state'?", options: ["Changes are only in the buffer.", "Rollback can still be performed.", "Updates are made permanent on the DB.", "It transitions to the failed state."], answer: 2 }
+    ]
+  },
+  {
+    id: 'transaction_implementation',
+    title: '24. Atomicity & Durability Implementation',
+    notes: {
+      intro: "Recovery Mechanism Component of DBMS supports atomicity and durability.",
+      shadowCopy: {
+        title: "Shadow-copy scheme",
+        basics: [
+          "Based on making copies of DB (aka, shadow copies).",
+          "Assumption: only one Transaction (T) is active at a time.",
+          "A pointer called db-pointer is maintained on the disk; which at any instant points to current copy of DB.",
+          "T, that wants to update DB first creates a complete copy of DB.",
+          "All further updates are done on new DB copy leaving the original copy (shadow copy) untouched.",
+          "If at any point the T has to be aborted the system deletes the new copy. And the old copy is not affected."
+        ],
+        commitSteps: [
+          "OS makes sure all the pages of the new copy of DB written on the disk.",
+          "DB system updates the db-pointer to point to the new copy of DB.",
+          "New copy is now the current copy of DB.",
+          "The old copy is deleted.",
+          "The T is said to have been COMMITTED at the point where the updated db-pointer is written to disk."
+        ],
+        atomicity: [
+          "If T fails at any time before db-pointer is updated, the old content of DB are not affected.",
+          "T abort can be done by just deleting the new copy of DB.",
+          "Hence, either all updates are reflected or none."
+        ],
+        durability: [
+          "Suppose, system fails any time before the updated db-pointer is written to disk.",
+          "When the system restarts, it will read db-pointer & will thus, see the original content of DB and none of the effects of T will be visible.",
+          "T is assumed to be successful only when db-pointer is updated.",
+          "If system fails after db-pointer has been updated. Before that all the pages of the new copy were written to disk. Hence, when system restarts, it will read new DB copy."
+        ],
+        implementationDetail: "The implementation is dependent on write to the db-pointer being atomic. Luckily, disk system provide atomic updates to entire block or at least a disk sector. So, we make sure db-pointer lies entirely in a single sector. By storing db-pointer at the beginning of a block.",
+        drawback: "Inefficient, as entire DB is copied for every Transaction."
+      },
+      logBased: {
+        title: "Log-based recovery methods",
+        basics: [
+          "The log is a sequence of records. Log of each transaction is maintained in some stable storage so that if any failure occurs, then it can be recovered from there.",
+          "If any operation is performed on the database, then it will be recorded in the log.",
+          "But the process of storing the logs should be done before the actual transaction is applied in the database.",
+          "Stable storage is a classification of computer data storage technology that guarantees atomicity for any given write operation and allows software to be written that is robust against some hardware and power failures."
+        ],
+        deferred: {
+          title: "Deferred DB Modifications",
+          points: [
+            "Ensuring atomicity by recording all the DB modifications in the log but deferring the execution of all the write operations until the final action of the T has been executed.",
+            "Log information is used to execute deferred writes when T is completed.",
+            "If system crashed before the T completes, or if T is aborted, the information in the logs are ignored.",
+            "If T completes, the records associated to it in the log file are used in executing the deferred writes.",
+            "If failure occur while this updating is taking place, we preform redo."
+          ]
+        },
+        immediate: {
+          title: "Immediate DB Modifications",
+          points: [
+            "DB modifications to be output to the DB while the T is still in active state.",
+            "DB modifications written by active T are called uncommitted modifications.",
+            "In the event of crash or T failure, system uses old value field of the log records to restore modified values.",
+            "Update takes place only after log records in a stable storage."
+          ],
+          failureHandling: [
+            "System failure before T completes, or if T aborted, then old value field is used to undo the T.",
+            "If T completes and system crashes, then new value field is used to redo T having commit logs in the logs."
+          ]
+        }
+      }
+    },
+    flashcards: [
+      { front: "Which DBMS component supports atomicity and durability?", back: "The Recovery Mechanism Component." },
+      { front: "What is the core idea of the Shadow-copy scheme?", back: "It is based on making copies of the database (shadow copies) and maintaining a 'db-pointer' to the current copy." },
+      { front: "In the Shadow-copy scheme, when is a transaction considered committed?", back: "A transaction is said to have been COMMITTED at the exact point where the updated db-pointer is successfully written to disk." },
+      { front: "Why is the Shadow-copy scheme considered inefficient?", back: "Because the entire database is copied for every single transaction." },
+      { front: "In log-based recovery, when should the process of storing logs be done?", back: "The process of storing logs should be done BEFORE the actual transaction is applied to the database." },
+      { front: "What is Stable Storage in the context of DBMS?", back: "A storage technology that guarantees atomicity for any given write operation and is robust against hardware and power failures." },
+      { front: "Explain 'Deferred DB Modifications'.", back: "It ensures atomicity by recording modifications in the log but deferring the execution of write operations until the final action of the transaction has been executed." },
+      { front: "What happens in 'Deferred DB Modifications' if a system crashes before the transaction completes?", back: "The information in the logs for that transaction is simply ignored." },
+      { front: "Explain 'Immediate DB Modifications'.", back: "Database modifications are output to the DB while the transaction is still in the active state. These are called uncommitted modifications." },
+      { front: "How are failures handled in 'Immediate DB Modifications' before a transaction completes?", back: "The system uses the old value field of the log records to undo the transaction." }
+    ],
+    quiz: [
+      { question: "Which of the following is a major assumption of the Shadow-copy scheme?", options: ["Multiple transactions can be active simultaneously.", "Only one transaction is active at a time.", "Database pointer is not required.", "The entire database is never copied."], answer: 1 },
+      { question: "In the Shadow-copy scheme, how is a transaction aborted?", options: ["By restoring log files.", "By undoing the changes in the DB.", "By just deleting the new copy of the DB.", "By updating the db-pointer."], answer: 2 },
+      { question: "Where must the db-pointer be stored to ensure its update is atomic?", options: ["In RAM.", "In volatile memory.", "Entirely in a single disk sector or block.", "Spread across multiple disk sectors."], answer: 2 },
+      { question: "In Log-based recovery methods, what type of storage is used for maintaining the log of each transaction?", options: ["Cache storage", "Volatile storage", "Stable storage", "Temporary storage"], answer: 2 },
+      { question: "In 'Deferred DB Modifications', when are the deferred writes actually executed?", options: ["While the transaction is in active state.", "When the transaction is completed.", "Before the log is written.", "As soon as the user requests it."], answer: 1 },
+      { question: "In 'Immediate DB Modifications', modifications written by an active transaction are known as:", options: ["Committed modifications", "Uncommitted modifications", "Stable modifications", "Deferred modifications"], answer: 1 },
+      { question: "What action is performed in 'Immediate DB Modifications' if a transaction completes, but the system crashes right after?", options: ["Undo the transaction.", "Ignore the logs.", "Redo the transaction using new value fields.", "Delete the new shadow copy."], answer: 2 },
+      { question: "What is the primary drawback of the Shadow-copy scheme?", options: ["It requires stable storage.", "It uses immediate DB modifications.", "It cannot handle transaction failures.", "It is inefficient because the entire DB is copied for every transaction."], answer: 3 }
+    ]
+  },
+  {
+    id: 'indexing',
+    title: '25. Indexing in DBMS',
+    notes: {
+      intro: {
+        title: "Indexing",
+        points: [
+          "Indexing is used to optimise the performance of a database by minimising the number of disk accesses required when a query is processed.",
+          "The index is a type of data structure. It is used to locate and access the data in a database table quickly.",
+          "Speeds up operation with read operations like SELECT queries, WHERE clause etc.",
+          "Indexing is optional, but increases access speed. It is not the primary mean to access the tuple, it is the secondary mean.",
+          "Index file is always sorted."
+        ]
+      },
+      structure: {
+        title: "Index Structure",
+        parts: [
+          { name: "Search Key", desc: "Contains copy of primary key or candidate key of the table or something else." },
+          { name: "Data Reference", desc: "Pointer holding the address of disk block where the value of the corresponding key is stored." }
+        ]
+      },
+      methods: {
+        title: "Indexing Methods",
+        primary: {
+          title: "Primary Index (Clustering Index)",
+          basics: [
+            "A file may have several indices, on different search keys. If the data file containing the records is sequentially ordered, a Primary index is an index whose search key also defines the sequential order of the file.",
+            "NOTE: The term primary index is sometimes used to mean an index on a primary key. However, such usage is nonstandard and should be avoided.",
+            "All files are ordered sequentially on some search key. It could be Primary Key or non-primary key.",
+            "Primary Indexing can be based on Data file is sorted w.r.t Primary Key attribute or non-key attributes."
+          ],
+          denseSparse: {
+            title: "Dense And Sparse Indices",
+            dense: [
+              "The dense index contains an index record for every search key value in the data file.",
+              "The index record contains the search-key value and a pointer to the first data record with that search-key value. The rest of the records with the same search-key value would be stored sequentially after the first record.",
+              "It needs more space to store index record itself. The index records have the search key and a pointer to the actual record on the disk."
+            ],
+            sparse: [
+              "An index record appears for only some of the search-key values.",
+              "Sparse Index helps you to resolve the issues of dense indexing in DBMS. In this method of indexing technique, a range of index columns stores the same data block address, and when data needs to be retrieved, the block address will be fetched."
+            ]
+          },
+          basedOnKey: [
+            "Data file is sorted w.r.t primary key attribute.",
+            "PK will be used as search-key in Index.",
+            "Sparse Index will be formed i.e., no. of entries in the index file = no. of blocks in datafile."
+          ],
+          basedOnNonKey: [
+            "Data file is sorted w.r.t non-key attribute.",
+            "No. Of entries in the index = unique non-key attribute value in the data file.",
+            "This is dense index as, all the unique values have an entry in the index file.",
+            "E.g., Let's assume that a company recruited many employees in various departments. In this case, clustering indexing in DBMS should be created for all employees who belong to the same dept."
+          ],
+          multiLevel: [
+            "Index with two or more levels.",
+            "If the single level index become enough large that the binary search it self would take much time, we can break down indexing into multiple levels."
+          ]
+        },
+        secondary: {
+          title: "Secondary Index (Non-Clustering Index)",
+          points: [
+            "Datafile is unsorted. Hence, Primary Indexing is not possible.",
+            "Can be done on key or non-key attribute.",
+            "Called secondary indexing because normally one indexing is already applied.",
+            "No. Of entries in the index file = no. of records in the data file.",
+            "It's an example of Dense index."
+          ]
+        }
+      },
+      prosCons: {
+        advantages: ["Faster access and retrieval of data.", "IO is less."],
+        limitations: ["Additional space to store index table.", "Indexing Decrease performance in INSERT, DELETE, and UPDATE query."]
+      }
+    },
+    flashcards: [
+      { front: "What is the primary purpose of indexing in a DBMS?", back: "To optimize database performance by minimizing the number of disk accesses required for queries." },
+      { front: "What are the two main components of an index entry?", back: "Search Key and Data Reference." },
+      { front: "Is an index file typically sorted or unsorted?", back: "An index file is always sorted." },
+      { front: "What is a Dense Index?", back: "An index where there is an index record for every single search key value in the data file." },
+      { front: "What is a Sparse Index?", back: "An index where an index record appears for only some of the search-key values, typically pointing to data blocks instead of individual records." },
+      { front: "When is a Sparse Index typically formed in Primary Indexing?", back: "When the data file is sorted w.r.t the primary key attribute (no. of entries in index file = no. of blocks in datafile)." },
+      { front: "What is another name for Primary Index?", back: "Clustering Index." },
+      { front: "Why use a Multi-level Index?", back: "When a single-level index becomes so large that binary search on it would take too much time, breaking it down into multiple levels speeds up access." },
+      { front: "In Secondary Indexing, what is the ordering of the data file?", back: "The data file is unsorted." },
+      { front: "Is a Secondary Index typically dense or sparse?", back: "It is an example of a Dense index, as the number of entries in the index file equals the number of records in the data file." },
+      { front: "Name a major limitation of Indexing.", back: "It requires additional space to store the index table and decreases performance in INSERT, DELETE, and UPDATE queries." }
+    ],
+    quiz: [
+      { question: "Which of the following operations is primarily sped up by using an index?", options: ["INSERT", "DELETE", "SELECT", "UPDATE"], answer: 2 },
+      { question: "What does a 'Data Reference' in an index hold?", options: ["A copy of the primary key.", "The actual tuple data.", "A pointer holding the address of the disk block.", "A hash value."], answer: 2 },
+      { question: "Which of the following is true about a Dense Index?", options: ["It contains an index record for every search key value in the data file.", "It has index records for only some search-key values.", "It uses less space than a sparse index.", "It is only used with unsorted data files."], answer: 0 },
+      { question: "In Primary Indexing based on a Non-Key attribute, the number of entries in the index equals:", options: ["The number of blocks in the data file.", "The total number of records.", "The unique non-key attribute values in the data file.", "The number of levels in the index."], answer: 2 },
+      { question: "Which scenario describes a Clustering Index (based on Non-Key attribute)?", options: ["Data file sorted on Primary Key.", "Unsorted data file.", "Data file sorted on a non-key attribute like department name.", "Indexing on a random attribute."], answer: 2 },
+      { question: "Secondary Indexing is also known as:", options: ["Clustering Index", "Non-Clustering Index", "Sparse Index", "Multi-level Index"], answer: 1 },
+      { question: "How many entries are typically in a Secondary Index file?", options: ["Equal to the number of blocks in the data file.", "Equal to the number of unique values.", "Equal to the number of records in the data file.", "One per index level."], answer: 2 },
+      { question: "What is the impact of Indexing on data modification queries (INSERT, DELETE, UPDATE)?", options: ["It increases their performance.", "It has no effect.", "It decreases their performance.", "It makes them atomic."], answer: 2 }
+    ]
+  },
+  {
+    id: 'nosql',
+    title: '26. NoSQL Databases',
+    notes: {
+      intro: {
+        title: "What is NoSQL?",
+        points: [
+          "NoSQL databases (aka 'not only SQL') are non-tabular databases and store data differently than relational tables.",
+          "They provide flexible schemas and scale easily with large amounts of data and high user loads.",
+          "They are schema free.",
+          "Data structures used are not tabular, they are more flexible, has the ability to adjust dynamically.",
+          "Can handle huge amount of data (big data).",
+          "Most of the NoSQL are open sources and has the capability of horizontal scaling.",
+          "It just stores data in some format other than relational."
+        ]
+      },
+      history: {
+        title: "History behind NoSQL",
+        points: [
+          "Emerged in the late 2000s as the cost of storage dramatically decreased. Developers became the primary cost, so databases optimized for productivity.",
+          "Data becoming unstructured more, hence defining schema in advance became costly.",
+          "Allow developers to store huge amounts of unstructured data for flexibility.",
+          "Recognising the need to rapidly adapt to changing requirements (Agile).",
+          "Cloud computing rose in popularity, needing distribution across servers/regions, scale out, and geo-placement."
+        ]
+      },
+      acidVsBase: {
+        title: "ACID vs. BASE & Consistency",
+        intro: "The fundamental trade-off of database design: How does NoSQL maintain perfect ACID consistency across multiple different documents spread across servers? Usually, it doesn't. It trades rigid ACID for a more relaxed model called BASE.",
+        sections: [
+          {
+            subtitle: "The Single 'Sticky Note' Rule (Document-Level ACID)",
+            desc: "Most NoSQL databases (like MongoDB) have ACID properties, but only for a single document at a time. Updating 5 fields on one document guarantees Atomicity. However, transferring value between two documents is difficult as it cannot easily lock both simultaneously."
+          },
+          {
+            subtitle: "BASE Model",
+            desc: "NoSQL prioritizes speed and global scaling using BASE:\n• Basically Available: System always responds (won't crash/lock), even if a server goes down.\n• Soft State: Database state might change over time without new input due to background syncing.\n• Eventual Consistency: If you stop sending updates, eventually all servers worldwide will agree on the same data. Briefly, they might be out of sync."
+          },
+          {
+            subtitle: "Real-World Example (The Instagram Like)",
+            desc: "Liking a photo in India instantly updates the Mumbai server. At that exact millisecond, a user in Seattle sees the old count from the Washington server (technically inconsistent). Milliseconds later, Mumbai syncs with Washington, achieving eventual consistency."
+          }
+        ]
+      },
+      types: {
+        title: "Types of NoSQL Data Models",
+        models: [
+          {
+            name: "Key-Value Stores",
+            desc: "The simplest type. Data element stored as a key-value pair. Uses compact, efficient index structures for constant-time retrieval.",
+            useCases: "Shopping carts, user preferences, profiles, caching, real-time random data access.",
+            examples: "Oracle NoSQL, Amazon DynamoDB, Redis, MongoDB."
+          },
+          {
+            name: "Column-Oriented (Wide-Column)",
+            desc: "Data stored such that each row of a column is next to other rows from that same column. Columns often of the same type benefit from efficient compression.",
+            useCases: "Analytics.",
+            examples: "Cassandra, RedShift, Snowflake, HBase."
+          },
+          {
+            name: "Document Based Stores",
+            desc: "Store data in documents similar to JSON objects. Supports ACID properties at document level.",
+            useCases: "E-commerce platforms, trading platforms, mobile app development.",
+            examples: "MongoDB, CouchDB."
+          },
+          {
+            name: "Graph Based Stores",
+            desc: "Focuses on the relationship between data elements (nodes and links/edges). Optimised to capture and search connections, overcoming JOIN overhead.",
+            useCases: "Fraud detection, social networks, knowledge graphs.",
+            examples: "Neo4j, Amazon Neptune."
+          }
+        ]
+      },
+      prosCons: {
+        advantages: [
+          "Flexible Schema (schema changes in RDBMS are huge tasks).",
+          "Horizontal Scaling (scale-out) achieved through Sharding or Replica-sets.",
+          "High Availability (auto-replication to preceding consistent state).",
+          "Easy insert and read operations (data accessed together is stored together).",
+          "Caching mechanism.",
+          "Optimized for Cloud applications."
+        ],
+        disadvantages: [
+          "Data Redundancy (optimised for queries, not reducing duplication).",
+          "Update & Delete operations are costly.",
+          "Single model doesn't fulfil all application needs (may need multiple databases).",
+          "Doesn't support multi-document ACID properties in general.",
+          "Doesn't support data entry with strict consistency constraints."
+        ],
+        whenToUse: [
+          "Fast-paced Agile development",
+          "Storage of structured and semi-structured data",
+          "Huge volumes of data",
+          "Requirements for scale-out architecture",
+          "Modern application paradigms like micro-services and real-time streaming"
+        ]
+      },
+      sqlVsNosql: {
+        title: "SQL vs NoSQL",
+        headers: ["Feature", "SQL Databases", "NoSQL Databases"],
+        rows: [
+          ["Data Storage Model", "Tables with fixed rows and columns", "JSON documents, key-value pairs, wide-column tables, Graph nodes/edges"],
+          ["Development History", "1970s (focus on reducing data duplication)", "Late 2000s (focus on scaling, agile, DevOps)"],
+          ["Primary Purpose", "General Purpose", "Document: general. Key-value: simple lookup. Wide-column: predictable queries. Graph: relationships"],
+          ["Schemas", "Fixed", "Flexible"],
+          ["Scaling", "Vertical (Scale-up)", "Horizontal (scale-out across servers)"],
+          ["ACID Properties", "Supported", "Not Supported (except at document-level in DBs like MongoDB)"],
+          ["JOINS", "Typically Required", "Typically not required"],
+          ["Data Object Mapping", "Requires ORM", "Many do not require ORMs"]
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What does NoSQL stand for?", back: "'Not Only SQL'." },
+      { front: "What is the primary difference in scaling between SQL and NoSQL?", back: "SQL typically scales Vertically (Scale-up), while NoSQL scales Horizontally (Scale-out) across commodity servers." },
+      { front: "What are the four main types of NoSQL data models?", back: "Key-Value, Document, Wide-Column, and Graph." },
+      { front: "What does BASE stand for in NoSQL?", back: "Basically Available, Soft state, Eventual consistency." },
+      { front: "Explain 'Eventual Consistency'.", back: "If no new updates are made, eventually all servers worldwide will sync and agree on the same data. For a brief moment, they might be out of sync." },
+      { front: "Does NoSQL support ACID properties?", back: "Generally no for multi-table transactions, but many support Document-Level ACID (guaranteeing Atomicity for a single document)." },
+      { front: "Which NoSQL database type is best for analyzing relationships, like in social networks?", back: "Graph Based Stores (e.g., Neo4j)." },
+      { front: "Why are read operations often faster in NoSQL compared to SQL?", back: "Because data accessed together is stored together, eliminating the need for complex and expensive JOIN operations." },
+      { front: "What is a major limitation of NoSQL databases regarding data updates?", back: "Update and Delete operations can be costly, and data redundancy is high since they don't focus on reducing duplication." },
+      { front: "When should you definitely use SQL instead of NoSQL?", back: "When building applications like banking systems that require strict, multi-table ACID consistency." }
+    ],
+    quiz: [
+      { question: "Which of the following is NOT a characteristic of BASE in NoSQL?", options: ["Basically Available", "Soft State", "Eventual Consistency", "Atomicity"], answer: 3 },
+      { question: "In NoSQL, what does Document-Level ACID mean?", options: ["All documents in the DB are locked during an update.", "A single document's updates are guaranteed to be atomic.", "Multiple documents can be updated atomically.", "There are no ACID properties at all."], answer: 1 },
+      { question: "Which NoSQL model stores data such that each row of a column is next to other rows from that same column?", options: ["Document Store", "Key-Value Store", "Wide-Column Store", "Graph Store"], answer: 2 },
+      { question: "Which of the following use cases is best suited for a Graph Database?", options: ["Shopping Cart", "Fraud Detection", "Financial Ledger", "E-commerce Product Catalog"], answer: 1 },
+      { question: "How does NoSQL typically achieve horizontal scaling?", options: ["Adding more RAM to a single server.", "Sharding or Replica-sets.", "Using ORMs.", "Switching to a relational schema."], answer: 1 },
+      { question: "A common misconception about NoSQL databases is:", options: ["They don't store relationship data well.", "They are schema-free.", "They scale horizontally.", "They handle large volumes of data."], answer: 0 },
+      { question: "Which of the following is a disadvantage of NoSQL?", options: ["Rigid Schemas", "Slow read operations", "Data Redundancy", "Inability to handle unstructured data"], answer: 2 },
+      { question: "If you need rapid agile development and have unstructured big data, which database is generally preferred?", options: ["Relational Database", "NoSQL Database", "Centralized Mainframe", "XML Database"], answer: 1 }
+    ]
+  },
+  {
+    id: 'modern_data_ecosystems',
+    title: '27. Modern Data Ecosystems',
+    notes: {
+      intro: "Two of the most famous names in the Big Data world, MongoDB and Apache Hadoop, do completely different jobs. Additionally, modern tools like Supabase bring traditional SQL back into the modern web.",
+      mongodb: {
+        title: "MongoDB (The Ultimate 'Sticky Note' Database)",
+        points: [
+          "MongoDB is the most famous NoSQL Document Database in the world.",
+          "What it is: A database designed to store, retrieve, and manage data for live applications in real-time.",
+          "How it stores data: Instead of a spreadsheet, it stores data in 'Collections' (like a folder) that contain 'Documents' (the individual JSON-like sticky notes).",
+          "What it is best for: Modern web applications, mobile apps, or video games with complex user profiles. Built to serve data to millions of active users with blistering speed."
+        ]
+      },
+      hadoop: {
+        title: "Apache Hadoop (The Heavy Data Lifter)",
+        points: [
+          "Hadoop is NOT a database. It is a Distributed Data Processing Framework.",
+          "What it is: Software tools to store and analyze massive amounts of data (Petabytes) by distributing the workload across a cluster of cheap, regular computers.",
+          "HDFS (Hadoop Distributed File System): Chops large files into blocks and scatters them across hundreds of servers.",
+          "MapReduce: Instead of loading data into RAM, Hadoop sends math equations to where the data lives (Map), and then master server adds the answers together (Reduce).",
+          "What it is best for: Batch Processing. Terrible for real-time applications. Excellent for running massive overnight historical analytics."
+        ]
+      },
+      workingTogether: {
+        title: "How MongoDB and Hadoop Work Together",
+        points: [
+          "The Front Line: MongoDB runs the live website, quickly saving customer orders and loading profiles instantly.",
+          "The Transfer: At the end of every week, all new data is exported from MongoDB into Hadoop.",
+          "The Back Room: Hadoop acts as a giant historical archive. Data scientists run complex analytics on Hadoop without slowing down the live MongoDB servers."
+        ]
+      },
+      supabase: {
+        title: "Supabase (The Big Plot Twist: Return to SQL)",
+        intro: "Supabase represents a massive return to SQL. The core database inside Supabase is PostgreSQL (a strict, powerful Relational SQL Database enforcing absolute ACID compliance).",
+        points: [
+          "The Wrapper Concept: Developers wanted the strict rules and relationships of SQL (to avoid NoSQL's 'Eventual Consistency' headaches in financial/inventory apps), but hated how difficult traditional SQL was to connect to modern apps.",
+          "The Solution: Supabase acts as a 'Wrapper'. The engine is Postgres (indestructible SQL freight train), and the dashboard is a modern, easy-to-use API.",
+          "Supabase vs. Firebase: Firebase is the NoSQL Document DB king of rapid app development. Supabase was built as the 'Open-Source Firebase Alternative', giving the same fast serverless experience but with strict SQL tables.",
+          "Backend-as-a-Service (BaaS): Supabase gives you the entire backend in one box: Postgres DB, Authentication (logins), Storage (large files), and Real-time Subscriptions (broadcasting SQL changes instantly)."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What type of database is MongoDB?", back: "It is a NoSQL Document Database." },
+      { front: "How does MongoDB organize its data?", back: "It stores data in 'Collections' that contain 'Documents' (JSON-like structures)." },
+      { front: "Is Apache Hadoop a database?", back: "No, it is a Distributed Data Processing Framework." },
+      { front: "What does HDFS stand for and what does it do?", back: "Hadoop Distributed File System. It chops massive files into blocks and scatters them across different servers." },
+      { front: "What is MapReduce?", back: "A framework where math operations are sent to where the data lives (Map), and the finished answers are sent back to a master server to be added together (Reduce)." },
+      { front: "What is Hadoop best suited for: Real-time queries or Batch processing?", back: "Batch Processing (e.g., crunching numbers on petabytes of historical data overnight)." },
+      { front: "What core database technology powers Supabase?", back: "PostgreSQL, a strict and powerful Relational SQL Database." },
+      { front: "Why is Supabase referred to as a 'Wrapper'?", back: "Because it wraps a complex Postgres SQL engine with a modern, easy-to-use dashboard and API for frontend apps." },
+      { front: "How does Supabase differ from Firebase?", back: "Firebase uses a NoSQL Document Database, while Supabase (the open-source alternative) uses a strict SQL table structure." },
+      { front: "What does BaaS mean, and what features does Supabase offer as a BaaS?", back: "Backend-as-a-Service. Supabase offers Postgres DB, Authentication, Storage, and Real-time Subscriptions." }
+    ],
+    quiz: [
+      { question: "Which of the following best describes MongoDB?", options: ["Distributed Data Processing Framework", "Relational SQL Database", "NoSQL Document Database", "Wide-Column Store"], answer: 2 },
+      { question: "What is the primary function of Hadoop?", options: ["Serving real-time user profiles", "Batch processing of massive datasets", "Real-time subscriptions", "Client-side state management"], answer: 1 },
+      { question: "Which two components make up the core of Apache Hadoop?", options: ["Postgres and HDFS", "HDFS and MapReduce", "MapReduce and Supabase", "Collections and Documents"], answer: 1 },
+      { question: "How do large companies typically combine MongoDB and Hadoop?", options: ["They don't, they are mutually exclusive.", "Hadoop for real-time app data, MongoDB for batch processing.", "MongoDB for real-time live apps, Hadoop for historical batch analytics.", "Both are used as a wrapper for Postgres."], answer: 2 },
+      { question: "Supabase was explicitly built as an open-source alternative to which popular platform?", options: ["MongoDB", "Apache Hadoop", "Firebase", "AWS S3"], answer: 2 },
+      { question: "Despite its modern API, what kind of database lies at the heart of Supabase?", options: ["NoSQL Document", "Key-Value Store", "Graph Database", "Relational SQL (Postgres)"], answer: 3 },
+      { question: "Why might a developer choose Supabase over Firebase for a complex financial app?", options: ["To use a NoSQL database.", "To avoid strict table rules.", "To benefit from strict SQL relationships and absolute ACID compliance.", "Because it uses MapReduce."], answer: 2 },
+      { question: "Which of the following is NOT typically provided automatically by a BaaS like Supabase?", options: ["Authentication", "Storage for large files", "Frontend UI rendering", "Real-time database subscriptions"], answer: 2 }
+    ]
   }
 ];
 
@@ -1863,9 +2450,49 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
+  const [user, setUser] = useState(null);
+  const [starredCards, setStarredCards] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const q = query(collection(db, `users/${currentUser.uid}/starredCards`));
+        const unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
+          const cards = [];
+          querySnapshot.forEach((docSnap) => {
+            cards.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          setStarredCards(cards);
+        });
+        return () => unsubscribeSnapshot();
+      } else {
+        setStarredCards([]);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+  
   const courseGroups = {
-    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational'].includes(m.id)),
-    'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational'].includes(m.id))
+    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems'].includes(m.id)),
+    'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems'].includes(m.id)),
+    'Revision': [{ id: 'revision', title: 'Starred Flashcards', flashcards: starredCards }]
   };
   
   const activeGroupModules = courseGroups[activeGroup];
@@ -1905,6 +2532,24 @@ export default function App() {
               Prep Guide
             </h1>
             <div className="flex gap-2 items-center">
+              {/* Auth Button */}
+              {user ? (
+                <button 
+                  onClick={handleLogout}
+                  className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-900/50 transition-colors border border-rose-200 dark:border-rose-900"
+                  title="Logout"
+                >
+                  <LogOut size={18} />
+                </button>
+              ) : (
+                <button 
+                  onClick={handleLogin}
+                  className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200 dark:border-indigo-900"
+                  title="Login with Google"
+                >
+                  <LogIn size={18} />
+                </button>
+              )}
               {/* Theme Toggle Button */}
               <button 
                 onClick={() => setIsDarkMode(!isDarkMode)}
@@ -2012,7 +2657,7 @@ export default function App() {
           {/* Active Tab View */}
           <div className="min-h-[500px]">
             {activeTab === 'notes' && <NotesView module={activeModule} />}
-            {activeTab === 'flashcards' && <FlashcardsView cards={activeModule.flashcards} key={`fc-${activeModule.id}`} />}
+            {activeTab === 'flashcards' && <FlashcardsView cards={activeModule.flashcards} moduleTitle={activeModule.title} user={user} starredCards={starredCards} key={`fc-${activeModule.id}`} />}
             {activeTab === 'quiz' && <QuizView questions={activeModule.quiz} key={`qz-${activeModule.id}`} />}
           </div>
         </div>
@@ -2032,6 +2677,9 @@ export default function App() {
 // --- SUB-COMPONENTS ---
 
 function NotesView({ module }) {
+  if (module.id === 'revision') {
+    return <div className="text-center p-10 text-tertiary">Select the Flashcards tab to view your starred cards.</div>;
+  }
   // Render Module 1: Intro
   if (module.id === 'intro') {
     return (
@@ -5559,6 +6207,801 @@ function NotesView({ module }) {
     );
   }
 
+  if (module.id === 'normalisation') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+
+        {/* Intro + Why Normalise */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+              <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
+            </h2>
+            <div className="space-y-3">
+              {module.notes.intro.points.map((pt, idx) => (
+                <p key={idx} className="text-secondary text-sm leading-relaxed flex items-start gap-3">
+                  <span className="text-indigo-500 font-bold mt-0.5">•</span>
+                  {pt}
+                </p>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+            <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+              <AlertTriangle className="text-amber-500" /> Why Normalise?
+            </h2>
+            <p className="text-amber-800 dark:text-amber-200 text-sm mb-4 leading-relaxed"><strong>Goal:</strong> {module.notes.whyNormalise.reason}</p>
+            <div className="bg-amber-100 dark:bg-amber-900/50 rounded-xl p-4 border border-amber-300 dark:border-amber-800">
+              <p className="text-amber-900 dark:text-amber-100 text-sm font-semibold">{module.notes.whyNormalise.redundancyEffect}</p>
+            </div>
+          </section>
+        </div>
+
+        {/* Anomalies */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-2">
+            <AlertOctagon className="text-rose-500" /> {module.notes.anomalies.title}
+          </h2>
+          <p className="text-secondary text-sm mb-6">{module.notes.anomalies.intro}</p>
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            {module.notes.anomalies.types.map((anom, idx) => (
+              <div key={idx} className="bg-rose-50 dark:bg-rose-950/20 p-5 rounded-xl border border-rose-200 dark:border-rose-900/50 hover:border-rose-400 dark:hover:border-rose-700 transition-colors">
+                <strong className="text-rose-700 dark:text-rose-300 text-sm block mb-2">{anom.name}</strong>
+                <p className="text-rose-900 dark:text-rose-200/80 text-xs leading-relaxed">{anom.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2">
+            {module.notes.anomalies.consequences.map((con, idx) => (
+              <div key={idx} className="flex items-start gap-3 bg-surface-muted/50 p-3 rounded-lg border border-subtle">
+                <Skull size={16} className="text-rose-400 mt-0.5 shrink-0" />
+                <p className="text-secondary text-sm leading-relaxed">{con}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Functional Dependency */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-violet-600 dark:text-violet-400 mb-4 flex items-center gap-2">
+            <ArrowDownUp className="text-violet-500" /> {module.notes.functionalDependency.title}
+          </h2>
+          <div className="space-y-3 mb-6">
+            <p className="text-secondary text-sm leading-relaxed"><strong className="text-primary">Definition:</strong> {module.notes.functionalDependency.definition}</p>
+            <div className="bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-900/50 rounded-xl p-4">
+              <p className="text-violet-900 dark:text-violet-200 text-sm font-mono">{module.notes.functionalDependency.notation}</p>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {module.notes.functionalDependency.types.map((fdType, idx) => (
+              <div key={idx} className="bg-violet-50 dark:bg-violet-950/20 p-5 rounded-xl border border-violet-200 dark:border-violet-900/50">
+                <strong className="text-violet-700 dark:text-violet-300 text-sm block mb-2">{fdType.name}</strong>
+                <p className="text-violet-900 dark:text-violet-200/80 text-xs leading-relaxed">{fdType.desc}</p>
+                {fdType.rule && <p className="text-violet-600 dark:text-violet-400 text-xs mt-2 font-mono bg-violet-100 dark:bg-violet-900/40 p-2 rounded-lg">{fdType.rule}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Armstrong's Axioms */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
+            <ShieldCheck className="text-emerald-500" /> {module.notes.armstrongs.title}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            {module.notes.armstrongs.rules.map((rule, idx) => (
+              <div key={idx} className="bg-emerald-50 dark:bg-emerald-950/20 p-5 rounded-xl border border-emerald-200 dark:border-emerald-900/50 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="bg-emerald-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">{idx + 1}</span>
+                  <strong className="text-emerald-700 dark:text-emerald-300 text-sm">{rule.name}</strong>
+                </div>
+                <ul className="space-y-2">
+                  {rule.points.map((pt, pIdx) => (
+                    <li key={pIdx} className="text-emerald-900 dark:text-emerald-200/80 text-xs leading-relaxed flex items-start gap-2">
+                      <span className="text-emerald-500 mt-0.5">→</span>
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Normal Forms */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+            <Layers className="text-indigo-500" /> {module.notes.normalForms.title}
+          </h2>
+          <div className="relative">
+            {/* Timeline connector */}
+            <div className="hidden md:block absolute left-[28px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-blue-400 via-indigo-400 via-violet-400 to-emerald-400 opacity-40"></div>
+            <div className="space-y-5">
+              {module.notes.normalForms.forms.map((form, idx) => {
+                const colorMap = {
+                  blue: { bg: 'bg-blue-50 dark:bg-blue-950/20', border: 'border-blue-200 dark:border-blue-900/50', title: 'text-blue-700 dark:text-blue-300', dot: 'bg-blue-500', bullet: 'text-blue-500' },
+                  indigo: { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', title: 'text-indigo-700 dark:text-indigo-300', dot: 'bg-indigo-500', bullet: 'text-indigo-500' },
+                  violet: { bg: 'bg-violet-50 dark:bg-violet-950/20', border: 'border-violet-200 dark:border-violet-900/50', title: 'text-violet-700 dark:text-violet-300', dot: 'bg-violet-500', bullet: 'text-violet-500' },
+                  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-950/20', border: 'border-emerald-200 dark:border-emerald-900/50', title: 'text-emerald-700 dark:text-emerald-300', dot: 'bg-emerald-500', bullet: 'text-emerald-500' }
+                };
+                const c = colorMap[form.color] || colorMap.indigo;
+                return (
+                  <div key={idx} className="flex items-start gap-4">
+                    <div className={`w-14 h-14 rounded-xl ${c.dot} flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-md`}>
+                      {idx + 1}
+                    </div>
+                    <div className={`flex-1 ${c.bg} p-5 rounded-xl border ${c.border} hover:shadow-md transition-shadow`}>
+                      <strong className={`${c.title} text-base block mb-3`}>{form.name}</strong>
+                      <ul className="space-y-2">
+                        {form.rules.map((rule, rIdx) => (
+                          <li key={rIdx} className="flex items-start gap-2 text-xs text-secondary leading-relaxed">
+                            <span className={`${c.bullet} font-bold mt-0.5 shrink-0`}>✓</span>
+                            {rule}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Advantages */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle mt-6">
+          <h2 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4 flex items-center gap-2">
+            <CheckSquare className="text-teal-500" /> {module.notes.advantages.title}
+          </h2>
+          <div className="space-y-3">
+            {module.notes.advantages.points.map((pt, idx) => (
+              <p key={idx} className="text-secondary text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-teal-500 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'transaction') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
+          </h2>
+          <div className="space-y-3">
+            {module.notes.intro.points.map((pt, idx) => (
+              <p key={idx} className="text-secondary text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-indigo-500 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* ACID Properties */}
+        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-2">
+            <ShieldCheck className="text-amber-500" /> {module.notes.acid.title}
+          </h2>
+          <p className="text-amber-800 dark:text-amber-200/80 text-sm mb-6">{module.notes.acid.intro}</p>
+          <div className="grid md:grid-cols-2 gap-4">
+            {module.notes.acid.properties.map((prop, idx) => (
+              <div key={idx} className="bg-amber-100/50 dark:bg-amber-900/30 p-5 rounded-xl border border-amber-200 dark:border-amber-900/50 border-l-4 border-l-amber-500">
+                <strong className="text-amber-700 dark:text-amber-300 text-sm block mb-2">{prop.name}</strong>
+                <p className="text-amber-900 dark:text-amber-100/80 text-xs leading-relaxed whitespace-pre-line">{prop.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Transaction States */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
+            <Activity className="text-emerald-500" /> {module.notes.states.title}
+          </h2>
+          
+          <div className="w-full flex justify-center py-6 overflow-x-auto mb-8 bg-surface-muted/50 rounded-xl border border-subtle">
+            <svg width="600" height="320" viewBox="0 0 600 320" className="text-sm font-medium min-w-[600px]">
+              <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L9,3 z" fill="currentColor" className="text-tertiary" />
+                </marker>
+              </defs>
+              
+              {/* Edges */}
+              <g className="stroke-tertiary stroke-2 fill-none" markerEnd="url(#arrow)">
+                <path d="M 155 175 L 205 105" />
+                <text x="140" y="145" className="stroke-none fill-amber-600 dark:fill-amber-400 text-xs font-bold">R/W operations</text>
+
+                <path d="M 330 80 L 400 80" />
+                <text x="365" y="70" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 text-xs font-bold">Permanent store</text>
+
+                <path d="M 130 220 L 195 260" />
+                <text x="145" y="255" className="stroke-none fill-amber-600 dark:fill-amber-400 text-xs font-bold">Failure</text>
+
+                <path d="M 250 110 L 250 240" />
+                <text x="258" y="180" className="stroke-none fill-amber-600 dark:fill-amber-400 text-xs font-bold">Failure</text>
+
+                <path d="M 310 270 L 400 270" />
+                <text x="355" y="260" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 text-xs font-bold">Roll back</text>
+                
+                <path d="M 500 100 L 530 155" />
+                <path d="M 500 250 L 530 195" />
+              </g>
+
+              {/* Nodes */}
+              <g className="fill-surface stroke-strong stroke-2 text-primary">
+                <ellipse cx="100" cy="200" rx="60" ry="25" className="stroke-amber-500 fill-amber-50 dark:fill-amber-950/30 stroke-2" />
+                <text x="100" y="205" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 font-bold">Active state</text>
+
+                <ellipse cx="250" cy="80" rx="80" ry="25" className="stroke-amber-500 fill-amber-50 dark:fill-amber-950/30 stroke-2" />
+                <text x="250" y="85" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 font-bold">Partially committed</text>
+
+                <ellipse cx="460" cy="80" rx="70" ry="25" className="stroke-amber-500 fill-amber-50 dark:fill-amber-950/30 stroke-2" />
+                <text x="460" y="85" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 font-bold">Committed state</text>
+
+                <ellipse cx="250" cy="270" rx="60" ry="25" className="stroke-amber-500 fill-amber-50 dark:fill-amber-950/30 stroke-2" />
+                <text x="250" y="275" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 font-bold">Failed state</text>
+
+                <ellipse cx="460" cy="270" rx="60" ry="25" className="stroke-amber-500 fill-amber-50 dark:fill-amber-950/30 stroke-2" />
+                <text x="460" y="275" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 font-bold">Aborted state</text>
+
+                <ellipse cx="530" cy="175" rx="65" ry="25" className="stroke-amber-500 fill-amber-50 dark:fill-amber-950/30 stroke-2" />
+                <text x="530" y="180" textAnchor="middle" className="stroke-none fill-amber-600 dark:fill-amber-400 font-bold">Terminated state</text>
+              </g>
+            </svg>
+          </div>
+          <div className="space-y-4">
+            {module.notes.states.list.map((state, idx) => (
+              <div key={idx} className="flex items-start gap-4">
+                <div className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-bold px-3 py-1.5 rounded-lg text-sm shrink-0 border border-emerald-200 dark:border-emerald-800 whitespace-nowrap text-center min-w-[140px]">
+                  {state.name}
+                </div>
+                <p className="text-secondary text-sm leading-relaxed mt-1">
+                  {state.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'transaction_implementation') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <BookOpen className="text-indigo-500" /> Intro
+          </h2>
+          <p className="text-secondary text-sm leading-relaxed border-l-4 border-indigo-500 pl-4 bg-indigo-50 dark:bg-indigo-950/20 py-3">
+            {module.notes.intro}
+          </p>
+        </section>
+
+        {/* Shadow-copy scheme */}
+        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
+            <Layers className="text-amber-500" /> {module.notes.shadowCopy.title}
+          </h2>
+          
+          <div className="space-y-6">
+            <div className="bg-surface rounded-xl p-5 border border-amber-200 dark:border-amber-800">
+              <h3 className="font-bold text-primary mb-3">Basics</h3>
+              <ul className="space-y-2">
+                {module.notes.shadowCopy.basics.map((pt, idx) => (
+                  <li key={idx} className="text-secondary text-sm flex items-start gap-2">
+                    <span className="text-amber-500 mt-0.5">•</span> {pt}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-xl p-5 border border-emerald-200 dark:border-emerald-900/50">
+                <h3 className="font-bold text-emerald-700 dark:text-emerald-300 mb-3 flex items-center gap-2">
+                  <CheckSquare size={16} /> Commit Steps
+                </h3>
+                <ul className="space-y-2">
+                  {module.notes.shadowCopy.commitSteps.map((pt, idx) => (
+                    <li key={idx} className="text-emerald-900 dark:text-emerald-100/80 text-xs flex items-start gap-2">
+                      <span className="font-bold">{idx + 1}.</span> {pt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-4 border border-blue-200 dark:border-blue-900/50">
+                  <h3 className="font-bold text-blue-700 dark:text-blue-300 mb-2 text-sm">Atomicity</h3>
+                  <ul className="space-y-1">
+                    {module.notes.shadowCopy.atomicity.map((pt, idx) => (
+                      <li key={idx} className="text-blue-900 dark:text-blue-100/80 text-xs flex items-start gap-2">
+                        <span className="text-blue-500">•</span> {pt}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-4 border border-purple-200 dark:border-purple-900/50">
+                  <h3 className="font-bold text-purple-700 dark:text-purple-300 mb-2 text-sm">Durability</h3>
+                  <ul className="space-y-1">
+                    {module.notes.shadowCopy.durability.map((pt, idx) => (
+                      <li key={idx} className="text-purple-900 dark:text-purple-100/80 text-xs flex items-start gap-2">
+                        <span className="text-purple-500">•</span> {pt}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-surface rounded-xl p-5 border border-amber-200 dark:border-amber-800">
+              <h3 className="font-bold text-primary mb-2 text-sm">Implementation Detail</h3>
+              <p className="text-secondary text-xs leading-relaxed">{module.notes.shadowCopy.implementationDetail}</p>
+              
+              <div className="mt-4 bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-300 p-3 rounded-lg text-xs font-medium border border-red-200 dark:border-red-900/50 flex items-center gap-2">
+                <AlertTriangle size={14} /> Drawback: {module.notes.shadowCopy.drawback}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Log-based recovery methods */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-6 flex items-center gap-2">
+            <Database className="text-rose-500" /> {module.notes.logBased.title}
+          </h2>
+          
+          <div className="space-y-4 mb-8">
+            {module.notes.logBased.basics.map((pt, idx) => (
+              <div key={idx} className="bg-surface-muted/50 p-3 rounded-lg text-secondary text-sm border-l-2 border-rose-400">
+                {pt}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-indigo-50 dark:bg-indigo-950/20 rounded-xl p-6 border border-indigo-200 dark:border-indigo-900/50">
+              <h3 className="font-bold text-indigo-700 dark:text-indigo-300 mb-4">{module.notes.logBased.deferred.title}</h3>
+              <ul className="space-y-3">
+                {module.notes.logBased.deferred.points.map((pt, idx) => (
+                  <li key={idx} className="text-indigo-900 dark:text-indigo-100/80 text-sm flex items-start gap-2 leading-relaxed">
+                    <span className="text-indigo-500 mt-1">•</span> {pt}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-teal-50 dark:bg-teal-950/20 rounded-xl p-6 border border-teal-200 dark:border-teal-900/50">
+              <h3 className="font-bold text-teal-700 dark:text-teal-300 mb-4">{module.notes.logBased.immediate.title}</h3>
+              <ul className="space-y-3 mb-4">
+                {module.notes.logBased.immediate.points.map((pt, idx) => (
+                  <li key={idx} className="text-teal-900 dark:text-teal-100/80 text-sm flex items-start gap-2 leading-relaxed">
+                    <span className="text-teal-500 mt-1">•</span> {pt}
+                  </li>
+                ))}
+              </ul>
+              
+              <div className="bg-surface-muted/50 rounded-lg p-3 border border-teal-200/50 dark:border-teal-800/50">
+                <strong className="text-teal-800 dark:text-teal-200 text-xs block mb-2">Failure Handling:</strong>
+                <ul className="space-y-1">
+                  {module.notes.logBased.immediate.failureHandling.map((pt, idx) => (
+                    <li key={idx} className="text-teal-900 dark:text-teal-100/70 text-xs flex items-start gap-2">
+                      <span className="font-bold">{idx + 1}.</span> {pt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'indexing') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
+          </h2>
+          <div className="space-y-3">
+            {module.notes.intro.points.map((pt, idx) => (
+              <p key={idx} className="text-secondary text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-indigo-500 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* Structure */}
+        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
+            <Layers className="text-amber-500" /> {module.notes.structure.title}
+          </h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {module.notes.structure.parts.map((part, idx) => (
+              <div key={idx} className="bg-amber-100/50 dark:bg-amber-900/30 p-5 rounded-xl border border-amber-200 dark:border-amber-900/50 border-l-4 border-l-amber-500">
+                <strong className="text-amber-700 dark:text-amber-300 text-sm block mb-2">{part.name}</strong>
+                <p className="text-amber-900 dark:text-amber-100/80 text-xs leading-relaxed whitespace-pre-line">{part.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Methods */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
+            <FolderOpen className="text-emerald-500" /> {module.notes.methods.title}
+          </h2>
+          
+          <div className="space-y-6">
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-900/50">
+              <h3 className="font-bold text-emerald-700 dark:text-emerald-300 mb-4 text-lg">{module.notes.methods.primary.title}</h3>
+              <ul className="space-y-2 mb-6">
+                {module.notes.methods.primary.basics.map((pt, idx) => (
+                  <li key={idx} className="text-emerald-900 dark:text-emerald-100/80 text-sm flex items-start gap-2 leading-relaxed">
+                    <span className="text-emerald-500 mt-1">•</span> {pt}
+                  </li>
+                ))}
+              </ul>
+              
+              <div className="bg-surface-muted/50 rounded-xl p-4 border border-emerald-200/50 dark:border-emerald-800/50 mb-6">
+                <h4 className="font-bold text-emerald-800 dark:text-emerald-200 mb-3">{module.notes.methods.primary.denseSparse.title}</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-surface p-4 rounded-lg border border-subtle">
+                    <strong className="text-sm text-primary block mb-2">Dense Index</strong>
+                    <ul className="space-y-1">
+                      {module.notes.methods.primary.denseSparse.dense.map((pt, idx) => (
+                        <li key={idx} className="text-xs text-secondary leading-relaxed flex items-start gap-2">
+                          <span className="text-emerald-500">•</span> {pt}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="bg-surface p-4 rounded-lg border border-subtle">
+                    <strong className="text-sm text-primary block mb-2">Sparse Index</strong>
+                    <ul className="space-y-1">
+                      {module.notes.methods.primary.denseSparse.sparse.map((pt, idx) => (
+                        <li key={idx} className="text-xs text-secondary leading-relaxed flex items-start gap-2">
+                          <span className="text-emerald-500">•</span> {pt}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-surface-muted/50 p-4 rounded-lg border border-subtle">
+                  <strong className="text-sm text-primary block mb-2">Based on Key Attribute</strong>
+                  <ul className="space-y-1">
+                    {module.notes.methods.primary.basedOnKey.map((pt, idx) => (
+                      <li key={idx} className="text-xs text-secondary leading-relaxed flex items-start gap-2">
+                        <span className="text-emerald-500">•</span> {pt}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-surface-muted/50 p-4 rounded-lg border border-subtle">
+                  <strong className="text-sm text-primary block mb-2">Based on Non-Key Attribute</strong>
+                  <ul className="space-y-1">
+                    {module.notes.methods.primary.basedOnNonKey.map((pt, idx) => (
+                      <li key={idx} className="text-xs text-secondary leading-relaxed flex items-start gap-2">
+                        <span className="text-emerald-500">•</span> {pt}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-surface-muted/50 p-4 rounded-lg border border-subtle">
+                  <strong className="text-sm text-primary block mb-2">Multi-level Index</strong>
+                  <ul className="space-y-1">
+                    {module.notes.methods.primary.multiLevel.map((pt, idx) => (
+                      <li key={idx} className="text-xs text-secondary leading-relaxed flex items-start gap-2">
+                        <span className="text-emerald-500">•</span> {pt}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-teal-50 dark:bg-teal-950/20 rounded-xl p-6 border border-teal-200 dark:border-teal-900/50">
+              <h3 className="font-bold text-teal-700 dark:text-teal-300 mb-4 text-lg">{module.notes.methods.secondary.title}</h3>
+              <ul className="space-y-2">
+                {module.notes.methods.secondary.points.map((pt, idx) => (
+                  <li key={idx} className="text-teal-900 dark:text-teal-100/80 text-sm flex items-start gap-2 leading-relaxed">
+                    <span className="text-teal-500 mt-1">•</span> {pt}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Pros and Cons */}
+        <section className="grid md:grid-cols-2 gap-4">
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-900/50">
+            <h3 className="font-bold text-emerald-700 dark:text-emerald-300 mb-4 flex items-center gap-2">
+              <CheckSquare size={18} /> Advantages
+            </h3>
+            <ul className="space-y-2">
+              {module.notes.prosCons.advantages.map((pt, idx) => (
+                <li key={idx} className="text-emerald-900 dark:text-emerald-100/80 text-sm flex items-start gap-2">
+                  <span className="text-emerald-500 mt-0.5">•</span> {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-rose-50 dark:bg-rose-950/20 rounded-2xl p-6 border border-rose-200 dark:border-rose-900/50">
+            <h3 className="font-bold text-rose-700 dark:text-rose-300 mb-4 flex items-center gap-2">
+              <AlertTriangle size={18} /> Limitations
+            </h3>
+            <ul className="space-y-2">
+              {module.notes.prosCons.limitations.map((pt, idx) => (
+                <li key={idx} className="text-rose-900 dark:text-rose-100/80 text-sm flex items-start gap-2">
+                  <span className="text-rose-500 mt-0.5">•</span> {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'nosql') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
+            <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
+          </h2>
+          <div className="space-y-3">
+            {module.notes.intro.points.map((pt, idx) => (
+              <p key={idx} className="text-secondary text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-indigo-500 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* ACID vs BASE */}
+        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
+            <CheckSquare className="text-amber-500" /> {module.notes.acidVsBase.title}
+          </h2>
+          <p className="text-amber-900 dark:text-amber-100/80 text-sm leading-relaxed mb-6 font-medium bg-amber-100/50 dark:bg-amber-900/30 p-4 rounded-xl border border-amber-200 dark:border-amber-800/50">
+            {module.notes.acidVsBase.intro}
+          </p>
+          
+          <div className="space-y-5">
+            {module.notes.acidVsBase.sections.map((section, idx) => (
+              <div key={idx} className="bg-surface p-5 rounded-xl border border-amber-200 dark:border-amber-900/50">
+                <h3 className="font-bold text-amber-700 dark:text-amber-300 mb-2">{section.subtitle}</h3>
+                <p className="text-secondary text-sm leading-relaxed whitespace-pre-line">{section.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* History */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4 flex items-center gap-2">
+            <Clock className="text-teal-500" /> {module.notes.history.title}
+          </h2>
+          <ul className="space-y-3">
+            {module.notes.history.points.map((pt, idx) => (
+              <li key={idx} className="text-secondary text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-teal-500 font-bold mt-0.5">•</span>
+                {pt}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Types of NoSQL */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-6 flex items-center gap-2">
+            <Database className="text-purple-500" /> {module.notes.types.title}
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-4">
+            {module.notes.types.models.map((model, idx) => (
+              <div key={idx} className="bg-purple-50 dark:bg-purple-950/20 p-5 rounded-xl border border-purple-200 dark:border-purple-900/50">
+                <h3 className="font-bold text-purple-700 dark:text-purple-300 mb-3 text-lg border-b border-purple-200 dark:border-purple-800/50 pb-2">{model.name}</h3>
+                <p className="text-secondary text-sm leading-relaxed mb-4">{model.desc}</p>
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-start gap-2">
+                    <strong className="text-purple-800 dark:text-purple-200 min-w-[70px]">Use cases:</strong>
+                    <span className="text-purple-900 dark:text-purple-100/70">{model.useCases}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <strong className="text-purple-800 dark:text-purple-200 min-w-[70px]">Examples:</strong>
+                    <span className="text-purple-900 dark:text-purple-100/70">{model.examples}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pros, Cons and When to use */}
+        <section className="grid md:grid-cols-3 gap-4">
+          <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-900/50">
+            <h3 className="font-bold text-emerald-700 dark:text-emerald-300 mb-4 flex items-center gap-2">
+              <CheckSquare size={18} /> Advantages
+            </h3>
+            <ul className="space-y-2">
+              {module.notes.prosCons.advantages.map((pt, idx) => (
+                <li key={idx} className="text-emerald-900 dark:text-emerald-100/80 text-xs flex items-start gap-2 leading-relaxed">
+                  <span className="text-emerald-500 mt-0.5">•</span> {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div className="bg-rose-50 dark:bg-rose-950/20 rounded-2xl p-6 border border-rose-200 dark:border-rose-900/50">
+            <h3 className="font-bold text-rose-700 dark:text-rose-300 mb-4 flex items-center gap-2">
+              <AlertTriangle size={18} /> Disadvantages
+            </h3>
+            <ul className="space-y-2">
+              {module.notes.prosCons.disadvantages.map((pt, idx) => (
+                <li key={idx} className="text-rose-900 dark:text-rose-100/80 text-xs flex items-start gap-2 leading-relaxed">
+                  <span className="text-rose-500 mt-0.5">•</span> {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 dark:bg-blue-950/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-900/50">
+            <h3 className="font-bold text-blue-700 dark:text-blue-300 mb-4 flex items-center gap-2">
+              <FolderOpen size={18} /> When to use
+            </h3>
+            <ul className="space-y-2">
+              {module.notes.prosCons.whenToUse.map((pt, idx) => (
+                <li key={idx} className="text-blue-900 dark:text-blue-100/80 text-xs flex items-start gap-2 leading-relaxed">
+                  <span className="text-blue-500 mt-0.5">•</span> {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* SQL vs NoSQL Table */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle overflow-x-auto">
+          <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-6 flex items-center gap-2">
+            <Layout className="text-slate-500" /> {module.notes.sqlVsNosql.title}
+          </h2>
+          <table className="w-full text-left border-collapse min-w-[600px]">
+            <thead>
+              <tr className="bg-slate-100 dark:bg-slate-800">
+                {module.notes.sqlVsNosql.headers.map((h, i) => (
+                  <th key={i} className="p-4 border-b border-subtle text-primary font-bold text-sm">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {module.notes.sqlVsNosql.rows.map((row, rowIdx) => (
+                <tr key={rowIdx} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  {row.map((cell, cellIdx) => (
+                    <td key={cellIdx} className={`p-4 border-b border-subtle text-sm ${cellIdx === 0 ? 'font-semibold text-primary' : 'text-secondary'}`}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+      </div>
+    );
+  }
+
+  if (module.id === 'modern_data_ecosystems') {
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
+        
+        {/* Intro */}
+        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <p className="text-secondary text-sm leading-relaxed border-l-4 border-indigo-500 pl-4 bg-indigo-50 dark:bg-indigo-950/20 py-3 font-medium">
+            {module.notes.intro}
+          </p>
+        </section>
+
+        {/* MongoDB */}
+        <section className="bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl p-8 shadow-sm border border-emerald-200 dark:border-emerald-900/50">
+          <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
+            <Database className="text-emerald-500" /> {module.notes.mongodb.title}
+          </h2>
+          <div className="space-y-3 bg-surface p-5 rounded-xl border border-emerald-200 dark:border-emerald-900/50">
+            {module.notes.mongodb.points.map((pt, idx) => (
+              <p key={idx} className="text-emerald-900 dark:text-emerald-100/80 text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-emerald-500 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* Hadoop */}
+        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+          <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
+            <Server className="text-amber-500" /> {module.notes.hadoop.title}
+          </h2>
+          <div className="space-y-3 bg-surface p-5 rounded-xl border border-amber-200 dark:border-amber-900/50">
+            {module.notes.hadoop.points.map((pt, idx) => (
+              <p key={idx} className="text-amber-900 dark:text-amber-100/80 text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-amber-500 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* Working Together */}
+        <section className="bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8 shadow-sm border border-blue-200 dark:border-blue-900/50">
+          <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-6 flex items-center gap-2">
+            <ArrowDownUp className="text-blue-500" /> {module.notes.workingTogether.title}
+          </h2>
+          <div className="space-y-3 bg-surface p-5 rounded-xl border border-blue-200 dark:border-blue-900/50">
+            {module.notes.workingTogether.points.map((pt, idx) => (
+              <p key={idx} className="text-blue-900 dark:text-blue-100/80 text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-blue-500 font-bold mt-0.5">{idx + 1}.</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        {/* Supabase */}
+        <section className="bg-purple-50 dark:bg-purple-950/30 rounded-2xl p-8 shadow-sm border border-purple-200 dark:border-purple-900/50">
+          <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4 flex items-center gap-2">
+            <Code className="text-purple-500" /> {module.notes.supabase.title}
+          </h2>
+          <p className="text-purple-900 dark:text-purple-100/80 text-sm leading-relaxed mb-6 font-medium bg-purple-100/50 dark:bg-purple-900/30 p-4 rounded-xl border border-purple-200 dark:border-purple-800/50">
+            {module.notes.supabase.intro}
+          </p>
+          <div className="space-y-3 bg-surface p-5 rounded-xl border border-purple-200 dark:border-purple-900/50">
+            {module.notes.supabase.points.map((pt, idx) => (
+              <p key={idx} className="text-purple-900 dark:text-purple-100/80 text-sm leading-relaxed flex items-start gap-3">
+                <span className="text-purple-500 font-bold mt-0.5">•</span>
+                {pt}
+              </p>
+            ))}
+          </div>
+        </section>
+
+      </div>
+    );
+  }
+
   return <div>Module content not found.</div>;
 }
 
@@ -5636,7 +7079,7 @@ function ErSymbol({ type }) {
   }
 }
 
-function FlashcardsView({ cards }) {
+function FlashcardsView({ cards, moduleTitle, user, starredCards }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -5647,6 +7090,25 @@ function FlashcardsView({ cards }) {
   }, [cards]);
 
   if (!cards || cards.length === 0) return <div className="text-center p-10 text-tertiary">No flashcards for this module yet.</div>;
+
+  const currentCard = cards[currentIndex];
+  // Simple deterministic ID generation based on the card front text
+  const currentCardId = btoa(unescape(encodeURIComponent(currentCard.front))).replace(/[^a-zA-Z0-9]/g, '').slice(0, 30);
+  const isCurrentlyStarred = user && starredCards.some(sc => sc.id === currentCardId);
+
+  const handleStar = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      alert("Please login to star cards.");
+      return;
+    }
+    const docRef = doc(db, `users/${user.uid}/starredCards`, currentCardId);
+    if (isCurrentlyStarred) {
+      await deleteDoc(docRef);
+    } else {
+      await setDoc(docRef, { ...currentCard, moduleTitle: moduleTitle || 'Revision' });
+    }
+  };
 
   const nextCard = () => {
     setIsFlipped(false);
@@ -5666,6 +7128,13 @@ function FlashcardsView({ cards }) {
         className="relative w-full max-w-lg h-80 perspective-1000 cursor-pointer group"
         onClick={() => setIsFlipped(!isFlipped)}
       >
+        <button 
+          onClick={handleStar}
+          className={`absolute top-4 right-4 z-20 p-2 rounded-full transition-colors ${isCurrentlyStarred ? 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30 hover:bg-yellow-200 dark:hover:bg-yellow-900/50' : 'text-secondary bg-surface-muted hover:bg-subtle'}`}
+          title={isCurrentlyStarred ? "Unstar Card" : "Star Card"}
+        >
+          <Star size={20} fill={isCurrentlyStarred ? "currentColor" : "none"} />
+        </button>
         <div className={`w-full h-full transition-transform duration-500 transform-style-3d relative ${isFlipped ? 'rotate-y-180' : ''}`}>
           {/* Front */}
           <div className="absolute inset-0 backface-hidden bg-surface-muted border-2 border-strong rounded-3xl p-8 flex flex-col items-center justify-center text-center shadow-lg group-hover:border-indigo-500/50 transition-colors">
