@@ -2441,6 +2441,91 @@ const courseModules = [
       { question: "Why might a developer choose Supabase over Firebase for a complex financial app?", options: ["To use a NoSQL database.", "To avoid strict table rules.", "To benefit from strict SQL relationships and absolute ACID compliance.", "Because it uses MapReduce."], answer: 2 },
       { question: "Which of the following is NOT typically provided automatically by a BaaS like Supabase?", options: ["Authentication", "Storage for large files", "Frontend UI rendering", "Real-time database subscriptions"], answer: 2 }
     ]
+  },
+  {
+    id: 'types_of_databases',
+    title: 'LEC-16: Types of Databases',
+    notes: {
+      intro: "This lecture expands the big picture of databases by categorizing the evolution of database types, comparing Relational, Object-Oriented, NoSQL, Hierarchical, and Network databases.",
+      relational: {
+        title: "1. Relational Databases (SQL)",
+        points: [
+          "Based on the Relational Model and widely popular since the 1970s.",
+          "Data is stored in discrete tables that are JOINed together using foreign keys.",
+          "Use Structured Query Language (SQL) for CRUD operations.",
+          "Advantages: Strong guarantee of data normalisation and highly optimized for structured data.",
+          "Disadvantages: Scalability issues (horizontal scaling is difficult) and increased complexity as data grows huge.",
+          "Examples: MySQL, Microsoft SQL Server, Oracle."
+        ]
+      },
+      objectOriented: {
+        title: "2. Object-Oriented Databases (The Programmer's Dream)",
+        points: [
+          "The Problem it Solves: Normally, with SQL, you have to write a complex middle layer of code (ORM) to chop your programming objects into flat rows and columns, and then rebuild them when reading.",
+          "The Solution: Drops tables entirely. It stores data exactly as a programming object directly on the disk.",
+          "Core Concept: Everything is an Object Package. Information is instantly available in one package instead of being scattered across multiple tables.",
+          "Features: Supports OOP concepts like Inheritance, object-identity, and Encapsulation.",
+          "Advantages: Data storage and retrieval is easy and quick. Handles complex data relations that standard relational databases struggle with.",
+          "Disadvantages: High complexity causes performance issues (read, write, update operations can be slowed down). Lacks massive community support.",
+          "Examples: ObjectDB, GemStone."
+        ]
+      },
+      nosql: {
+        title: "3. NoSQL Databases",
+        points: [
+          "Non-tabular databases that store data differently than relational tables.",
+          "Types: Document, Key-Value, Wide-Column, and Graph.",
+          "Advantages: Flexible schemas (schema free), scales easily with large amounts of data (big data) and high user loads (horizontal scaling).",
+          "Data structures are flexible and have the ability to adjust dynamically."
+        ]
+      },
+      hierarchical: {
+        title: "4. Hierarchical Databases (The Family Tree Approach)",
+        points: [
+          "One of the oldest database models, built specifically around a strict parent-child hierarchy.",
+          "Structure: A tree-like organization with a root 'parent' at the top, linking to subdirectories (children).",
+          "The Golden Rule: A parent record can have multiple child records, but each child record can only have ONE parent.",
+          "How it searches: To find data, the engine must traverse the entire tree starting at the root node.",
+          "Advantages: Ease of use. Because data naturally maps out in a strict one-to-many physical architecture, traversing a branch is lightning-fast.",
+          "Real-World Analogy: Folders on your computer (C: Drive -> Documents -> Notes), or website drop-down menus.",
+          "Disadvantages: Inflexible. Cannot describe relationships where a child node has multiple parent nodes (M:N). Top-to-bottom searching can be time-consuming and redundant.",
+          "Examples: IBM IMS."
+        ]
+      },
+      network: {
+        title: "5. Network Databases",
+        points: [
+          "An extension of Hierarchical databases designed to solve the inflexibility issue.",
+          "Structure: Organized in a Graph structure rather than a strict tree.",
+          "The Difference: Child records are given the freedom to associate with multiple parent records.",
+          "Advantages: Can handle complex relations that hierarchical databases cannot.",
+          "Disadvantages: Maintenance is tedious. The M:N links may cause slow retrieval. Lacks modern web community support.",
+          "Examples: Integrated Data Store (IDS), IDMS."
+        ]
+      },
+      summary: {
+        title: "The Big Picture Map",
+        points: [
+          "Relational (SQL): Looks at the world as a collection of organized, strict Spreadsheets connected by keys.",
+          "NoSQL (MongoDB): Looks at the world as flexible, independent Sticky Notes (JSON) that can scale globally.",
+          "Object-Oriented: Looks at the world exactly how your backend programming code does—as self-contained Objects.",
+          "Hierarchical: Looks at the world as a strict Family Tree or File Directory System."
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is an Object-Oriented Database?", back: "A database that drops tables and stores data exactly as a programming object directly on the disk, removing the need for an ORM." },
+      { front: "What is the Golden Rule of Hierarchical Databases?", back: "A parent record can have multiple child records, but each child record can only have ONE parent." },
+      { front: "What is a major disadvantage of Object-Oriented Databases?", back: "High complexity causes performance issues (slowing down read/write operations) and it lacks massive community support compared to SQL." },
+      { front: "How does a Network Database differ from a Hierarchical Database?", back: "A Network database allows a child record to have multiple parent records (Graph structure), whereas a Hierarchical database strictly limits a child to one parent (Tree structure)." },
+      { front: "What is the main advantage of a Hierarchical Database?", back: "Traversing a specific branch is lightning-fast because the data is mapped out in a strict one-to-many physical architecture on the disk." }
+    ],
+    quiz: [
+      { question: "Which database type is best compared to a strict family tree or file directory system?", options: ["Relational Database", "NoSQL Database", "Hierarchical Database", "Network Database"], answer: 2 },
+      { question: "What problem do Object-Oriented databases primarily solve?", options: ["The inability to scale horizontally.", "The need for complex ORM layers that map programming objects to SQL tables.", "The lack of security in NoSQL databases.", "The need for strict parent-child relationships."], answer: 1 },
+      { question: "Which database type uses a Graph structure and allows multiple parent records for a single child?", options: ["Network Database", "Hierarchical Database", "Relational Database", "Document Database"], answer: 0 },
+      { question: "Which of the following is a disadvantage of a Hierarchical Database?", options: ["It requires an ORM to interact with code.", "It cannot describe relationships where a child has multiple parents.", "Traversing a single branch is extremely slow.", "It does not support the concept of a 'root' parent."], answer: 1 }
+    ]
   }
 ];
 
@@ -2451,11 +2536,13 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [starredCards, setStarredCards] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setLoading(false);
       if (currentUser) {
         const q = query(collection(db, `users/${currentUser.uid}/starredCards`));
         const unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
@@ -2490,8 +2577,8 @@ export default function App() {
   };
   
   const courseGroups = {
-    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems'].includes(m.id)),
-    'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems'].includes(m.id)),
+    'OS': courseModules.filter(m => !['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases'].includes(m.id)),
+    'DBMS': courseModules.filter(m => ['dbms_arch', 'er_model', 'extended_er', 'relational_model', 'er_to_relational', 'normalisation', 'transaction', 'transaction_implementation', 'indexing', 'nosql', 'modern_data_ecosystems', 'types_of_databases'].includes(m.id)),
     'Revision': [{ id: 'revision', title: 'Starred Flashcards', flashcards: starredCards }]
   };
   
@@ -2517,6 +2604,46 @@ export default function App() {
   }, [isDarkMode]);
 
   const activeModule = courseModules.find(m => m.id === activeModuleId) || activeGroupModules[0];
+
+  if (loading) {
+    return (
+      <div className="flex h-screen bg-background items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex h-screen bg-background items-center justify-center relative overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+        
+        <div className="bg-surface border border-subtle p-12 rounded-3xl shadow-xl max-w-md w-full text-center z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="w-20 h-20 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AppWindow className="text-indigo-600 dark:text-indigo-400" size={40} />
+          </div>
+          <h1 className="text-3xl font-bold text-primary mb-3">GetMePlaced</h1>
+          <p className="text-secondary mb-8 leading-relaxed">Your ultimate structured prep guide. Sign in to access your notes, flashcards, and quizzes.</p>
+          
+          <button 
+            onClick={handleLogin}
+            className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-indigo-500/20"
+          >
+            <LogIn size={20} />
+            Continue with Google
+          </button>
+        </div>
+        
+        <button 
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className="absolute top-6 right-6 p-3 rounded-full bg-surface-muted hover:bg-subtle text-tertiary hover:text-primary transition-colors border border-subtle z-20"
+        >
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-background text-primary font-sans overflow-hidden">
@@ -2638,27 +2765,27 @@ export default function App() {
               onClick={() => setActiveTab('notes')}
               className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'notes' ? 'bg-indigo-600/10 shadow-sm text-indigo-500 font-bold border border-indigo-500/20' : 'text-tertiary hover:text-primary hover:bg-surface-muted'}`}
             >
-              <BookOpen size={16} /> Notes
+              <BookOpen size={16} /> Notes {activeModule.id === 'revision' ? `(${starredCards.filter(c => c.type === 'note').length})` : ''}
             </button>
             <button 
               onClick={() => setActiveTab('flashcards')}
               className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'flashcards' ? 'bg-indigo-600/10 shadow-sm text-indigo-500 font-bold border border-indigo-500/20' : 'text-tertiary hover:text-primary hover:bg-surface-muted'}`}
             >
-              <Layers size={16} /> Flashcards ({activeModule.flashcards ? activeModule.flashcards.length : 0})
+              <Layers size={16} /> Flashcards ({activeModule.id === 'revision' ? starredCards.filter(c => c.type === 'flashcard').length : (activeModule.flashcards ? activeModule.flashcards.length : 0)})
             </button>
             <button 
               onClick={() => setActiveTab('quiz')}
               className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'quiz' ? 'bg-indigo-600/10 shadow-sm text-indigo-500 font-bold border border-indigo-500/20' : 'text-tertiary hover:text-primary hover:bg-surface-muted'}`}
             >
-              <CheckSquare size={16} /> Quiz ({activeModule.quiz ? activeModule.quiz.length : 0})
+              <CheckSquare size={16} /> Quiz ({activeModule.id === 'revision' ? starredCards.filter(c => c.type === 'quiz').length : (activeModule.quiz ? activeModule.quiz.length : 0)})
             </button>
           </div>
           
           {/* Active Tab View */}
           <div className="min-h-[500px]">
-            {activeTab === 'notes' && <NotesView module={activeModule} />}
-            {activeTab === 'flashcards' && <FlashcardsView cards={activeModule.flashcards} moduleTitle={activeModule.title} user={user} starredCards={starredCards} key={`fc-${activeModule.id}`} />}
-            {activeTab === 'quiz' && <QuizView questions={activeModule.quiz} key={`qz-${activeModule.id}`} />}
+            {activeTab === 'notes' && <NotesView module={activeModule} user={user} starredCards={starredCards} />}
+            {activeTab === 'flashcards' && <FlashcardsView cards={activeModule.id === 'revision' ? starredCards.filter(c => c.type === 'flashcard') : activeModule.flashcards} moduleTitle={activeModule.title} user={user} starredCards={starredCards} key={`fc-${activeModule.id}`} />}
+            {activeTab === 'quiz' && <QuizView questions={activeModule.id === 'revision' ? starredCards.filter(c => c.type === 'quiz') : activeModule.quiz} moduleTitle={activeModule.title} user={user} starredCards={starredCards} key={`qz-${activeModule.id}`} />}
           </div>
         </div>
       </main>
@@ -2676,15 +2803,121 @@ export default function App() {
 
 // --- SUB-COMPONENTS ---
 
-function NotesView({ module }) {
+function StarableBlock({ children, moduleTitle, user, starredCards, blockId }) {
+  const containerRef = React.useRef(null);
+  const isCurrentlyStarred = user && starredCards.some(sc => sc.id === blockId);
+
+  const handleStar = async (e) => {
+    e.stopPropagation();
+    if (!user) return alert("Please login to star notes.");
+    const docRef = doc(db, `users/${user.uid}/starredCards`, blockId);
+    if (isCurrentlyStarred) {
+      await deleteDoc(docRef);
+    } else {
+      const clone = containerRef.current.cloneNode(true);
+      const btn = clone.querySelector('.star-btn');
+      if (btn) btn.remove();
+      
+      await setDoc(docRef, { 
+        type: 'note', 
+        html: clone.innerHTML, 
+        moduleTitle: moduleTitle || 'Revision' 
+      });
+    }
+  };
+
+  return (
+    <div className="relative group w-full" ref={containerRef}>
+      <button 
+        onClick={handleStar}
+        className={`star-btn absolute top-4 right-4 z-20 p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 ${isCurrentlyStarred ? 'opacity-100 text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30 hover:bg-yellow-200 dark:hover:bg-yellow-900/50' : 'text-secondary bg-surface-muted hover:bg-subtle'}`}
+        title={isCurrentlyStarred ? "Unstar Note" : "Star Note"}
+      >
+        <Star size={16} fill={isCurrentlyStarred ? "currentColor" : "none"} />
+      </button>
+      {children}
+    </div>
+  );
+}
+
+function NotesView({ module, user, starredCards }) {
   if (module.id === 'revision') {
-    return <div className="text-center p-10 text-tertiary">Select the Flashcards tab to view your starred cards.</div>;
+    const notes = starredCards.filter(c => c.type === 'note');
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {notes.length === 0 ? (
+          <div className="text-center p-10 text-tertiary">No starred notes yet.</div>
+        ) : (
+          notes.map(note => (
+            <div key={note.id} className="relative group bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden">
+               <button 
+                  onClick={async () => {
+                    await deleteDoc(doc(db, `users/${user.uid}/starredCards`, note.id));
+                  }}
+                  className="absolute top-4 right-4 z-20 p-2 rounded-full opacity-0 group-hover:opacity-100 text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-all duration-300"
+                  title="Unstar Note"
+                >
+                  <Star size={16} fill="currentColor" />
+                </button>
+               {/* Render the saved HTML content from the original module */}
+               <div dangerouslySetInnerHTML={{ __html: note.html }} />
+            </div>
+          ))
+        )}
+      </div>
+    );
   }
+
+  if (module.id === 'types_of_databases') {
+    const colors = {
+      relational: { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500' },
+      objectOriented: { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-900/50', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500' },
+      nosql: { bg: 'bg-emerald-50 dark:bg-emerald-950/20', border: 'border-emerald-200 dark:border-emerald-900/50', text: 'text-emerald-600 dark:text-emerald-400', icon: 'text-emerald-500' },
+      hierarchical: { bg: 'bg-rose-50 dark:bg-rose-950/20', border: 'border-rose-200 dark:border-rose-900/50', text: 'text-rose-600 dark:text-rose-400', icon: 'text-rose-500' },
+      network: { bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/20', border: 'border-fuchsia-200 dark:border-fuchsia-900/50', text: 'text-fuchsia-600 dark:text-fuchsia-400', icon: 'text-fuchsia-500' },
+      summary: { bg: 'bg-slate-50 dark:bg-slate-900/40', border: 'border-slate-200 dark:border-slate-800', text: 'text-slate-700 dark:text-slate-300', icon: 'text-slate-500' }
+    };
+
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <StarableBlock moduleTitle={module.title} user={user} starredCards={starredCards} blockId={`${module.id}-intro`}>
+          <div className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <p className="text-secondary text-lg leading-relaxed">{module.notes.intro}</p>
+          </div>
+        </StarableBlock>
+
+        {Object.entries(module.notes).map(([key, section]) => {
+          if (key === 'intro') return null;
+          const style = colors[key] || colors.summary;
+          
+          return (
+            <StarableBlock key={key} moduleTitle={module.title} user={user} starredCards={starredCards} blockId={`${module.id}-${key}`}>
+              <section className={`rounded-2xl p-8 shadow-sm border ${style.bg} ${style.border}`}>
+                <h2 className={`text-2xl font-bold mb-6 flex items-center gap-3 ${style.text}`}>
+                  <Database className={style.icon} size={24} /> {section.title}
+                </h2>
+                <ul className="space-y-4">
+                  {section.points.map((pt, idx) => (
+                    <li key={idx} className="text-secondary text-sm md:text-base leading-relaxed flex items-start gap-3">
+                      <span className={`font-bold mt-1 ${style.icon}`}>•</span>
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </StarableBlock>
+          );
+        })}
+      </div>
+    );
+  }
+
   // Render Module 1: Intro
   if (module.id === 'intro') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${1}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> System Architecture
           </h2>
@@ -2710,9 +2943,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${2}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-primary mb-6">Core Definitions</h2>
             <div className="space-y-6">
               {module.notes.definitions.map((item, idx) => (
@@ -2723,9 +2958,11 @@ function NotesView({ module }) {
               ))}
             </div>
           </section>
+    </StarableBlock>
 
           <div className="space-y-6">
-            <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+            <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${3}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
               <h2 className="text-xl font-bold text-primary mb-6 text-left">Key OS Functions</h2>
               <ul className="space-y-3 text-left">
                 {module.notes.functions.map((item, idx) => (
@@ -2741,8 +2978,10 @@ function NotesView({ module }) {
                 ))}
               </ul>
             </section>
+    </StarableBlock>
 
-            <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50 text-left">
+            <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${4}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50 text-left">
               <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4">What if there is no OS?</h2>
               <ul className="space-y-2 list-disc list-inside text-amber-200/80">
                 {module.notes.whyOs.map((item, idx) => (
@@ -2750,9 +2989,11 @@ function NotesView({ module }) {
                 ))}
               </ul>
             </section>
+    </StarableBlock>
 
             {module.notes.ipc && (
-              <section className="bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8 shadow-sm border border-blue-200 dark:border-blue-900/50 text-left">
+              <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${5}`}>
+      <section className="bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8 shadow-sm border border-blue-200 dark:border-blue-900/50 text-left">
                 <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
                   <Activity className="text-blue-500" /> {module.notes.ipc.title}
                 </h2>
@@ -2761,6 +3002,7 @@ function NotesView({ module }) {
                   {module.notes.ipc.methods}
                 </div>
               </section>
+    </StarableBlock>
             )}
           </div>
         </div>
@@ -2772,7 +3014,8 @@ function NotesView({ module }) {
   if (module.id === 'types') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${6}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Cpu className="text-indigo-600 dark:text-indigo-400" /> Primary Goals of an OS
           </h2>
@@ -2787,8 +3030,10 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${7}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6">Operating System Types</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.osTypes.map((type, idx) => (
@@ -2802,6 +3047,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -2810,7 +3056,8 @@ function NotesView({ module }) {
   if (module.id === 'threads') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${8}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6">Core Concepts</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.coreConcepts.map((concept, idx) => (
@@ -2821,8 +3068,10 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
-        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${9}`}>
+      <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
           <div className="p-6 border-b border-subtle bg-surface-muted/50">
             <h2 className="text-xl font-bold text-primary">Multi-Tasking vs Multi-Threading</h2>
           </div>
@@ -2847,8 +3096,10 @@ function NotesView({ module }) {
             </table>
           </div>
         </section>
+    </StarableBlock>
 
-        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${10}`}>
+      <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
           <div className="p-6 border-b border-subtle bg-surface-muted/50">
             <h2 className="text-xl font-bold text-primary">Context Switching (Thread vs Process)</h2>
           </div>
@@ -2873,6 +3124,7 @@ function NotesView({ module }) {
             </table>
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -2881,7 +3133,8 @@ function NotesView({ module }) {
   if (module.id === 'components') {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${11}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6">Core Components</h2>
           <div className="space-y-4">
             {module.notes.coreComponents.map((comp, idx) => (
@@ -2892,8 +3145,10 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${12}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6">Kernel Functions</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {module.notes.kernelFunctions.map((func, idx) => (
@@ -2904,8 +3159,10 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${13}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6">I/O Management Techniques</h2>
           <div className="grid md:grid-cols-3 gap-4">
             {module.notes.ioTechniques.map((tech, idx) => (
@@ -2916,8 +3173,10 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${14}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6">Types of Kernels</h2>
           <div className="space-y-4">
             {module.notes.kernelTypes.map((k, idx) => (
@@ -2935,6 +3194,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -2945,7 +3205,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Overview and Diagram */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${15}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             
             {/* Overview Text */}
@@ -3002,9 +3263,11 @@ function NotesView({ module }) {
 
           </div>
         </section>
+    </StarableBlock>
 
         {/* Categories Grid */}
-        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden p-8 text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${16}`}>
+      <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden p-8 text-left">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Layers className="text-emerald-600 dark:text-emerald-400" /> Types of System Calls
           </h2>
@@ -3017,9 +3280,11 @@ function NotesView({ module }) {
              ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Windows vs Unix Table */}
-        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${17}`}>
+      <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
           <div className="p-6 border-b border-subtle bg-surface-muted/50">
             <h2 className="text-xl font-bold text-primary flex items-center gap-2">
               <Code className="text-blue-600 dark:text-blue-400" /> Windows vs Unix System Calls
@@ -3058,6 +3323,7 @@ function NotesView({ module }) {
             </table>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -3069,7 +3335,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Boot Flowchart/Diagram */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${18}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Activity className="text-rose-600 dark:text-rose-400" /> What happens during boot?
           </h2>
@@ -3107,9 +3374,11 @@ function NotesView({ module }) {
             The MBR (Master Boot Record) helps the computer find and start the operating system by specifying boot sectors and partition parameters.
           </p>
         </section>
+    </StarableBlock>
 
         {/* Step-by-step Timeline */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${19}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-8 flex items-center gap-2">
             <Power className="text-rose-600 dark:text-rose-400" /> Detail: System Startup Steps
           </h2>
@@ -3127,9 +3396,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* What's inside the MBR? */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${20}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Server className="text-indigo-600 dark:text-indigo-400" /> What's inside the MBR?
           </h2>
@@ -3192,10 +3463,12 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         <div className="grid md:grid-cols-2 gap-6 text-left">
           {/* Hardware & Firmware */}
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${21}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
               <HardDrive className="text-indigo-600 dark:text-indigo-400" /> Key Hardware & Firmware
             </h2>
@@ -3208,9 +3481,11 @@ function NotesView({ module }) {
               ))}
             </div>
           </section>
+    </StarableBlock>
 
           {/* OS Bootloaders */}
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${22}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
              <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
               <Terminal className="text-emerald-600 dark:text-emerald-400" /> OS Bootloaders
             </h2>
@@ -3223,15 +3498,18 @@ function NotesView({ module }) {
               ))}
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* Exam Prep Key Concept Block */}
-        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${23}`}>
+      <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
           <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-2">Exam Checkpoint</h2>
           <p className="text-secondary text-sm leading-relaxed">
             <strong>MBR (Master Boot Record)</strong> is the first sector of a storage disk containing boot code and partition information used during system startup. Remember its exact 512-byte structure breakdown (446 bytes code + 64 bytes partitions + 2 bytes signature) for MCQ/theory exams!
           </p>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -3244,7 +3522,8 @@ function NotesView({ module }) {
         
         {/* Core Differences Grid */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${24}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
             <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
               <Cpu className="text-indigo-600 dark:text-indigo-400" /> Registers & Data Processing
             </h2>
@@ -3264,8 +3543,10 @@ function NotesView({ module }) {
               Because 64-bit registers are twice as large, they process double the data per instruction cycle, yielding huge math & execution speedups.
             </div>
           </section>
+    </StarableBlock>
 
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left flex flex-col justify-between">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${25}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left flex flex-col justify-between">
             <div>
               <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
                 <HardDrive className="text-emerald-600 dark:text-emerald-400" /> Addressable Memory Limits
@@ -3287,10 +3568,12 @@ function NotesView({ module }) {
               A 32-bit OS can only reference 2<sup>32</sup> distinct addresses. 2<sup>32</sup> bytes = exactly 4,294,967,296 bytes (4 GB). Beyond this, the CPU has no way to point to physical memory locations!
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* Key Advantages */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${26}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <CheckSquare className="text-rose-600 dark:text-rose-400" /> Key Advantages of 64-Bit Architecture
           </h2>
@@ -3305,14 +3588,17 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Quick Interview Prep Card */}
-        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${27}`}>
+      <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
           <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-2">Interview Summary</h2>
           <p className="text-secondary text-sm leading-relaxed">
             If asked the difference: <span className="italic text-white">"A 32-bit OS is limited to 4GB of RAM and processes 4 bytes per cycle, whereas a 64-bit OS can address virtually unlimited RAM and processes 8 bytes per cycle, making it vastly superior for performance and heavy resource usage."</span>
           </p>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -3324,7 +3610,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Memory Hierarchy Pyramid */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${28}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> The Memory Hierarchy
           </h2>
@@ -3364,9 +3651,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Detailed Descriptions Grid */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${29}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle text-left">
           <h2 className="text-xl font-bold text-primary mb-6">Detailed Memory Levels</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
@@ -3404,9 +3693,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Trade-offs Comparisons */}
-        <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${30}`}>
+      <section className="bg-surface rounded-2xl shadow-sm border border-subtle overflow-hidden text-left">
           <div className="p-6 border-b border-subtle bg-surface-muted/50">
             <h2 className="text-xl font-bold text-primary">Trade-offs Comparisons (Primary vs Secondary)</h2>
           </div>
@@ -3431,9 +3722,11 @@ function NotesView({ module }) {
             </table>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Volatility Highlight Block */}
-        <section className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${31}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-left">
           <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-2">
             <Activity className="text-amber-500" /> Volatility Check
           </h2>
@@ -3448,6 +3741,7 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -3458,7 +3752,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Program vs Process */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${32}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
             <Activity className="text-indigo-600 dark:text-indigo-400" /> Program vs. Process
           </h2>
@@ -3482,9 +3777,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Process Creation Steps */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${33}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> How the OS Creates a Process
           </h2>
@@ -3500,10 +3797,12 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Architecture of Process */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${34}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
               <Terminal className="text-emerald-600 dark:text-emerald-400" /> Process Memory Layout
             </h2>
@@ -3546,9 +3845,11 @@ function NotesView({ module }) {
               <div className="text-center text-[10px] text-tertiary font-bold uppercase tracking-widest border-t border-subtle pt-1 mt-2">Low Memory Addresses</div>
             </div>
           </section>
+    </StarableBlock>
 
           {/* PCB Section */}
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${35}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
               <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                 <Server className="text-indigo-600 dark:text-indigo-400" /> Process Control Block (PCB)
@@ -3568,10 +3869,12 @@ function NotesView({ module }) {
               </div>
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* Registers in PCB Context Switching */}
-        <section className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-500/50 rounded-2xl p-8">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${36}`}>
+      <section className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-500/50 rounded-2xl p-8">
           <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-3 flex items-center gap-2">
             <Cpu className="text-indigo-600 dark:text-indigo-400" /> Deep Dive: Registers in the PCB & Context Switching
           </h2>
@@ -3589,6 +3892,7 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -3600,7 +3904,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* State Transition Diagram */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${37}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Activity className="text-rose-600 dark:text-rose-400" /> State Transition Diagram
           </h2>
@@ -3701,9 +4006,11 @@ function NotesView({ module }) {
             </svg>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Process States Descriptions */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${38}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6">The 5 Process States</h2>
           <div className="grid md:grid-cols-5 gap-4">
             {module.notes.statesList.map((state, idx) => (
@@ -3714,12 +4021,14 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Process Queues & Schedulers */}
         <div className="grid md:grid-cols-2 gap-6">
           
           {/* Queues */}
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${39}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
               <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                 <Layers className="text-indigo-600 dark:text-indigo-400" /> Process Queues
@@ -3740,9 +4049,11 @@ function NotesView({ module }) {
               </div>
             </div>
           </section>
+    </StarableBlock>
 
           {/* Schedulers & Dispatcher */}
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${40}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
               <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                 <Cpu className="text-emerald-600 dark:text-emerald-400" /> Schedulers & Dispatchers
@@ -3757,10 +4068,12 @@ function NotesView({ module }) {
               </div>
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* Quick Review Card */}
-        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${41}`}>
+      <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-6 text-left">
           <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 mb-2">Interview Checklist</h2>
           <ul className="list-disc list-inside text-secondary text-sm space-y-1">
             <li><strong>Waiting State Destination:</strong> After I/O completion, a process goes back to the <strong>Ready Queue</strong> (NOT straight to the Running state).</li>
@@ -3768,6 +4081,7 @@ function NotesView({ module }) {
             <li><strong>STS vs. Dispatcher:</strong> The STS <strong>decides</strong> who gets CPU time; the Dispatcher <strong>executes</strong> the actual context switch.</li>
           </ul>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -3779,7 +4093,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Swapping (MTS) */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${42}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-2 flex items-center gap-2">
             <FolderOpen className="text-indigo-600 dark:text-indigo-400" /> Swapping & Memory Management
           </h2>
@@ -3804,9 +4119,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Context Switching & Overhead */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${43}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Cpu className="text-rose-600 dark:text-rose-400" /> Context-Switching (Pure Overhead)
           </h2>
@@ -3837,9 +4154,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Orphan vs Zombie Process Comparison */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${44}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Activity className="text-amber-600 dark:text-amber-400" /> Orphan vs. Zombie Processes
           </h2>
@@ -3881,9 +4200,11 @@ function NotesView({ module }) {
 
           </div>
         </section>
+    </StarableBlock>
 
         {/* Analogy Section */}
-        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${45}`}>
+      <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mb-6 flex items-center gap-2">
             <BookOpen className="text-indigo-600 dark:text-indigo-400" /> Mental Model: The Restaurant Kitchen Analogy
           </h2>
@@ -3917,6 +4238,7 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -3928,7 +4250,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro to Scheduling */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${46}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Activity className="text-indigo-600 dark:text-indigo-400" /> Process Scheduling Fundamentals
           </h2>
@@ -3977,10 +4300,12 @@ function NotesView({ module }) {
             })}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Goals & Metrics */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${47}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
               <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
                 <CheckSquare className="text-rose-600 dark:text-rose-400" /> Goals of CPU Scheduling
@@ -3997,8 +4322,10 @@ function NotesView({ module }) {
               </ul>
             </div>
           </section>
+    </StarableBlock>
 
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${48}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
               <BookOpen className="text-sky-600 dark:text-sky-400" /> Key Scheduling Metrics
             </h2>
@@ -4011,10 +4338,12 @@ function NotesView({ module }) {
               ))}
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* FCFS & Convoy Effect */}
-        <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${49}`}>
+      <section className="bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/50 rounded-2xl p-8 shadow-sm text-left">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mb-4 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.fcfs.title}
           </h2>
@@ -4026,6 +4355,7 @@ function NotesView({ module }) {
             <p className="text-secondary text-sm leading-relaxed">{module.notes.fcfs.convoyEffect}</p>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4037,7 +4367,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Shortest Job First (SJF) */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${50}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Activity className="text-indigo-600 dark:text-indigo-400" /> Shortest Job First (SJF)
           </h2>
@@ -4066,9 +4397,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Priority Scheduling */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${51}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Layers className="text-rose-600 dark:text-rose-400" /> Priority Scheduling
           </h2>
@@ -4101,9 +4434,11 @@ function NotesView({ module }) {
             <p className="text-secondary text-sm leading-relaxed">{module.notes.priority.solution.desc}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Round Robin (RR) */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${52}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <RotateCcw className="text-sky-600 dark:text-sky-400" /> Round Robin Scheduling (RR)
           </h2>
@@ -4146,6 +4481,7 @@ function NotesView({ module }) {
              </div>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4157,7 +4493,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* MLQ */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${53}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-primary flex items-center gap-2">
               <Layers className="text-rose-600 dark:text-rose-400" /> {module.notes.mlq.title}
@@ -4198,9 +4535,11 @@ function NotesView({ module }) {
             <p className="text-red-200/80 text-sm leading-relaxed">{module.notes.mlq.problem.desc}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* MLFQ */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${54}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-primary flex items-center gap-2">
               <Activity className="text-emerald-600 dark:text-emerald-400" /> {module.notes.mlfq.title}
@@ -4224,6 +4563,7 @@ function NotesView({ module }) {
             <p className="text-emerald-200/80 text-sm leading-relaxed">{module.notes.mlfq.summary}</p>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4235,7 +4575,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* What is Concurrency? */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${55}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
@@ -4245,9 +4586,11 @@ function NotesView({ module }) {
             <p className="text-secondary text-sm leading-relaxed">{module.notes.intro.example}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* TCB */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${56}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
             <Server className="text-emerald-600 dark:text-emerald-400" /> {module.notes.tcb.title}
           </h2>
@@ -4264,9 +4607,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* The Trick Question */}
-        <section className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-8 shadow-sm">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${57}`}>
+      <section className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-8 shadow-sm">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <Activity className="text-rose-600 dark:text-rose-400" /> {module.notes.trickQuestion.title}
           </h2>
@@ -4276,9 +4621,11 @@ function NotesView({ module }) {
           </div>
           <p className="text-secondary text-sm leading-relaxed">{module.notes.trickQuestion.explanation}</p>
         </section>
+    </StarableBlock>
 
         {/* Benefits */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${58}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <CheckSquare className="text-sky-600 dark:text-sky-400" /> Benefits of Multi-Threading (Even on a single CPU)
           </h2>
@@ -4291,6 +4638,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4302,7 +4650,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Critical Section */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${59}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
             <Database className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
@@ -4316,9 +4665,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Race Condition */}
-        <section className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-8 shadow-sm">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${60}`}>
+      <section className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-2xl p-8 shadow-sm">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <AlertTriangle className="text-rose-600 dark:text-rose-400" /> {module.notes.raceCondition.title}
           </h2>
@@ -4327,9 +4678,11 @@ function NotesView({ module }) {
             "{module.notes.raceCondition.example}"
           </div>
         </section>
+    </StarableBlock>
 
         {/* Solutions */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${61}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <ShieldCheck className="text-emerald-600 dark:text-emerald-400" /> {module.notes.solutions.title}
           </h2>
@@ -4348,9 +4701,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Disadvantages */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${62}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <AlertOctagon className="text-amber-600 dark:text-amber-400" /> {module.notes.disadvantages.title}
           </h2>
@@ -4367,10 +4722,12 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Global Var & Peterson Failures */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${63}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
               <h2 className="text-lg font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
                 <AlertTriangle size={20} className="text-rose-600 dark:text-rose-400" /> {module.notes.globalVarFail.title}
@@ -4389,8 +4746,10 @@ function NotesView({ module }) {
               {module.notes.globalVarFail.takeaway}
             </div>
           </section>
+    </StarableBlock>
 
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${64}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col justify-between">
             <div>
               <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
                 <Activity size={20} className="text-amber-600 dark:text-amber-400" /> {module.notes.petersonFail.title}
@@ -4408,6 +4767,7 @@ function NotesView({ module }) {
               {module.notes.petersonFail.takeaway}
             </div>
           </section>
+    </StarableBlock>
         </div>
 
       </div>
@@ -4420,7 +4780,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Busy Waiting */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${65}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.busyWaiting.title}
           </h2>
@@ -4431,9 +4792,11 @@ function NotesView({ module }) {
             <p className="text-emerald-200/90 text-sm leading-relaxed">{module.notes.busyWaiting.solution}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Condition Variables */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${66}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <AppWindow className="text-indigo-600 dark:text-indigo-400" /> {module.notes.conditionVars.title}
           </h2>
@@ -4443,9 +4806,11 @@ function NotesView({ module }) {
             {module.notes.conditionVars.analogy}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Semaphores */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${67}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <Layers className="text-amber-600 dark:text-amber-400" /> {module.notes.semaphoreTypes.title}
           </h2>
@@ -4474,9 +4839,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Hardware Locks */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${68}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <Cpu className="text-emerald-600 dark:text-emerald-400" /> {module.notes.atomicProtection.title}
           </h2>
@@ -4485,9 +4852,11 @@ function NotesView({ module }) {
             <p className="text-emerald-200/90 text-sm leading-relaxed">{module.notes.atomicProtection.hardware}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Nested Locks */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${69}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <Layers className="text-sky-600 dark:text-sky-400" /> {module.notes.nestedLocks.title}
           </h2>
@@ -4523,6 +4892,7 @@ function NotesView({ module }) {
             </ul>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4534,7 +4904,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Dining Philosophers */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${70}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <User className="text-amber-600 dark:text-amber-400" /> {module.notes.diningPhilosophers.title}
           </h2>
@@ -4569,9 +4940,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Producer/Consumer */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${71}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <ArrowDownUp className="text-sky-600 dark:text-sky-400" /> {module.notes.producerConsumer.title}
           </h2>
@@ -4616,6 +4989,7 @@ function NotesView({ module }) {
             {module.notes.producerConsumer.takeaway}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4627,7 +5001,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Definition */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${72}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <AlertTriangle className="text-rose-600 dark:text-rose-400" /> {module.notes.definition.title}
           </h2>
@@ -4637,9 +5012,11 @@ function NotesView({ module }) {
             {module.notes.definition.example}
           </div>
         </section>
+    </StarableBlock>
 
         {/* 4 Conditions */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${73}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <ShieldCheck className="text-amber-600 dark:text-amber-400" /> {module.notes.conditions.title}
           </h2>
@@ -4653,9 +5030,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* How OS Handles */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${74}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <Settings className="text-sky-600 dark:text-sky-400" /> {module.notes.handling.title}
           </h2>
@@ -4673,9 +5052,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Prevention */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${75}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-emerald-600 dark:text-emerald-400" /> {module.notes.prevention.title}
           </h2>
@@ -4689,6 +5070,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4700,7 +5082,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Avoidance */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${76}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-emerald-600 dark:text-emerald-400" /> {module.notes.avoidance.title}
           </h2>
@@ -4719,9 +5102,11 @@ function NotesView({ module }) {
             <span className="text-emerald-600 dark:text-emerald-400 font-bold">The Golden Rule:</span> {module.notes.avoidance.goldenRule}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Banker's Algorithm */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${77}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <Settings className="text-sky-600 dark:text-sky-400" /> {module.notes.banker.title}
           </h2>
@@ -4736,9 +5121,11 @@ function NotesView({ module }) {
             </ol>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Detection */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${78}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <Activity className="text-amber-600 dark:text-amber-400" /> {module.notes.detection.title}
           </h2>
@@ -4752,9 +5139,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Recovery */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${79}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <ShieldCheck className="text-rose-600 dark:text-rose-400" /> {module.notes.recovery.title}
           </h2>
@@ -4780,6 +5169,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -4791,7 +5181,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
 
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${80}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <Database className="text-sky-600 dark:text-sky-400" /> {module.notes.intro.title}
           </h2>
@@ -4800,9 +5191,11 @@ function NotesView({ module }) {
             <p className="text-sky-200 text-sm"><span className="font-bold text-sky-600 dark:text-sky-300">The Goal:</span> {module.notes.intro.goal}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Logical vs Physical Address */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${81}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <ArrowDownUp className="text-amber-600 dark:text-amber-400" /> {module.notes.addresses.title}
           </h2>
@@ -4851,9 +5244,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Memory Protection */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${82}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <ShieldCheck className="text-rose-600 dark:text-rose-400" /> {module.notes.protection.title}
           </h2>
@@ -4878,9 +5273,11 @@ function NotesView({ module }) {
             <span className="text-amber-600 dark:text-amber-400 font-bold">User Mode Rule:</span> {module.notes.protection.userModeRule}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Allocation Methods */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${83}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.allocationMethods.title}
           </h2>
@@ -4895,9 +5292,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Fixed Partitioning */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${84}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <FolderOpen className="text-amber-600 dark:text-amber-400" /> {module.notes.fixedPartition.title}
           </h2>
@@ -4927,9 +5326,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Dynamic Partitioning */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${85}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <Activity className="text-emerald-600 dark:text-emerald-400" /> {module.notes.dynamicPartition.title}
           </h2>
@@ -4966,9 +5367,11 @@ function NotesView({ module }) {
             <p className="text-secondary text-sm leading-relaxed">{module.notes.dynamicPartition.compaction}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Quick Reference Card */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${86}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <CheckSquare className="text-tertiary" /> Quick Comparison: Fixed vs Dynamic
           </h2>
@@ -5000,6 +5403,7 @@ function NotesView({ module }) {
             </table>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -5010,7 +5414,8 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Defragmentation / Compaction */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${87}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <Settings className="text-indigo-600 dark:text-indigo-400" /> {module.notes.defragmentation.title}
           </h2>
@@ -5026,9 +5431,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Representation */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${88}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <Database className="text-emerald-600 dark:text-emerald-400" /> {module.notes.representation.title}
           </h2>
@@ -5036,9 +5443,11 @@ function NotesView({ module }) {
             <p className="text-secondary text-sm leading-relaxed">{module.notes.representation.desc}</p>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Satisfying Request */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${89}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <Layers className="text-amber-600 dark:text-amber-400" /> {module.notes.satisfyingRequest.title}
           </h2>
@@ -5053,6 +5462,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -5062,7 +5472,8 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${90}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <AlertTriangle className="text-rose-600 dark:text-rose-400" /> {module.notes.intro.title}
           </h2>
@@ -5077,9 +5488,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Concept */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${91}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.concept.title}
           </h2>
@@ -5115,9 +5528,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* TLB */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${92}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <Cpu className="text-emerald-600 dark:text-emerald-400" /> {module.notes.tlb.title}
           </h2>
@@ -5139,6 +5554,7 @@ function NotesView({ module }) {
             <p className="text-tertiary text-sm leading-relaxed">{module.notes.tlb.asid}</p>
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -5148,7 +5564,8 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${93}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <User className="text-amber-600 dark:text-amber-400" /> {module.notes.intro.title}
           </h2>
@@ -5163,9 +5580,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Paging vs Segmentation */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${94}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <ArrowDownUp className="text-indigo-600 dark:text-indigo-400" /> {module.notes.pagingVsSegmentation.title}
           </h2>
@@ -5180,9 +5599,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Logical Address & Hardware */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${95}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <Cpu className="text-emerald-600 dark:text-emerald-400" /> Logical Address & Hardware
           </h2>
@@ -5202,9 +5623,11 @@ function NotesView({ module }) {
             </ul>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Pros & Cons */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${96}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-rose-600 dark:text-rose-400" /> {module.notes.prosCons.title}
           </h2>
@@ -5238,6 +5661,7 @@ function NotesView({ module }) {
             <p className="text-tertiary text-sm leading-relaxed">{module.notes.modern.desc}</p>
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -5247,7 +5671,8 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${97}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <AppWindow className="text-sky-600 dark:text-sky-400" /> {module.notes.intro.title}
           </h2>
@@ -5264,9 +5689,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Demand Paging */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${98}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <Activity className="text-indigo-600 dark:text-indigo-400" /> {module.notes.demandPaging.title}
           </h2>
@@ -5284,9 +5711,11 @@ function NotesView({ module }) {
             </ul>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Valid-Invalid Bit Scheme */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${99}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <ShieldCheck className="text-emerald-600 dark:text-emerald-400" /> {module.notes.validInvalid.title}
           </h2>
@@ -5302,9 +5731,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Page Faults & Pure Demand Paging */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${100}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.pageFault.title}
           </h2>
@@ -5335,9 +5766,11 @@ function NotesView({ module }) {
             </ul>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Pros & Cons */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${101}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-violet-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-violet-400" /> {module.notes.prosCons.title}
           </h2>
@@ -5366,6 +5799,7 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -5375,7 +5809,8 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${102}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <AppWindow className="text-emerald-600 dark:text-emerald-400" /> {module.notes.intro.title}
           </h2>
@@ -5390,9 +5825,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Algorithms */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${103}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-6 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.algorithms.title}
           </h2>
@@ -5451,6 +5888,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -5460,7 +5898,8 @@ function NotesView({ module }) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${104}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.intro.title}
           </h2>
@@ -5478,9 +5917,11 @@ function NotesView({ module }) {
             </ul>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Graph */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${105}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <Activity className="text-sky-600 dark:text-sky-400" /> {module.notes.graph.title}
           </h2>
@@ -5510,9 +5951,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Techniques */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${106}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
             <ShieldCheck className="text-emerald-600 dark:text-emerald-400" /> {module.notes.techniques.title}
           </h2>
@@ -5534,6 +5977,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
       </div>
     );
   }
@@ -5543,7 +5987,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Three Schema Architecture */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${107}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <Layers className="text-indigo-600 dark:text-indigo-400" /> {module.notes.threeSchema.title}
           </h2>
@@ -5583,10 +6028,12 @@ function NotesView({ module }) {
             <Database size={28} className="text-tertiary mt-1" />
           </div>
         </section>
+    </StarableBlock>
 
         {/* Instances & Schemas / Data Models */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${108}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
               <Code className="text-amber-600 dark:text-amber-400" /> {module.notes.instancesSchemas.title}
             </h2>
@@ -5599,8 +6046,10 @@ function NotesView({ module }) {
               ))}
             </ul>
           </section>
+    </StarableBlock>
 
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${109}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col">
             <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
               <FolderOpen className="text-emerald-600 dark:text-emerald-400" /> {module.notes.dataModels.title}
             </h2>
@@ -5620,11 +6069,13 @@ function NotesView({ module }) {
               <p className="text-secondary text-sm leading-relaxed">{module.notes.appAccess.desc}</p>
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* DB Languages & DBA */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${110}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle flex flex-col">
             <h2 className="text-xl font-bold text-pink-400 mb-6 flex items-center gap-2">
               <Terminal className="text-pink-400" /> {module.notes.databaseLanguages.title}
             </h2>
@@ -5642,8 +6093,10 @@ function NotesView({ module }) {
               </div>
             </div>
           </section>
+    </StarableBlock>
 
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${111}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
               <User className="text-rose-600 dark:text-rose-400" /> {module.notes.dba.title}
             </h2>
@@ -5662,10 +6115,12 @@ function NotesView({ module }) {
               </ul>
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* Architectures */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${112}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-cyan-400 mb-6 flex items-center gap-2">
             <Server className="text-cyan-400" /> {module.notes.architectures.title}
           </h2>
@@ -5693,6 +6148,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -5703,7 +6159,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro to ER Model */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${113}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <BookOpen className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
@@ -5716,9 +6173,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Entities */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${114}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <AppWindow className="text-emerald-600 dark:text-emerald-400" /> {module.notes.entities.title}
           </h2>
@@ -5741,9 +6200,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Attributes */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${115}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-sky-600 dark:text-sky-400" /> {module.notes.attributes.title}
           </h2>
@@ -5758,9 +6219,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Relationships */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${116}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <Activity className="text-amber-600 dark:text-amber-400" /> {module.notes.relationships.title}
           </h2>
@@ -5802,9 +6265,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Notations */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${117}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-6 flex items-center gap-2">
             <Layers className="text-rose-600 dark:text-rose-400" /> {module.notes.notations.title}
           </h2>
@@ -5820,9 +6285,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* The Classic Trap */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${118}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-fuchsia-400 mb-4 flex items-center gap-2">
             <AlertTriangle className="text-fuchsia-400" /> {module.notes.trap.title}
           </h2>
@@ -5881,6 +6348,7 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -5891,7 +6359,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro to Extended ER */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${119}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <BookOpen className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
@@ -5899,9 +6368,11 @@ function NotesView({ module }) {
             {module.notes.intro.desc}
           </p>
         </section>
+    </StarableBlock>
 
         {/* Blank Spaces Problem */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${120}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <AlertOctagon className="text-rose-600 dark:text-rose-400" /> {module.notes.blankSpaces.title}
           </h2>
@@ -5920,11 +6391,13 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Specialisation & Generalisation */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Specialisation */}
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${121}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-sky-600 dark:text-sky-400 mb-4 flex items-center gap-2">
               <ArrowDownUp className="text-sky-600 dark:text-sky-400" /> {module.notes.specialisation.title}
             </h2>
@@ -5977,9 +6450,11 @@ function NotesView({ module }) {
               </svg>
             </div>
           </section>
+    </StarableBlock>
 
           {/* Generalisation */}
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${122}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
               <ArrowDownUp className="text-emerald-600 dark:text-emerald-400 rotate-180" /> {module.notes.generalisation.title}
             </h2>
@@ -6033,10 +6508,12 @@ function NotesView({ module }) {
               </svg>
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* Inheritance */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${123}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <Terminal className="text-amber-600 dark:text-amber-400" /> {module.notes.inheritance.title}
           </h2>
@@ -6052,9 +6529,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Aggregation */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${124}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-fuchsia-400 mb-4 flex items-center gap-2">
             <AppWindow className="text-fuchsia-400" /> {module.notes.aggregation.title}
           </h2>
@@ -6072,6 +6551,7 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6082,7 +6562,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${125}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <BookOpen className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
@@ -6098,9 +6579,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Properties */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${126}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-emerald-600 dark:text-emerald-400" /> {module.notes.properties.title}
           </h2>
@@ -6113,9 +6596,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Keys */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${127}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
             <Settings className="text-amber-600 dark:text-amber-400" /> {module.notes.keys.title}
           </h2>
@@ -6132,9 +6617,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Integrity Constraints */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${128}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-4 flex items-center gap-2">
             <ShieldCheck className="text-rose-600 dark:text-rose-400" /> {module.notes.integrity.title}
           </h2>
@@ -6158,6 +6645,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6168,7 +6656,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${129}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <AppWindow className="text-indigo-600 dark:text-indigo-400" /> {module.notes.intro.title}
           </h2>
@@ -6181,9 +6670,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Notations / Rules */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${130}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
             <Layers className="text-emerald-600 dark:text-emerald-400" /> {module.notes.notations.title}
           </h2>
@@ -6202,6 +6693,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6213,7 +6705,8 @@ function NotesView({ module }) {
 
         {/* Intro + Why Normalise */}
         <div className="grid md:grid-cols-2 gap-6">
-          <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${131}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
             <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
               <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
             </h2>
@@ -6226,8 +6719,10 @@ function NotesView({ module }) {
               ))}
             </div>
           </section>
+    </StarableBlock>
 
-          <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+          <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${132}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
             <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
               <AlertTriangle className="text-amber-500" /> Why Normalise?
             </h2>
@@ -6236,10 +6731,12 @@ function NotesView({ module }) {
               <p className="text-amber-900 dark:text-amber-100 text-sm font-semibold">{module.notes.whyNormalise.redundancyEffect}</p>
             </div>
           </section>
+    </StarableBlock>
         </div>
 
         {/* Anomalies */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${133}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-2 flex items-center gap-2">
             <AlertOctagon className="text-rose-500" /> {module.notes.anomalies.title}
           </h2>
@@ -6261,9 +6758,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Functional Dependency */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${134}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-violet-600 dark:text-violet-400 mb-4 flex items-center gap-2">
             <ArrowDownUp className="text-violet-500" /> {module.notes.functionalDependency.title}
           </h2>
@@ -6283,9 +6782,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Armstrong's Axioms */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${135}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
             <ShieldCheck className="text-emerald-500" /> {module.notes.armstrongs.title}
           </h2>
@@ -6308,9 +6809,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Normal Forms */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${136}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
             <Layers className="text-indigo-500" /> {module.notes.normalForms.title}
           </h2>
@@ -6348,9 +6851,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Advantages */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle mt-6">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${137}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle mt-6">
           <h2 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-teal-500" /> {module.notes.advantages.title}
           </h2>
@@ -6363,6 +6868,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6373,7 +6879,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${138}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
           </h2>
@@ -6386,9 +6893,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* ACID Properties */}
-        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${139}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-2">
             <ShieldCheck className="text-amber-500" /> {module.notes.acid.title}
           </h2>
@@ -6402,9 +6911,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Transaction States */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${140}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
             <Activity className="text-emerald-500" /> {module.notes.states.title}
           </h2>
@@ -6473,6 +6984,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6483,7 +6995,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${141}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <BookOpen className="text-indigo-500" /> Intro
           </h2>
@@ -6491,9 +7004,11 @@ function NotesView({ module }) {
             {module.notes.intro}
           </p>
         </section>
+    </StarableBlock>
 
         {/* Shadow-copy scheme */}
-        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${142}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
             <Layers className="text-amber-500" /> {module.notes.shadowCopy.title}
           </h2>
@@ -6559,9 +7074,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Log-based recovery methods */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${143}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-rose-600 dark:text-rose-400 mb-6 flex items-center gap-2">
             <Database className="text-rose-500" /> {module.notes.logBased.title}
           </h2>
@@ -6609,6 +7126,7 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6619,7 +7137,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${144}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
           </h2>
@@ -6632,9 +7151,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Structure */}
-        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${145}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
             <Layers className="text-amber-500" /> {module.notes.structure.title}
           </h2>
@@ -6647,9 +7168,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Methods */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${146}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
             <FolderOpen className="text-emerald-500" /> {module.notes.methods.title}
           </h2>
@@ -6737,9 +7260,11 @@ function NotesView({ module }) {
             </div>
           </div>
         </section>
+    </StarableBlock>
 
         {/* Pros and Cons */}
-        <section className="grid md:grid-cols-2 gap-4">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${147}`}>
+      <section className="grid md:grid-cols-2 gap-4">
           <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-900/50">
             <h3 className="font-bold text-emerald-700 dark:text-emerald-300 mb-4 flex items-center gap-2">
               <CheckSquare size={18} /> Advantages
@@ -6765,6 +7290,7 @@ function NotesView({ module }) {
             </ul>
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6775,7 +7301,8 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${148}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-indigo-600 dark:text-indigo-400 mb-4 flex items-center gap-2">
             <BookOpen className="text-indigo-500" /> {module.notes.intro.title}
           </h2>
@@ -6788,9 +7315,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* ACID vs BASE */}
-        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${149}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
             <CheckSquare className="text-amber-500" /> {module.notes.acidVsBase.title}
           </h2>
@@ -6807,9 +7336,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* History */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${150}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-teal-600 dark:text-teal-400 mb-4 flex items-center gap-2">
             <Clock className="text-teal-500" /> {module.notes.history.title}
           </h2>
@@ -6822,9 +7353,11 @@ function NotesView({ module }) {
             ))}
           </ul>
         </section>
+    </StarableBlock>
 
         {/* Types of NoSQL */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${151}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-6 flex items-center gap-2">
             <Database className="text-purple-500" /> {module.notes.types.title}
           </h2>
@@ -6848,9 +7381,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Pros, Cons and When to use */}
-        <section className="grid md:grid-cols-3 gap-4">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${152}`}>
+      <section className="grid md:grid-cols-3 gap-4">
           <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-900/50">
             <h3 className="font-bold text-emerald-700 dark:text-emerald-300 mb-4 flex items-center gap-2">
               <CheckSquare size={18} /> Advantages
@@ -6890,9 +7425,11 @@ function NotesView({ module }) {
             </ul>
           </div>
         </section>
+    </StarableBlock>
 
         {/* SQL vs NoSQL Table */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle overflow-x-auto">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${153}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle overflow-x-auto">
           <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-6 flex items-center gap-2">
             <Layout className="text-slate-500" /> {module.notes.sqlVsNosql.title}
           </h2>
@@ -6919,6 +7456,7 @@ function NotesView({ module }) {
             </tbody>
           </table>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -6929,14 +7467,17 @@ function NotesView({ module }) {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
         
         {/* Intro */}
-        <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${154}`}>
+      <section className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle">
           <p className="text-secondary text-sm leading-relaxed border-l-4 border-indigo-500 pl-4 bg-indigo-50 dark:bg-indigo-950/20 py-3 font-medium">
             {module.notes.intro}
           </p>
         </section>
+    </StarableBlock>
 
         {/* MongoDB */}
-        <section className="bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl p-8 shadow-sm border border-emerald-200 dark:border-emerald-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${155}`}>
+      <section className="bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl p-8 shadow-sm border border-emerald-200 dark:border-emerald-900/50">
           <h2 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-6 flex items-center gap-2">
             <Database className="text-emerald-500" /> {module.notes.mongodb.title}
           </h2>
@@ -6949,9 +7490,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Hadoop */}
-        <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${156}`}>
+      <section className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-8 shadow-sm border border-amber-200 dark:border-amber-900/50">
           <h2 className="text-xl font-bold text-amber-600 dark:text-amber-400 mb-6 flex items-center gap-2">
             <Server className="text-amber-500" /> {module.notes.hadoop.title}
           </h2>
@@ -6964,9 +7507,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Working Together */}
-        <section className="bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8 shadow-sm border border-blue-200 dark:border-blue-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${157}`}>
+      <section className="bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8 shadow-sm border border-blue-200 dark:border-blue-900/50">
           <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-6 flex items-center gap-2">
             <ArrowDownUp className="text-blue-500" /> {module.notes.workingTogether.title}
           </h2>
@@ -6979,9 +7524,11 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
         {/* Supabase */}
-        <section className="bg-purple-50 dark:bg-purple-950/30 rounded-2xl p-8 shadow-sm border border-purple-200 dark:border-purple-900/50">
+        <StarableBlock moduleTitle={module?.title} user={user} starredCards={starredCards} blockId={`${module?.id}-sec-${158}`}>
+      <section className="bg-purple-50 dark:bg-purple-950/30 rounded-2xl p-8 shadow-sm border border-purple-200 dark:border-purple-900/50">
           <h2 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4 flex items-center gap-2">
             <Code className="text-purple-500" /> {module.notes.supabase.title}
           </h2>
@@ -6997,6 +7544,7 @@ function NotesView({ module }) {
             ))}
           </div>
         </section>
+    </StarableBlock>
 
       </div>
     );
@@ -7171,7 +7719,7 @@ function FlashcardsView({ cards, moduleTitle, user, starredCards }) {
   );
 }
 
-function QuizView({ questions }) {
+function QuizView({ questions, moduleTitle, user, starredCards }) {
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState(null);
   const [showResult, setShowResult] = useState(false);
@@ -7229,9 +7777,33 @@ function QuizView({ questions }) {
   }
 
   const q = questions[currentQ];
+  const currentCardId = btoa(unescape(encodeURIComponent(q.question))).replace(/[^a-zA-Z0-9]/g, '').slice(0, 30);
+  const isCurrentlyStarred = user && starredCards.some(sc => sc.id === currentCardId);
+
+  const handleStar = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      alert("Please login to star questions.");
+      return;
+    }
+    const docRef = doc(db, `users/${user.uid}/starredCards`, currentCardId);
+    if (isCurrentlyStarred) {
+      await deleteDoc(docRef);
+    } else {
+      await setDoc(docRef, { ...q, type: 'quiz', moduleTitle: moduleTitle || 'Revision' });
+    }
+  };
 
   return (
-    <div className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle max-w-2xl mx-auto text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="bg-surface rounded-2xl p-8 shadow-sm border border-subtle max-w-2xl mx-auto text-left animate-in fade-in slide-in-from-bottom-4 duration-500 relative group">
+      <button 
+        onClick={handleStar}
+        className={`absolute top-4 right-4 z-20 p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 ${isCurrentlyStarred ? 'opacity-100 text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30 hover:bg-yellow-200 dark:hover:bg-yellow-900/50' : 'text-secondary bg-surface-muted hover:bg-subtle'}`}
+        title={isCurrentlyStarred ? "Unstar Question" : "Star Question"}
+      >
+        <Star size={20} fill={isCurrentlyStarred ? "currentColor" : "none"} />
+      </button>
+
       <div className="flex justify-between items-center mb-8">
         <span className="text-sm font-bold text-tertiary tracking-wider uppercase">Question {currentQ + 1} of {questions.length}</span>
         <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 rounded-full">Score: {score}</span>
