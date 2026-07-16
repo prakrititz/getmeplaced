@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { BookOpen, Layers, CheckSquare, AppWindow, FolderOpen, Sun, Moon, Menu, X, LogIn, LogOut } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { BookOpen, Layers, CheckSquare, AppWindow, FolderOpen, Sun, Moon, Menu, X, LogIn, LogOut, Square } from 'lucide-react';
 import { auth, googleProvider, db } from './firebase';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import { collection, query, onSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
 
 // Data
 import { courseModules } from './data/courseModules';
@@ -24,23 +24,40 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [starredCards, setStarredCards] = useState([]);
+  const [completedModules, setCompletedModules] = useState(new Set());
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
       if (currentUser) {
-        const q = query(collection(db, `users/${currentUser.uid}/starredCards`));
-        const unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
+        // Listen to starred cards
+        const qCards = query(collection(db, `users/${currentUser.uid}/starredCards`));
+        const unsubCards = onSnapshot(qCards, (querySnapshot) => {
           const cards = [];
           querySnapshot.forEach((docSnap) => {
             cards.push({ id: docSnap.id, ...docSnap.data() });
           });
           setStarredCards(cards);
         });
-        return () => unsubscribeSnapshot();
+
+        // Listen to completed modules
+        const qProgress = query(collection(db, `users/${currentUser.uid}/completedModules`));
+        const unsubProgress = onSnapshot(qProgress, (querySnapshot) => {
+          const completed = new Set();
+          querySnapshot.forEach((docSnap) => {
+            completed.add(docSnap.id);
+          });
+          setCompletedModules(completed);
+        });
+
+        return () => {
+          unsubCards();
+          unsubProgress();
+        };
       } else {
         setStarredCards([]);
+        setCompletedModules(new Set());
       }
     });
     return () => unsubscribe();
@@ -61,6 +78,17 @@ export default function App() {
       console.error("Logout failed", error);
     }
   };
+
+  const handleToggleComplete = useCallback(async (moduleId, e) => {
+    e.stopPropagation();
+    if (!user) return;
+    const ref = doc(db, `users/${user.uid}/completedModules`, moduleId);
+    if (completedModules.has(moduleId)) {
+      await deleteDoc(ref);
+    } else {
+      await setDoc(ref, { completedAt: new Date().toISOString() });
+    }
+  }, [user, completedModules]);
   
   const courseGroups = {
     'OS': osModules,
@@ -91,6 +119,11 @@ export default function App() {
   }, [isDarkMode]);
 
   const activeModule = courseModules.find(m => m.id === activeModuleId) || activeGroupModules[0];
+
+  // Progress stats for active group
+  const groupModuleIds = activeGroupModules.map(m => m.id).filter(id => id !== 'revision');
+  const groupCompleted = groupModuleIds.filter(id => completedModules.has(id)).length;
+  const groupTotal = groupModuleIds.length;
 
   if (loading) {
     return (
@@ -200,23 +233,72 @@ export default function App() {
           </div>
         </div>
 
+        {/* Progress Bar */}
+        {groupTotal > 0 && (
+          <div className="px-5 py-3 border-b border-subtle bg-background/50">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-xs font-semibold text-tertiary uppercase tracking-wide">{activeGroup} Progress</span>
+              <span className="text-xs font-bold text-indigo-500">{groupCompleted}/{groupTotal}</span>
+            </div>
+            <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
+                style={{ width: groupTotal > 0 ? `${(groupCompleted / groupTotal) * 100}%` : '0%' }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Module Navigation (Vertical List) */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-1.5 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-hide">
           <p className="px-3 pb-2 text-xs font-bold text-tertiary uppercase tracking-wider">{activeGroup} Modules</p>
-          {activeGroupModules.map((mod) => (
-            <button
-              key={mod.id}
-              onClick={() => { setActiveModuleId(mod.id); setActiveTab('notes'); setIsMobileMenuOpen(false); }}
-              className={`w-full text-left flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
-                activeModuleId === mod.id 
-                  ? 'bg-indigo-600/10 text-indigo-500 font-bold border border-indigo-500/20 shadow-sm' 
-                  : 'text-secondary hover:bg-surface-muted hover:text-primary border border-transparent'
-              }`}
-            >
-              <FolderOpen size={16} className={activeModuleId === mod.id ? 'text-indigo-500' : 'text-tertiary'} /> 
-              <span className="truncate">{mod.title}</span>
-            </button>
-          ))}
+          {activeGroupModules.map((mod) => {
+            const isActive = activeModuleId === mod.id;
+            const isDone = completedModules.has(mod.id);
+            const isRevision = mod.id === 'revision';
+            return (
+              <div
+                key={mod.id}
+                onClick={() => { setActiveModuleId(mod.id); setActiveTab('notes'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                  isActive 
+                    ? 'bg-indigo-600/10 text-indigo-500 font-bold border border-indigo-500/20 shadow-sm' 
+                    : isDone
+                      ? 'text-secondary border border-transparent bg-emerald-500/5'
+                      : 'text-secondary hover:bg-surface-muted hover:text-primary border border-transparent'
+                }`}
+              >
+                {/* Checkbox - only for non-revision modules */}
+                {!isRevision ? (
+                  <button
+                    onClick={(e) => handleToggleComplete(mod.id, e)}
+                    className={`flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                      isDone
+                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                        : isActive
+                          ? 'border-indigo-400 hover:border-emerald-400'
+                          : 'border-subtle hover:border-emerald-400'
+                    }`}
+                    title={isDone ? 'Mark as incomplete' : 'Mark as complete'}
+                  >
+                    {isDone && (
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </button>
+                ) : (
+                  <FolderOpen size={16} className={isActive ? 'text-indigo-500' : 'text-tertiary'} />
+                )}
+                <span className={`truncate flex-1 ${isDone && !isActive ? 'text-tertiary line-through decoration-emerald-500/50' : ''}`}>
+                  {mod.title}
+                </span>
+                {isDone && !isRevision && (
+                  <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-full flex-shrink-0">✓</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </aside>
 
@@ -224,21 +306,60 @@ export default function App() {
       <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
         
         {/* Mobile Header (Only visible on small screens) */}
-        <header className="md:hidden bg-surface border-b border-subtle p-4 flex justify-between items-center z-10 sticky top-0 shadow-sm">
+        <header className="md:hidden bg-surface border-b border-subtle p-3 flex justify-between items-center z-10 sticky top-0 shadow-sm">
            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 bg-surface-muted border border-subtle rounded-lg text-primary">
              <Menu size={20} />
            </button>
-           <div className="font-bold text-primary truncate max-w-[200px] text-sm">{activeModule.title}</div>
+           <div className="font-bold text-primary truncate max-w-[160px] text-sm">{activeModule.title}</div>
            <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 bg-surface-muted border border-subtle rounded-lg text-primary">
              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
            </button>
         </header>
 
+        {/* Mobile Tab Bar — sticky, prominent, always visible */}
+        <div className="md:hidden sticky top-[57px] z-10 bg-surface/95 backdrop-blur-xl border-b border-subtle px-3 py-2.5 shadow-md">
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setActiveTab('notes')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'notes' 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' 
+                  : 'bg-surface-muted text-tertiary hover:text-primary'
+              }`}
+            >
+              <BookOpen size={14} />
+              Notes
+            </button>
+            <button 
+              onClick={() => setActiveTab('flashcards')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'flashcards' 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' 
+                  : 'bg-surface-muted text-tertiary hover:text-primary'
+              }`}
+            >
+              <Layers size={14} />
+              Cards ({activeModule.id === 'revision' ? starredCards.filter(c => c.type === 'flashcard').length : (activeModule.flashcards ? activeModule.flashcards.length : 0)})
+            </button>
+            <button 
+              onClick={() => setActiveTab('quiz')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'quiz' 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' 
+                  : 'bg-surface-muted text-tertiary hover:text-primary'
+              }`}
+            >
+              <CheckSquare size={14} />
+              Quiz ({activeModule.id === 'revision' ? starredCards.filter(c => c.type === 'quiz').length : (activeModule.quiz ? activeModule.quiz.length : 0)})
+            </button>
+          </div>
+        </div>
+
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:px-16 w-full max-w-5xl mx-auto scrollbar-hide pb-24">
           
-          {/* Module Title Header */}
-          <div className="mb-8 pt-4 md:pt-0 border-b border-subtle pb-6">
+          {/* Module Title Header - desktop only */}
+          <div className="hidden md:block mb-8 pt-4 md:pt-0 border-b border-subtle pb-6">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-3 leading-tight">{activeModule.title}</h2>
             <p className="text-tertiary flex items-center gap-2">
               <span className="bg-surface-muted px-2 py-1 rounded text-xs font-semibold uppercase">{activeGroup}</span>
@@ -246,8 +367,8 @@ export default function App() {
             </p>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="flex bg-surface p-1.5 rounded-2xl border border-subtle shadow-sm w-full md:w-fit mb-8 overflow-x-auto scrollbar-hide sticky top-4 z-10 backdrop-blur-xl bg-surface/90">
+          {/* Tab Navigation - Desktop only */}
+          <div className="hidden md:flex bg-surface p-1.5 rounded-2xl border border-subtle shadow-sm w-full md:w-fit mb-8 overflow-x-auto scrollbar-hide sticky top-4 z-10 backdrop-blur-xl bg-surface/90">
             <button 
               onClick={() => setActiveTab('notes')}
               className={`flex whitespace-nowrap items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'notes' ? 'bg-indigo-600/10 shadow-sm text-indigo-500 font-bold border border-indigo-500/20' : 'text-tertiary hover:text-primary hover:bg-surface-muted'}`}
@@ -268,6 +389,15 @@ export default function App() {
             </button>
           </div>
           
+          {/* Mobile Module Title — compact */}
+          <div className="md:hidden mb-4 pt-2">
+            <h2 className="text-xl font-bold text-primary leading-tight">{activeModule.title}</h2>
+            <p className="text-tertiary text-xs mt-0.5">
+              <span className="bg-surface-muted px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase">{activeGroup}</span>
+              {' '}Structured Prep Module
+            </p>
+          </div>
+
           {/* Active Tab View */}
           <div className="min-h-[500px]">
             {activeTab === 'notes' && <NotesView module={activeModule} user={user} starredCards={starredCards} />}
