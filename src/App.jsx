@@ -79,14 +79,17 @@ export default function App() {
     }
   };
 
-  const handleToggleComplete = useCallback(async (moduleId, e) => {
-    e.stopPropagation();
+  const handleToggleComplete = useCallback(async (moduleId) => {
     if (!user) return;
     const ref = doc(db, `users/${user.uid}/completedModules`, moduleId);
-    if (completedModules.has(moduleId)) {
-      await deleteDoc(ref);
-    } else {
-      await setDoc(ref, { completedAt: new Date().toISOString() });
+    try {
+      if (completedModules.has(moduleId)) {
+        await deleteDoc(ref);
+      } else {
+        await setDoc(ref, { completedAt: new Date().toISOString() });
+      }
+    } catch (err) {
+      console.error('Failed to toggle module complete:', err);
     }
   }, [user, completedModules]);
   
@@ -259,22 +262,25 @@ export default function App() {
             return (
               <div
                 key={mod.id}
-                onClick={() => { setActiveModuleId(mod.id); setActiveTab('notes'); setIsMobileMenuOpen(false); }}
-                className={`w-full text-left flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                className={`w-full flex items-center gap-2 rounded-xl text-sm font-medium transition-all ${
                   isActive 
-                    ? 'bg-indigo-600/10 text-indigo-500 font-bold border border-indigo-500/20 shadow-sm' 
+                    ? 'bg-indigo-600/10 border border-indigo-500/20 shadow-sm' 
                     : isDone
-                      ? 'text-secondary border border-transparent bg-emerald-500/5'
-                      : 'text-secondary hover:bg-surface-muted hover:text-primary border border-transparent'
+                      ? 'border border-transparent bg-emerald-500/5'
+                      : 'border border-transparent hover:bg-surface-muted'
                 }`}
               >
                 {/* Checkbox - only for non-revision modules */}
                 {!isRevision ? (
                   <button
-                    onClick={(e) => handleToggleComplete(mod.id, e)}
-                    className={`flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleToggleComplete(mod.id);
+                    }}
+                    className={`flex-shrink-0 ml-3 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
                       isDone
-                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                        ? 'bg-emerald-500 border-emerald-500'
                         : isActive
                           ? 'border-indigo-400 hover:border-emerald-400'
                           : 'border-subtle hover:border-emerald-400'
@@ -288,14 +294,22 @@ export default function App() {
                     )}
                   </button>
                 ) : (
-                  <FolderOpen size={16} className={isActive ? 'text-indigo-500' : 'text-tertiary'} />
+                  <FolderOpen size={16} className={`ml-3 flex-shrink-0 ${isActive ? 'text-indigo-500' : 'text-tertiary'}`} />
                 )}
-                <span className={`truncate flex-1 ${isDone && !isActive ? 'text-tertiary line-through decoration-emerald-500/50' : ''}`}>
-                  {mod.title}
-                </span>
-                {isDone && !isRevision && (
-                  <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-full flex-shrink-0">✓</span>
-                )}
+                {/* Clickable label area */}
+                <button
+                  onClick={() => { setActiveModuleId(mod.id); setActiveTab('notes'); setIsMobileMenuOpen(false); }}
+                  className={`flex-1 text-left flex items-center gap-2 py-2.5 pr-3 min-w-0 ${
+                    isActive ? 'text-indigo-500 font-bold' : isDone ? 'text-tertiary' : 'text-secondary hover:text-primary'
+                  }`}
+                >
+                  <span className={`truncate flex-1 ${isDone && !isActive ? 'line-through decoration-emerald-500/50' : ''}`}>
+                    {mod.title}
+                  </span>
+                  {isDone && !isRevision && (
+                    <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-full flex-shrink-0">✓</span>
+                  )}
+                </button>
               </div>
             );
           })}
