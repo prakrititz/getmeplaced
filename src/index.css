@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+@theme inline {
   --color-background: var(--bg-background);
   --color-surface: var(--bg-surface);
   --color-surface-muted: var(--bg-surface-muted);
