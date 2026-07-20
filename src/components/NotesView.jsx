@@ -33,7 +33,7 @@ export function NotesView({ module, user, starredCards }) {
     );
   }
 
-  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db' || module.id === 'oop_blueprint' || module.id === 'cpp_fundamentals' || module.id === 'cpp_architecture' || module.id === 'cpp_inheritance' || module.id === 'solid_principles' || module.id === 'cpp_polymorphism' || module.id === 'cpp_runtime_polymorphism' || module.id === 'cpp_diamond_problem' || module.id === 'cpp_templates' || module.id === 'cpp_vs_java') {
+  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db' || module.id === 'oop_blueprint' || module.id === 'cpp_fundamentals' || module.id === 'cpp_architecture' || module.id === 'cpp_inheritance' || module.id === 'solid_principles' || module.id === 'cpp_polymorphism' || module.id === 'cpp_runtime_polymorphism' || module.id === 'cpp_diamond_problem' || module.id === 'cpp_templates' || module.id === 'cpp_vs_java' || module.id === 'java_interfaces_abstract_classes' || module.id === 'cn_fundamentals' || module.id === 'cn_network_types' || module.id === 'cn_characteristics_osi' || module.id === 'cn_topologies' || module.id === 'cn_devices' || module.id === 'cn_layer2' || module.id === 'cn_layer3' || module.id === 'cn_core_protocols') {
     const colorPalette = [
       { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500' },
       { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-900/50', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500' },
@@ -89,11 +89,41 @@ export function NotesView({ module, user, starredCards }) {
                          </div>
                        );
                     }
+                    if (pt.trim().startsWith("|")) {
+                      const rows = pt.trim().split('\n').filter(r => r.trim().startsWith('|'));
+                      if (rows.length >= 3) {
+                        const headers = rows[0].split('|').map(h => h.trim()).filter(h => h);
+                        const dataRows = rows.slice(2).map(r => r.split('|').map(d => d.trim()).filter(d => d));
+                        
+                        return (
+                          <div key={idx} className="w-full my-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-md">
+                            <table className="w-full text-sm text-left divide-y divide-slate-200 dark:divide-slate-700/50">
+                              <thead className={`bg-slate-50/80 dark:bg-slate-800/50 ${style.text}`}>
+                                <tr className="divide-x divide-slate-200 dark:divide-slate-700/50">
+                                  {headers.map((h, i) => (
+                                    <th key={i} className="px-4 py-3.5 font-bold uppercase tracking-wider text-xs whitespace-nowrap" dangerouslySetInnerHTML={{ __html: h.replace(/`/g, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50 bg-white dark:bg-surface">
+                                {dataRows.map((row, i) => (
+                                  <tr key={i} className="divide-x divide-slate-200 dark:divide-slate-700/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
+                                    {row.map((cell, j) => (
+                                      <td key={j} className="px-4 py-3.5 text-secondary leading-relaxed" dangerouslySetInnerHTML={{ __html: cell.replace(/`/g, '').replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900 dark:text-white">$1</strong>') }} />
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        );
+                      }
+                    }
                     
                     return (
                       <li key={idx} className="text-secondary text-sm md:text-base leading-relaxed flex items-start gap-3">
-                        <span className={`font-bold mt-1 ${style.icon}`}>â€¢</span>
-                        {pt}
+                        <span className={`font-bold mt-1 ${style.icon}`}>•</span>
+                        <span className="flex-1" dangerouslySetInnerHTML={{ __html: pt.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>') }} />
                       </li>
                     );
                   })}

@@ -9,6 +9,7 @@ import { courseModules } from './data/courseModules';
 import { osModules } from './data/osModules';
 import { dbmsModules } from './data/dbmsModules';
 import { oopsModules } from './data/oopsModules';
+import { cnModules } from './data/cnModules';
 
 // Components
 import { NotesView } from './components/NotesView';
@@ -97,6 +98,7 @@ export default function App() {
     'OS': osModules,
     'DBMS': dbmsModules,
     'OOPS': oopsModules,
+    'CN': cnModules,
     'Revision': [{ id: 'revision', title: 'Starred Flashcards', flashcards: starredCards }]
   };
   

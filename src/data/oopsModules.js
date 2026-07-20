@@ -1,4 +1,4 @@
-﻿export const oopsModules = [
+export const oopsModules = [
   {
     id: 'oop_blueprint',
     title: 'The Object-Oriented Programming Blueprint: A Step-by-Step Guide',
@@ -707,6 +707,97 @@
       { question: "How is an object's cleanup handled in Java?", options: ["By explicitly calling a Destructor.", "By using the 'delete' keyword.", "By the automatic Garbage Collector.", "By using the 'friend' keyword."], answer: 2 },
       { question: "Which access modifier exists in Java but not in C++?", options: ["public", "private", "protected", "default (package-private)"], answer: 3 }
     ]
+  },
+  {
+    id: 'java_interfaces_abstract_classes',
+    title: 'Interfaces vs Abstract Classes (Java vs C++)',
+    notes: {
+      intro: "This is one of the biggest confusions for C++ programmers learning Java. Java deliberately split what C++ combines. Let's compare.",
+      cpp_approach: {
+        title: "C++ Approach",
+        points: [
+          "You basically have one mechanism. `Animal` is an abstract class because it has a pure virtual function. You inherit using `class Dog : public Animal`. Everything is just a class.",
+          "```cpp\nclass Animal {\npublic:\n    virtual void sound() = 0;\n};\n\nclass Dog : public Animal {\npublic:\n    void sound() override {\n        cout << \"Bark\";\n    }\n};\n```"
+        ]
+      },
+      java_separation: {
+        title: "Java Separates Two Concepts",
+        points: [
+          "Instead of one thing, Java has Classes, Abstract Classes, and Interfaces because they serve different purposes."
+        ]
+      },
+      extends_keyword: {
+        title: "1. extends",
+        points: [
+          "Used when inheriting from a class. Exactly like `class Dog : public Animal` in C++.",
+          "```java\nclass Animal {\n    void eat() {\n        System.out.println(\"Eating\");\n    }\n}\n\nclass Dog extends Animal {\n}\n```"
+        ]
+      },
+      abstract_class: {
+        title: "2. abstract class",
+        points: [
+          "Suppose Animal shouldn't exist by itself. Java abstract class is almost identical to a C++ abstract class.",
+          "```java\nabstract class Animal {\n    abstract void sound();\n    void eat() {\n        System.out.println(\"Eating\");\n    }\n}\n\nclass Dog extends Animal {\n    void sound() {\n        System.out.println(\"Bark\");\n    }\n}\n```"
+        ]
+      },
+      interfaces: {
+        title: "3. Interface",
+        points: [
+          "This is NOT a class. It only describes what an object can do. No constructor, no fields (except constants), no object.",
+          "It simply says: \"Anyone implementing me must provide fly().\" Think of it like a contract.",
+          "```java\ninterface Flyable {\n    void fly();\n}\n\nclass Bird implements Flyable {\n    public void fly() {\n        System.out.println(\"Flying\");\n    }\n}\n```"
+        ]
+      },
+      why_not_just_abstract: {
+        title: "Why not just abstract classes?",
+        points: [
+          "Java does not allow multiple inheritance of classes (e.g., `class RobotDog extends Animal, Machine` is illegal). Interfaces solve this.",
+          "A class can implement many interfaces.",
+          "```java\ninterface Walkable {\n    void walk();\n}\ninterface Rechargeable {\n    void recharge();\n}\nclass RobotDog implements Walkable, Rechargeable {\n    public void walk() {}\n    public void recharge() {}\n}\n```"
+        ]
+      },
+      real_example: {
+        title: "Real Example",
+        points: [
+          "A `Student` can Study, PlayFootball, Sing, and Dance. Instead of extending multiple classes, you implement multiple interfaces.",
+          "```java\ninterface Study {}\ninterface Football {}\ninterface Dance {}\ninterface Sing {}\n\nclass Student implements Study, Football, Dance, Sing {\n}\n```"
+        ]
+      },
+      difference: {
+        title: "Difference between Abstract Class and Interface",
+        points: [
+          "Abstract Class (e.g., `Animal`): Stores data and implementation.",
+          "Interface (e.g., `Flyable`): Just capability. No common state."
+        ]
+      },
+      syntax_and_keywords: {
+        title: "Java Syntax & Keywords",
+        points: [
+          "`extends` means: \"I am a kind of this class.\" (e.g., Dog is an Animal).",
+          "`implements` means: \"I promise I can do this.\" (e.g., Bird can fly).",
+          "```java\nclass Duck extends Animal implements Flyable, Swimmable {\n}\n```"
+        ]
+      },
+      cpp_equivalent: {
+        title: "C++ Equivalent and Mapping",
+        points: [
+          "In C++, you often use abstract base classes for both inheritance and interfaces. Java splits this into `abstract class` and `interface`. This separation avoids problems like the 'diamond problem'.",
+          "| C++ | Java |\n| --- | --- |\n| `class Derived : public Base` | `class Derived extends Base` |\n| Pure virtual class | `abstract class` or `interface` |\n| `virtual void f() = 0;` | `abstract void f();` or `void f();` |\n| Multiple inheritance of classes | ❌ Not allowed |\n| Multiple inheritance of interfaces | `implements Interface1, Interface2` |\n| Virtual methods | All non-`final` instance methods are dynamically dispatched |",
+          "The main idea is: **use an abstract class when you want to share code and state; use an interface when you want to define a capability or contract that many unrelated classes can implement.**"
+        ]
+      }
+    },
+    flashcards: [
+      { front: "What is the difference between an abstract class and an interface in Java?", back: "An abstract class can store data and implementation (sharing code and state). An interface just defines a capability or contract (what an object can do) with no common state." },
+      { front: "Does Java allow multiple inheritance of classes?", back: "No. Java does not allow multiple inheritance of classes to avoid issues like the diamond problem, but a class can implement multiple interfaces." },
+      { front: "What is the C++ equivalent of a Java interface?", back: "In C++, an abstract base class with only pure virtual functions acts as an interface." },
+      { front: "What does the `extends` keyword mean in Java conceptually?", back: "It means 'I am a kind of this class.' (e.g., Dog is an Animal)." },
+      { front: "What does the `implements` keyword mean in Java conceptually?", back: "It means 'I promise I can do this.' (e.g., Bird can fly)." }
+    ],
+    quiz: [
+      { question: "Why does Java have both abstract classes and interfaces, while C++ primarily uses abstract classes for both concepts?", options: ["Java interfaces run faster than abstract classes.", "Java separates sharing code/state (abstract class) from defining capabilities/contracts (interface) to avoid multiple inheritance issues.", "Abstract classes in Java cannot have methods.", "Java interfaces can store member variables like abstract classes."], answer: 1 },
+      { question: "Which of the following is illegal in Java?", options: ["class Dog extends Animal", "class Bird implements Flyable", "class Duck extends Animal implements Flyable, Swimmable", "class RobotDog extends Animal, Machine"], answer: 3 },
+      { question: "What is a Java interface fundamentally?", options: ["A blueprint that contains full method implementations and state.", "A contract describing what an object can do, without providing state or implementation.", "A type of class that allows multiple inheritance of state.", "An abstract class that contains constructors."], answer: 1 }
+    ]
   }
 ];
-
