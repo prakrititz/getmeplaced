@@ -1,10 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState, useId } from 'react';
 import { Database, Star, BookOpen, Layers, CheckSquare, Server, Activity, FolderOpen, Terminal, ArrowDownUp, Code, Power, HardDrive, AlertTriangle, ShieldCheck, AlertOctagon, Skull, Clock, Layout, User, ChevronRight, Cpu, RotateCcw, Settings, AppWindow } from 'lucide-react';
 import { doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { StarableBlock } from './StarableBlock';
 import { ErSymbol } from './ErSymbol';
+import mermaid from 'mermaid';
 
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'dark',
+  securityLevel: 'loose',
+  themeVariables: {
+    background: 'transparent',
+    fontFamily: 'inherit'
+  }
+});
+
+const MermaidDiagram = ({ chart }) => {
+  const [svg, setSvg] = useState('');
+  const id = useId();
+  
+  useEffect(() => {
+    const renderChart = async () => {
+      try {
+        const uniqueId = `mermaid-${id.replace(/:/g, '')}`;
+        const { svg } = await mermaid.render(uniqueId, chart);
+        setSvg(svg);
+      } catch (e) {
+        console.error('Mermaid render error', e);
+        setSvg(`<div class="text-red-500 p-4 border border-red-500 rounded text-sm font-mono">Error rendering diagram</div>`);
+      }
+    };
+    renderChart();
+  }, [chart, id]);
+  
+  return (
+    <div 
+      className="w-full overflow-x-auto flex justify-center my-8 p-2"
+      dangerouslySetInnerHTML={{ __html: svg }} 
+    />
+  );
+};
 export function NotesView({ module, user, starredCards }) {
   if (module.id === 'revision') {
     const notes = starredCards.filter(c => c.type === 'note');
@@ -33,7 +69,7 @@ export function NotesView({ module, user, starredCards }) {
     );
   }
 
-  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db' || module.id === 'oop_blueprint' || module.id === 'cpp_fundamentals' || module.id === 'cpp_architecture' || module.id === 'cpp_inheritance' || module.id === 'solid_principles' || module.id === 'cpp_polymorphism' || module.id === 'cpp_runtime_polymorphism' || module.id === 'cpp_diamond_problem' || module.id === 'cpp_templates' || module.id === 'cpp_vs_java' || module.id === 'java_interfaces_abstract_classes' || module.id === 'cn_fundamentals' || module.id === 'cn_network_types' || module.id === 'cn_characteristics_osi' || module.id === 'cn_topologies' || module.id === 'cn_devices' || module.id === 'cn_layer2' || module.id === 'cn_layer3' || module.id === 'cn_core_protocols' || module.id === 'cn_routing' || module.id === 'cn_layer4' || module.id === 'cn_layer7' || module.id === 'cn_backend_architecture' || module.id === 'cn_performance' || module.id === 'cn_commands') {
+  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db' || module.id === 'oop_blueprint' || module.id === 'cpp_fundamentals' || module.id === 'cpp_architecture' || module.id === 'cpp_inheritance' || module.id === 'solid_principles' || module.id === 'cpp_polymorphism' || module.id === 'cpp_runtime_polymorphism' || module.id === 'cpp_diamond_problem' || module.id === 'cpp_templates' || module.id === 'cpp_vs_java' || module.id === 'java_interfaces_abstract_classes' || module.id === 'cn_fundamentals' || module.id === 'cn_network_types' || module.id === 'cn_characteristics_osi' || module.id === 'cn_topologies' || module.id === 'cn_devices' || module.id === 'cn_layer2' || module.id === 'cn_layer3' || module.id === 'cn_core_protocols' || module.id === 'cn_routing' || module.id === 'cn_layer4' || module.id === 'cn_layer7' || module.id === 'cn_backend_architecture' || module.id === 'cn_security' || module.id === 'cn_performance' || module.id === 'cn_commands' || module.id === 'cn_deep_dive') {
     const colorPalette = [
       { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500' },
       { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-900/50', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500' },
@@ -64,6 +100,10 @@ export function NotesView({ module, user, starredCards }) {
                 </h2>
                 <ul className="space-y-4">
                   {section.points.map((pt, idx) => {
+                    if (pt.startsWith("```mermaid")) {
+                      const chartData = pt.replace(/```mermaid\n?/, '').replace(/\n?```$/, '');
+                      return <MermaidDiagram key={idx} chart={chartData} />;
+                    }
                     if (pt.startsWith("```")) {
                       return (
                         <div key={idx} className="w-full my-4 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-sm">

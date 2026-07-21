@@ -979,10 +979,84 @@ export const cnModules = [
     ]
   },
   {
-    id: 'cn_performance',
-    title: 'Module 13: Performance',
+    id: 'cn_security',
+    title: 'Module 13: Security',
     notes: {
-      intro: "Welcome to **Module 13: Performance**.\n\nIn system design interviews, you will frequently be asked to identify bottlenecks. Is the application slow because of the database, or is it physics? Understanding network performance allows you to confidently answer those questions and architect systems that respect the limitations of the physical world.\n\nLet's break down exactly where time is lost in a network and how we measure it.",
+      intro: "Welcome to **Module 13: Security**.\n\nIt looks like we are revisiting the security perimeter! This is a fantastic area to review, because in system design, security can never be an afterthought. You can build the fastest, most scalable system in the world, but if your API is completely open or your database is easily exposed, the architecture is fundamentally broken.\n\nHere is the deep dive into perimeter defenses that keep bad actors out, and the authentication mechanisms that let the right people in.",
+      chapter1: {
+        title: "48. Firewalls",
+        points: [
+          "Explanation:\nA firewall is your network's bouncer. It sits at the perimeter and inspects traffic trying to enter or leave, deciding what to block and what to allow based on a strict set of rules.",
+          "**Packet Filtering (Stateless):** The oldest and simplest firewall. It operates at Layer 3 and Layer 4. It looks at every single packet in isolation and checks the Source IP, Destination IP, and Port. If it matches a 'Block' rule, it's dropped. **Crucially, it has no memory.** If you request a webpage, you have to manually write a rule to allow the reply back in.",
+          "**Stateful Firewall:** The modern standard. It maintains a **State Table** in its memory to track active connections. If your internal PC reaches out to `google.com`, the firewall remembers that outbound request. When Google replies, the firewall dynamically allows the traffic back through because it belongs to an established, trusted 'state'.",
+          "**Application Firewall / WAF (Web Application Firewall):** These operate at Layer 7 (Application Layer). While a standard firewall blocks IPs and Ports, a WAF actually reads the HTTP payloads. It looks for malicious patterns inside the data itself, such as **SQL Injection** or **Cross-Site Scripting (XSS)**, and blocks them before they hit your web servers."
+        ]
+      },
+      chapter2: {
+        title: "49. VPN (Virtual Private Network)",
+        points: [
+          "Explanation:\nA VPN creates a secure, encrypted 'tunnel' over a public, untrusted network (the internet).",
+          "**Tunneling & Encryption:** The VPN takes a standard IP packet, encrypts the entire thing, wraps it in a *new* IP header, and sends it. Protocols like IPsec or OpenVPN handle this.",
+          "**Remote Access VPN:** Used by individual employees. Creates a secure tunnel directly to your company's perimeter firewall. To the internal network, your laptop appears physically plugged into the office switch.",
+          "**Site-to-Site VPN:** Used to connect entire office buildings. Routers handle the encryption transparently.",
+          "| Feature | VPN | Proxy |\n|---|---|---|\n| **Scope** | Encrypts and routes **all** traffic leaving the OS. | Usually acts on a **per-application** basis. |\n| **Encryption** | Heavily encrypted by default (IPsec, WireGuard). | Often unencrypted or only uses standard HTTPS. |\n| **Identity** | Makes you a virtual member of a remote network. | Acts as a middleman fetching resources on your behalf. |"
+        ]
+      },
+      chapter3: {
+        title: "50. Proxies (Deep Dive)",
+        points: [
+          "Explanation:\nA proxy is the ultimate 'middleman'. It intercepts requests from a client and forwards them to a server, or vice versa.",
+          "**Uses & Advantages:** They mask the client's internal IP address, cache frequently accessed websites to save bandwidth, and filter malicious or inappropriate content.",
+          "**Anonymous Proxy:** Hides your original IP address from the destination server. However, it still includes HTTP headers identifying *itself* as a proxy.",
+          "**Transparent Proxy:** Often used by corporate networks or ISPs. The client doesn't even know the proxy is there. Intercepts traffic seamlessly for caching or filtering.",
+          "| Feature | Proxy | Firewall |\n|---|---|---|\n| **Core Function** | Intercepts, inspects, and makes requests *on behalf* of the user. | Inspects packets and drops/allows them based on rules. |\n| **Action** | Can modify the data payload (e.g., stripping out tracking headers). | Generally does not modify payload (unless acting as a WAF). |\n| **Layer** | Operates primarily at Layer 7 (Application). | Operates primarily at Layer 3/4 (Network/Transport). |"
+        ]
+      },
+      chapter4: {
+        title: "51. Authentication (System Design Overview)",
+        points: [
+          "Explanation:\nWhen designing an API, you must know how to authenticate users and how it scales.",
+          "**Cookies (The Transport):** A small piece of text that a server asks the browser to hold onto. The browser automatically attaches that cookie to every subsequent request to that domain. Cookies are the *vehicle*; they are not the authentication itself.",
+          "**Sessions (Stateful Authentication):**\n1. You log in.\n2. Server generates a random string (`Session ID: xyz123`) and saves it in a database (like Redis) alongside your User ID.\n3. Server sends `xyz123` to your browser in a Cookie.\n4. On next request, browser sends the cookie. Server MUST query the database to verify.",
+          "*System Design Flaw:* Hard to scale horizontally. 10,000 requests/sec = 10,000 database lookups.",
+          "**JWT / JSON Web Tokens (Stateless Authentication):**\n1. You log in.\n2. Server creates a JSON object with your User ID and cryptographically **signs** it using a secret key. Sends this JWT to the client.\n3. On next request, you send the JWT.\n4. Server uses its secret key to verify the signature via CPU math. **It never checks the database.**",
+          "*System Design Benefit:* Scales infinitely because it requires zero database lookups.",
+          "**OAuth (Delegated Authorization):** A framework that allows a user to grant a third-party application limited access to their resources *without* sharing their password (e.g., 'Log in with Google' on Spotify)."
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is the primary difference between a Stateful and Stateless Firewall?",
+        back: "A stateless firewall looks at each packet individually and has no memory. A stateful firewall tracks active connections in a State Table, dynamically allowing return traffic for established connections."
+      },
+      {
+        front: "Why do JWTs (JSON Web Tokens) scale better than Session-based authentication?",
+        back: "Session authentication requires a database lookup (like Redis) on every single request to verify the Session ID. JWTs are stateless; the server simply verifies the cryptographic signature using CPU math, eliminating the database bottleneck."
+      },
+      {
+        front: "What is a WAF and how does it differ from a standard firewall?",
+        back: "A Web Application Firewall (WAF) operates at Layer 7. Instead of just checking IPs and ports, it inspects the actual HTTP payload to block malicious patterns like SQL Injection or XSS."
+      }
+    ],
+    quiz: [
+      {
+        question: "Which of the following creates a secure, encrypted tunnel over a public network and effectively makes you a virtual member of a remote network?",
+        options: ["Application Firewall", "Transparent Proxy", "Virtual Private Network (VPN)", "Stateful Firewall"],
+        answer: 2
+      },
+      {
+        question: "In OAuth, when you click 'Log in with Google' on a third-party site like Spotify, what happens?",
+        options: ["Spotify receives your Google password to verify your identity.", "Spotify is granted a token proving your identity without ever seeing your password.", "A direct Site-to-Site VPN is established between Spotify and Google.", "Google sends a JWT to your local database."],
+        answer: 1
+      }
+    ]
+  },
+  {
+    id: 'cn_performance',
+    title: 'Module 14: Performance',
+    notes: {
+      intro: "Welcome to **Module 14: Performance**.\n\nIn system design interviews, you will frequently be asked to identify bottlenecks. Is the application slow because of the database, or is it physics? Understanding network performance allows you to confidently answer those questions and architect systems that respect the limitations of the physical world.\n\nLet's break down exactly where time is lost in a network and how we measure it.",
       chapter1: {
         title: "Network Delays (Where time is lost)",
         points: [
@@ -1042,9 +1116,9 @@ export const cnModules = [
   },
   {
     id: 'cn_commands',
-    title: 'Module 14: Networking Commands',
+    title: 'Module 15: Networking Commands',
     notes: {
-      intro: "Welcome to **Module 14: Networking Commands**.\n\nIn the real world of system engineering, cloud architecture, and DevOps, you rarely have a shiny Graphical User Interface (GUI) to diagnose problems. When a server goes down at 3:00 AM, you only have a command-line terminal.\n\nMastering these commands is non-negotiable for troubleshooting, and they frequently pop up in technical interviews when assessing your hands-on operational knowledge.",
+      intro: "Welcome to **Module 15: Networking Commands**.\n\nIn the real world of system engineering, cloud architecture, and DevOps, you rarely have a shiny Graphical User Interface (GUI) to diagnose problems. When a server goes down at 3:00 AM, you only have a command-line terminal.\n\nMastering these commands is non-negotiable for troubleshooting, and they frequently pop up in technical interviews when assessing your hands-on operational knowledge.",
       chapter1: {
         title: "1. `ping`",
         points: [
@@ -1206,6 +1280,206 @@ export const cnModules = [
         question: "You want to verify if your newly updated DNS records have propagated globally. Which command is best suited for querying DNS servers for domain names and IP resolution?",
         options: ["nslookup / dig", "route print", "netstat", "ipconfig"],
         answer: 0
+      }
+    ]
+  },
+  {
+    id: 'cn_deep_dive',
+    title: 'Module 16: Networking Deep Dive',
+    notes: {
+      intro: "Welcome to **Module 16: Networking Deep Dive**.\n\nWe are combining everything we've learned into two complete, end-to-end operational flows. First, we'll see exactly how a device boots up and connects to a network. Second, we'll break down step-by-step what happens when you open `https://google.com`.\n\nThese flows are frequently asked in technical interviews and are essential for mastering full-stack system architecture.",
+      chapter1: {
+        title: "PART 1 — Device Boot-Up & Connecting to a Network",
+        points: [
+          "**1.1 Physical/Data Link Setup**",
+          "**NIC Initialization:** On power-on, the OS loads the NIC driver. The firmware performs a self-test. The NIC exposes a **MAC address** (e.g., `AA:BB:CC:DD:EE:FF`).",
+          "**Ethernet Association:** If wired, negotiates link speed/duplex with the switch via auto-negotiation.",
+          "**Wi-Fi Association:** If wireless, involves 1. Scanning, 2. Authentication, 3. Association, and 4. 4-Way Handshake (derives encryption keys).",
+          "**Channel Access Method:** Wi-Fi uses **CSMA/CA** (Carrier Sense Multiple Access / Collision Avoidance). Old Ethernet used **CSMA/CD** (Collision Detection).",
+          "**Switch MAC Learning:** The switch inspects the **source MAC** of the first frame and stores `MAC -> port` in its **CAM/MAC address table**. Until it learns the destination MAC, it floods the frame out all ports.",
+          "**1.2 DHCP — Getting an IP Address (DORA)**",
+          "```mermaid\nsequenceDiagram\n    participant C as Client (New Device)\n    participant S as DHCP Server\n\n    Note over C: No IP yet — uses 0.0.0.0<br/>Destination: 255.255.255.255 (broadcast)\n    C->>S: 1. DHCP DISCOVER (broadcast, L2 + L3)\n    Note over S: Server picks an available IP<br/>from its pool/scope\n    S->>C: 2. DHCP OFFER (IP, subnet, lease, gateway, DNS)\n    Note over C: Client may receive multiple<br/>offers from multiple servers\n    C->>S: 3. DHCP REQUEST (broadcast — \"I accept this offer\")\n    Note over S: Broadcast REQUEST tells other<br/>DHCP servers their offers were declined\n    S->>C: 4. DHCP ACK (confirms lease, final config)\n    Note over C: IP is now bound. Client can<br/>optionally send gratuitous ARP<br/>to check for IP conflicts\n```",
+          "**What's inside the ACK (the config bundle):**\n- **Assigned IP address:** Unique address on the subnet.\n- **Subnet Mask:** Defines the network vs. host portion.\n- **Default Gateway:** IP of the router for outside traffic.\n- **DNS Server(s):** IPs to query for name resolution.\n- **Lease Time:** How long the IP is valid.",
+          "**1.3 Post-DHCP Initialization**",
+          "**ARP Cache Initialization:** Starts empty. Populated on-demand via ARP Requests.",
+          "**Routing Table Initialization:** OS builds a local routing table containing local subnet, default route (`0.0.0.0/0`), and loopback (`127.0.0.1`).",
+          "**Internet Connectivity Test:** OS runs a captive portal check.",
+          "**1.4 Packet-by-Packet Summary Table**",
+          "| # | Packet | Src MAC | Dst MAC | Src IP | Dst IP | Purpose |\n|---|---|---|---|---|---|---|\n| 1 | DHCP Discover | Client MAC | `FF:FF:FF:FF:FF:FF` | `0.0.0.0` | `255.255.255.255` | Find a DHCP server |\n| 2 | DHCP Offer | Server MAC | Client MAC/broadcast | Server IP | `255.255.255.255` / Client IP | Offer a lease |\n| 3 | DHCP Request | Client MAC | `FF:FF:FF:FF:FF:FF` | `0.0.0.0` | `255.255.255.255` | Accept an offer |\n| 4 | DHCP ACK | Server MAC | Client MAC | Server IP | Client IP | Confirm the lease |",
+          "**1.5 OSI Mapping — Boot-Up Flow**",
+          "| Layer | Involved Here |\n|---|---|\n| L7 Application | DHCP client service (uses UDP ports 67/68) |\n| L4 Transport | UDP (connectionless — fits broadcast-based discovery) |\n| L3 Network | IP addressing, subnet mask, gateway, routing table |\n| L2 Data Link | MAC addressing, switch MAC learning, ARP, Wi-Fi association |\n| L1 Physical | Link negotiation, radio/electrical signaling, CSMA/CA or CSMA/CD |"
+        ]
+      },
+      chapter2: {
+        title: "PART 2 — What Happens When You Open `https://google.com`",
+        points: [
+          "**2.1 High-Level Flow**",
+          "```mermaid\nflowchart TD\n    A[User types URL] --> B[Browser Parsing & Cache Checks]\n    B --> C[DNS Resolution]\n    C --> D[Routing Prep: same subnet?]\n    D --> E[ARP: resolve gateway MAC]\n    E --> F[L2 Ethernet Frame + L3 IP Packet built]\n    F --> G[Switch forwards frame]\n    G --> H[Router routes + NAT]\n    H --> I[ISP Network / BGP / Backbone]\n    I --> J[CDN: Anycast/GeoDNS edge selection]\n    J --> K[TCP 3-Way Handshake]\n    K --> L[TLS Handshake]\n    L --> M[HTTP Request]\n    M --> N[Server-Side Stack: LB, WAF, App, DB]\n    N --> O[HTTP Response]\n    O --> P[Browser Rendering]\n```",
+          "**2.2 Local Machine — Before Any Packet Leaves**",
+          "**User types URL -> Browser Parsing:** `https://google.com` -> scheme=`https`, host=`google.com`, port=`443`, path=`/`.",
+          "**Pre-flight cache checks (in order):**\n1. **Browser Cache**\n2. **HSTS Cache**\n3. **DNS Cache (Browser)**\n4. **DNS Cache (OS)**\n5. **Hosts File**",
+          "**2.3 DNS Resolution**",
+          "```mermaid\nsequenceDiagram\n    participant Br as Browser/OS\n    participant R as Recursive Resolver (ISP/8.8.8.8)\n    participant Root as Root DNS Server\n    participant TLD as .com TLD Server\n    participant Auth as Google Authoritative NS\n\n    Br->>R: Query: google.com A/AAAA record?\n    R->>Root: Who handles .com?\n    Root-->>R: Here's the .com TLD server\n    R->>TLD: Who handles google.com?\n    TLD-->>R: Here's Google's authoritative NS\n    R->>Auth: What's the A/AAAA record for google.com?\n    Auth-->>R: A record: 142.250.x.x (TTL: 300s)\n    R-->>Br: 142.250.x.x\n```",
+          "**A Record:** IPv4. **AAAA Record:** IPv6. **CNAME:** Alias.",
+          "**2.4 Routing Preparation & 2.5 ARP**",
+          "OS checks if the IP is in the same subnet. Since it's public, it uses the **default route/gateway**. It then uses **ARP** to find the gateway's MAC address.",
+          "**2.6 Frame & Packet Construction**",
+          "**L2 Frame:** Src MAC (NIC), Dst MAC (Gateway), MTU.\n**L3 Packet:** Src IP (Private), Dst IP (Google), TTL.",
+          "**2.7 Switch -> Router -> ISP**",
+          "**Switch:** L2 forwarding based on CAM table.\n**Router:** L3 forwarding, decrements TTL, performs **NAT/PAT** to swap private IP for public IP.\n**ISP:** Uses **BGP (Border Gateway Protocol)** to route across the Internet Backbone.",
+          "**2.8 CDN / Anycast**",
+          "**GeoDNS** or **Anycast** ensures you hit the closest edge server to minimize latency.",
+          "**2.9 TCP 3-Way Handshake & 2.10 TLS Handshake**",
+          "Client and Server exchange SYN/ACKs to establish a reliable connection. Then, they exchange certificates and negotiate a symmetric **session key** for encryption (HTTPS).",
+          "**2.11 HTTP Request & 2.12 Server-Side Stack**",
+          "Request hits a **Reverse Proxy / Load Balancer**, passes a **WAF**, goes to an **API Gateway**, then **App Server**, **Cache**, and **DB**.",
+          "**2.13 Response Path & 2.14 Browser Rendering**",
+          "Response is compressed, encrypted, and routed back. Browser parses HTML (DOM) + CSS (CSSOM) -> **Render Tree** -> Paints to screen.",
+          "**2.15 Full OSI Mapping**",
+          "| Layer | What Happens |\n|---|---|\n| **L7 Application** | DNS query, HTTP GET, TLS handshake logic, cookies |\n| **L6 Presentation** | TLS encryption/decryption, compression (gzip/Brotli) |\n| **L5 Session** | TLS session establishment/resumption, HTTP session/cookies |\n| **L4 Transport** | TCP (3-way handshake, sequence numbers, ports, segmentation) / QUIC-UDP for HTTP/3 |\n| **L3 Network** | IP addressing, routing table lookups, TTL, fragmentation, NAT, BGP |\n| **L2 Data Link** | Ethernet/Wi-Fi framing, MAC addresses, ARP, switch MAC learning, CRC |\n| **L1 Physical** | Electrical/radio signaling, cabling, wireless carrier sensing |",
+          "**2.16 End-to-End Packet Summary**",
+          "| Stage | Src MAC | Dst MAC | Src IP | Dst IP | Src Port | Dst Port | Notes |\n|---|---|---|---|---|---|---|---|\n| ARP Request | Client | Broadcast | — | — | — | — | Find gateway MAC |\n| SYN | Client | Gateway (L2) | Private IP | Google IP | Ephemeral | 443 | TCP handshake start |\n| SYN-ACK | Gateway (L2) | Client | Google IP | Public IP | 443 | Ephemeral | Router untranslates on return |\n| ACK | Client | Gateway (L2) | Private IP | Google IP | Ephemeral | 443 | Handshake complete |\n| TLS ClientHello | Client | Gateway (L2) | Private IP | Google IP | Ephemeral | 443 | Begins TLS |\n| HTTP GET | Client | Gateway (L2) | Private IP | Google IP | Ephemeral | 443 | Inside encrypted tunnel |"
+        ]
+      },
+      chapter3: {
+        title: "Quick Reference — Where Things Live",
+        points: [
+          "```mermaid\nflowchart LR\n    subgraph L1L2[\"L1/L2 — Local Segment\"]\n        MAC[MAC Address]\n        ARP[ARP]\n        SW[Switch MAC Table]\n        CSMA[CSMA/CD or CSMA/CA]\n    end\n    subgraph L3[\"L3 — Network\"]\n        IP[IP Address]\n        RT[Routing Table]\n        NAT[NAT/PAT]\n        BGP[BGP]\n        TTLx[TTL]\n    end\n    subgraph L4[\"L4 — Transport\"]\n        TCP[TCP 3-Way Handshake]\n        PORT[Ports]\n    end\n    subgraph L567[\"L5-L7 — Session/Presentation/App\"]\n        TLS[TLS Handshake]\n        DNS[DNS Resolution]\n        HTTP[HTTP Request/Response]\n    end\n\n    L1L2 --> L3 --> L4 --> L567\n```"
+        ]
+      },
+      chapter4: {
+        title: "57. What Happens When You Watch a YouTube Video",
+        points: [
+          "```mermaid\nflowchart TD\n    A[Browser: user clicks video] --> B[DNS resolves youtube.com]\n    B --> C[Anycast + GeoDNS pick nearest CDN edge]\n    C --> D[HTTPS: TLS 1.3 handshake]\n    D --> E{HTTP/3 available?}\n    E -->|Yes| F[QUIC over UDP — built-in encryption + multiplexing]\n    E -->|No fallback| G[TCP + HTTP/2]\n    F --> H[Player requests a manifest: available resolutions/bitrates]\n    G --> H\n    H --> I[Adaptive Bitrate Streaming ABR logic starts]\n    I --> J[Player requests small video segments 2-10s each]\n    J --> K[CDN edge cache serves segment if cached, else pulls from origin]\n    K --> L[Segment decompressed/decoded H.264/VP9/AV1]\n    L --> M[Buffer fills ahead of playback point]\n    M --> N[Continuous loop: request next segment based on bandwidth + buffer health]\n    N --> O[Playback renders frame-by-frame in browser player]\n```",
+          "**Key concepts:**",
+          "**DNS:** resolves `youtube.com`/`googlevideo.com` (video is often served from a *different* domain than the search page).",
+          "**CDN Selection / Geo Routing / Anycast:** YouTube's video is served from the nearest Google edge PoP.",
+          "**HTTPS/TLS:** the video stream itself is encrypted end-to-end.",
+          "**QUIC / HTTP/3:** Google pioneered QUIC; it runs over **UDP**, has TLS 1.3 baked in, avoids TCP head-of-line blocking, and reconnects fast after network switches.",
+          "**Adaptive Bitrate Streaming (ABR):** The player continuously measures bandwidth and picks the best resolution/bitrate for the *next* segment.",
+          "**Video Segments & Buffering:** Video is chunked into short segments. The player keeps a buffer in memory to absorb jitter.",
+          "**Compression:** H.264, VP9, AV1 shrink file size using intra/inter-frame compression."
+        ]
+      },
+      chapter5: {
+        title: "58. What Happens During a WhatsApp Message",
+        points: [
+          "```mermaid\nsequenceDiagram\n    participant A as Sender's Phone\n    participant WS as WhatsApp Server\n    participant B as Receiver's Phone\n\n    Note over A: Internet connection active<br/>(Wi-Fi or mobile data)\n    A->>A: DNS resolves WhatsApp server endpoint\n    A->>WS: TCP handshake + TLS handshake (secure channel to server)\n    Note over A: Message encrypted client-side FIRST<br/>using Signal Protocol (E2EE) —<br/>server transport TLS is a second, separate layer\n    A->>WS: Encrypted message blob sent over TLS tunnel\n    Note over WS: Server CANNOT read message content<br/>(only routes based on recipient ID)\n    WS->>B: Push Notification wakes app (APNs/FCM) if backgrounded\n    WS->>B: Encrypted blob delivered over B's TLS connection\n    B->>B: Decrypts using Signal Protocol session keys\n    B-->>WS: Delivery ACK\n    WS-->>A: Single check → Double check (delivered)\n    B-->>WS: Read event (if read receipts enabled)\n    WS-->>A: Blue double check (read)\n```",
+          "**Key concepts:**",
+          "**Message Encryption / End-to-End Encryption (E2EE):** Encrypted **on your device** using keys only the sender and recipient possess. TLS is a separate transport-layer encryption.",
+          "**Signal Protocol:** The underlying E2EE scheme. Uses the **Double Ratchet Algorithm** (new key for every message) and **X3DH** (initial shared secret via prekeys).",
+          "**Server Relay:** WhatsApp's servers act purely as a **store-and-forward relay**: hold encrypted blob if recipient is offline, deliver when they reconnect, then delete.",
+          "**Push Notification:** Server triggers APNs (Apple) or FCM (Google) to wake the app."
+        ]
+      },
+      chapter6: {
+        title: "59. What Happens During an Online Video Call (Google Meet / Zoom)",
+        points: [
+          "```mermaid\nflowchart TD\n    A[DNS resolves call server] --> B[Authentication: login/meeting token validated]\n    B --> C[ICE process starts: gather candidate addresses]\n    C --> D[STUN: discover public IP:port behind NAT]\n    D --> E{Direct P2P path possible?}\n    E -->|Yes| F[Direct UDP media path between peers]\n    E -->|No — symmetric NAT/strict firewall| G[TURN: relay media through a relay server]\n    F --> H[Media flows: RTP packets]\n    G --> H\n    H --> I[SRTP: RTP payload encrypted]\n    I --> J[Jitter Buffer smooths out arrival-time variance]\n    J --> K[Packet Loss Concealment / retransmission requests for key frames]\n    K --> L[Adaptive Bitrate adjusts video quality to network conditions]\n    L --> M[Audio Codec Opus decodes audio / Video Codec VP8-VP9-H.264 decodes video]\n    M --> N[Rendered on screen + played through speakers]\n```",
+          "**Key concepts:**",
+          "**NAT Traversal problem:** Both peers are typically behind NAT routers, lacking directly reachable public IPs.",
+          "**STUN (Session Traversal Utilities for NAT):** A lightweight server that tells your device its public IP:port.",
+          "**TURN (Traversal Using Relays around NAT):** If direct path fails, a relay server forwards all media between peers.",
+          "**ICE (Interactive Connectivity Establishment):** Gathers all candidate paths (local IP, STUN, TURN) and picks the best one.",
+          "**UDP & RTP:** Video calls use UDP for timeliness over reliability. RTP carries media with sequence numbers and timestamps.",
+          "**Jitter Buffer:** Intentionally delays playback slightly to absorb inconsistent packet arrival timing."
+        ]
+      },
+      chapter7: {
+        title: "60. What Happens During an Online Game",
+        points: [
+          "```mermaid\nflowchart TD\n    A[DNS resolves matchmaking service] --> B[Matchmaking: skill/region-based server assignment]\n    B --> C[Client connects to Game Server — usually UDP]\n    C --> D[NAT/Port Forwarding may be needed for peer-hosted games]\n    D --> E[Client sends input packets each tick]\n    E --> F[Client-Side Prediction: renders movement immediately, doesn't wait for server]\n    F --> G[Server receives inputs, runs authoritative simulation at fixed Tick Rate]\n    G --> H[Server resolves conflicts — Server Authority wins]\n    H --> I[Server broadcasts world-state snapshot/deltas to all clients]\n    I --> J{Packet arrived on time?}\n    J -->|Yes| K[Client reconciles predicted state with server state]\n    J -->|Lost/late| L[Client extrapolates / interpolates using last known data]\n    K --> M[Frame rendered]\n    L --> M\n    M --> E\n```",
+          "**Key concepts:**",
+          "**UDP:** Gameplay traffic relies on UDP; a stale position update is worse than a dropped one.",
+          "**Game Server / Tick Rate:** The server runs its simulation in discrete steps (e.g., 64 ticks/sec).",
+          "**Client Prediction:** The client predicts outcomes locally for responsiveness, reconciling when the real server update arrives (visible as rubber-banding if incorrect).",
+          "**Server Authority:** The server's simulation is the absolute source of truth to prevent client manipulation/cheating."
+        ]
+      },
+      chapter8: {
+        title: "61. What Happens When You Download a File",
+        points: [
+          "```mermaid\nsequenceDiagram\n    participant C as Client\n    participant S as Server\n\n    C->>C: Parse URL\n    C->>C: DNS resolves hostname\n    C->>C: ARP resolves gateway MAC (local delivery)\n    C->>S: TCP 3-way handshake\n    C->>S: TLS handshake (if HTTPS)\n    C->>S: HTTP GET /file.zip\n    S-->>C: 200 OK, Content-Length: 500000000 (or chunked)\n    loop Sliding window controlled by flow + congestion control\n        S-->>C: TCP segment (file bytes)\n        C-->>S: ACK (advances window)\n    end\n    Note over C,S: Lost segment? Server retransmits<br/>after timeout / triple duplicate ACK\n    S-->>C: Final segment\n    C->>C: Assemble segments in sequence-number order into file\n    C->>C: Integrity check (checksum/hash, e.g. SHA-256) if provided\n```",
+          "**Key concepts:**",
+          "**TCP:** Used because downloads need **guaranteed, ordered, complete delivery**.",
+          "**Content-Length vs Chunked Transfer:** Declaring total byte size upfront vs streaming without upfront sizing.",
+          "**Sliding Window & Flow Control:** Sender can have multiple unacknowledged segments 'in flight' without overwhelming receiver capacity.",
+          "**Congestion Control:** Sender paces itself based on network congestion (starts slow, backs off on packet loss)."
+        ]
+      },
+      chapter9: {
+        title: "62. What Happens When You Use a VPN",
+        points: [
+          "```mermaid\nflowchart TD\n    A[VPN Client app launched] --> B[Authentication: credentials/certificate/MFA]\n    B --> C[VPN Protocol negotiation: OpenVPN / WireGuard / IKEv2]\n    C --> D[Key Exchange: Diffie-Hellman-style handshake establishes shared secret]\n    D --> E[Tunnel Creation: secure encrypted tunnel established to VPN server]\n    E --> F[OS creates Virtual Network Interface tun0/utun/PPP adapter]\n    F --> G[Routing Table Modification]\n    G --> H{Split Tunnel or Full Tunnel?}\n    H -->|Full Tunnel| I[Default Gateway changed to point into VPN tunnel — ALL traffic redirected]\n    H -->|Split Tunnel| J[Only specific routes/apps sent through tunnel — rest uses normal internet]\n    I --> K[DNS servers switched to VPN provider's resolvers — prevents DNS leaks]\n    J --> K\n    K --> L[Outbound packet encapsulated: original IP packet wrapped inside a new encrypted packet]\n    L --> M[Encapsulated packet leaves via normal NAT/PAT through your real router/ISP]\n    M --> N[Arrives at VPN Server]\n    N --> O[VPN Server decrypts + de-encapsulates]\n    O --> P[VPN Server applies its OWN NAT — internet sees the VPN server's IP, not yours]\n    P --> Q[Request reaches destination website/service]\n    Q --> R[Response follows exact reverse path: dest → VPN server → re-encrypted/encapsulated → your device → decapsulated by virtual interface → delivered to app]\n```",
+          "**Key concepts:**",
+          "**Virtual Network Interface & Routing Table:** The OS creates a fake NIC. The VPN client rewrites routing tables to push traffic to it.",
+          "**DNS Changes:** VPN overrides DNS servers to prevent ISP lookups (DNS leaks).",
+          "**NAT/PAT (Twice):** Happens at your home router, and again at the VPN server so destinations see the VPN server's IP.",
+          "**Packet Encapsulation:** Your original IP packet becomes the *payload* inside a new outer packet (tunneling).",
+          "**VPN vs Proxy vs SSH Tunnel:** VPN tunnels *all* traffic at OS level. Proxy forwards app-level traffic. SSH tunnel is manual per-port forwarding."
+        ]
+      },
+      chapter10: {
+        title: "63. & 64. Accessing a Website Behind Modern Infrastructure",
+        points: [
+          "```mermaid\nflowchart TD\n    U[User / Browser] --> DNS[DNS Resolution — resolves to CDN Anycast IP]\n    DNS --> CDN[CDN Edge Node — may serve cached response directly]\n    CDN --> WAF[WAF — inspects for SQLi/XSS/malicious patterns]\n    WAF --> LB[Load Balancer — distributes across healthy backend instances]\n    LB --> RP[Reverse Proxy Nginx/Envoy — TLS termination, routing rules]\n    RP --> GW[API Gateway — unified entry point, request shaping]\n    GW --> AUTHN[Authentication — verifies identity: session cookie / JWT / OAuth token]\n    AUTHN --> AUTHZ[Authorization — checks permissions for THIS resource]\n    AUTHZ --> RL[Rate Limiter — throttles abusive/excessive request rates]\n    RL --> APP[Application Server — executes business logic]\n    APP --> CACHE[Redis Cache — checks for hot data first]\n    CACHE -->|Miss| DB[(Database)]\n    CACHE -->|Hit| RESP[Build Response]\n    DB --> RESP\n    RESP --> COMP[Compression: gzip/Brotli]\n    COMP --> BACK[Response travels back through same chain]\n    BACK --> U\n```",
+          "**Key concepts:**",
+          "**CDN:** Resolves Anycast IP, serves cached responses to short-circuit the request.",
+          "**Reverse Proxy / API Gateway:** Unified front door handling TLS termination, routing, and translating protocols.",
+          "**Authentication vs Authorization:** Identity verification (WHO you are) vs Permissions (WHAT you can do).",
+          "**Redis Cache & Message Queue:** Checks in-memory store for hot data to skip DB queries. Publishes async background tasks to queues (Kafka/RabbitMQ)."
+        ]
+      },
+      chapter11: {
+        title: "65. Master End-to-End Packet Journey",
+        points: [
+          "```mermaid\nflowchart TD\n\n  A[\"🖥️ Application generates data<br/><i>Browser wants to send an HTTP GET</i>\"] --> B[\"📛 OS assigns Source Port<br/><i>Ephemeral port picked for this connection</i>\"]\n\n  B --> C[\"🌐 DNS Resolution<br/><i>Hostname → IP, checked via cache chain then recursive→root→TLD→authoritative</i>\"]\n\n  C --> D[\"📦 IP Packet built<br/><i>Src IP = your private IP, Dst IP = Google's IP, TTL set (e.g. 64)</i>\"]\n\n  D --> E{\"📍 Same subnet as destination?<br/><i>Routing Table checked</i>\"}\n  E -->|\"No — almost always for internet traffic\"| F[\"🚪 Default Gateway selected<br/><i>Route 0.0.0.0/0 chosen from routing table</i>\"]\n\n  F --> G{\"🗂️ Gateway MAC known?<br/><i>ARP Cache checked</i>\"}\n  G -->|\"No\"| H[\"📢 ARP Request broadcast<br/><i>'Who has 192.168.1.1?' — sent to FF:FF:FF:FF:FF:FF</i>\"]\n  H --> I[\"✅ ARP Reply received<br/><i>Gateway's MAC learned + cached</i>\"]\n  G -->|\"Yes, cached\"| J[\"🧱 Ethernet Frame built<br/><i>Src MAC = your NIC, Dst MAC = Gateway, CRC added, must fit MTU (1500B)</i>\"]\n  I --> J\n\n  J --> K[\"🔀 Local Switch<br/><i>Looks up Dst MAC in CAM table, forwards out correct port only</i>\"]\n\n  K --> L[\"🌉 Home/Office Router<br/><i>Strips frame, reads IP packet, decrements TTL by 1</i>\"]\n\n  L --> M[\"🔁 NAT / PAT applied<br/><i>Private src IP:port rewritten to Router's public IP:port, mapping saved in NAT table</i>\"]\n\n  M --> N[\"📡 ISP Network<br/><i>Multiple ISP routers forward the packet hop-by-hop</i>\"]\n\n  N --> O[\"🗺️ BGP-determined path<br/><i>Autonomous Systems exchange routes; picks path toward Google's AS</i>\"]\n\n  O --> P[\"🌊 Internet Backbone<br/><i>High-capacity fiber links, possibly crossing countries/oceans</i>\"]\n\n  P --> Q[\"🎯 CDN / Anycast Edge Selection<br/><i>Same destination IP announced from many PoPs — BGP naturally routes to nearest one</i>\"]\n\n  Q --> R{\"🛡️ Firewall / WAF check<br/><i>Inspect for malicious patterns</i>\"}\n  R -->|\"Clean\"| S[\"⚖️ Load Balancer<br/><i>Picks a healthy backend server</i>\"]\n\n  S --> T[\"🔐 TCP 3-Way Handshake<br/><i>SYN → SYN-ACK → ACK establishes reliable connection first</i>\"]\n\n  T --> U[\"🔒 TLS Handshake<br/><i>Certificate verified via CA, keys exchanged, symmetric session key derived</i>\"]\n\n  U --> V[\"🔁 Reverse Proxy<br/><i>Terminates TLS, forwards request internally</i>\"]\n\n  V --> W[\"🚪 API Gateway<br/><i>Single entry point for backend routing</i>\"]\n\n  W --> X[\"🔑 Authentication<br/><i>Cookie / Session / JWT validated — proves WHO you are</i>\"]\n\n  X --> Y[\"🚦 Rate Limiter<br/><i>Throttles if request rate too high</i>\"]\n\n  Y --> Z[\"🖥️ Application Server<br/><i>Executes business logic for this request</i>\"]\n\n  Z --> AA{\"⚡ Redis Cache check<br/><i>Is this data already hot in memory?</i>\"}\n  AA -->|\"Hit\"| AC[\"📨 Response object built\"]\n  AA -->|\"Miss\"| AB[\"🗄️ Database queried<br/><i>Source of truth fetched</i>\"]\n  AB --> AC\n\n  AC --> AD[\"🗜️ Compression applied<br/><i>Gzip/Brotli shrinks payload</i>\"]\n\n  AD --> AE[\"🔒 Re-encrypted with TLS session key<br/><i>Response leaves server encrypted</i>\"]\n\n  AE --> AF[\"✂️ TCP Segmentation<br/><i>Response broken into MTU-sized segments, sequence numbers assigned</i>\"]\n\n  AF --> AG[\"↩️ Reverse Path Routing<br/><i>Not necessarily identical route back — BGP/ISP decide independently</i>\"]\n\n  AG --> AH[\"🔁 NAT Table lookup at your Router<br/><i>Public IP:port mapped back to YOUR private IP:port</i>\"]\n\n  AH --> AI[\"🔀 Local Switch delivers frame<br/><i>Dst MAC matches your NIC — delivered, not flooded</i>\"]\n\n  AI --> AJ[\"📥 Your NIC receives frame<br/><i>CRC checked — corrupt frame silently dropped if it fails</i>\"]\n\n  AJ --> AK[\"🔓 TLS Decryption<br/><i>Browser decrypts using session key</i>\"]\n\n  AK --> AL[\"🧩 TCP Reassembly<br/><i>Segments reordered by sequence number, missing ones re-requested via ACK gaps</i>\"]\n\n  AL --> AM[\"🎨 Browser Rendering Pipeline<br/><i>HTML→DOM, CSS→CSSOM, Render Tree, Layout, Paint, Composite</i>\"]\n\n  AM --> AN[\"✅ Page displayed to user\"]\n```",
+          "**OSI Layer Notes at a Glance**",
+          "| Stage in the journey | OSI Layer(s) |\n|---|---|\n| DNS resolution | L7 |\n| IP packet built, routing table, TTL, NAT/PAT, BGP | L3 |\n| ARP, Ethernet frame, switch MAC table, CRC, MTU | L2 |\n| TCP handshake, segmentation, sequencing | L4 |\n| TLS handshake and encryption | L5/L6 |\n| HTTP request/response, Auth, cookies/JWT | L7 |\n| Compression | L6 |\n| Browser rendering | L7 (application) |"
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is the DORA process in DHCP?",
+        back: "Discover (Client broadcasts to find server), Offer (Server offers IP), Request (Client formally requests offered IP), Acknowledge (Server confirms lease)."
+      },
+      {
+        front: "When typing 'https://google.com', what is the FIRST cache the browser checks before resolving DNS?",
+        back: "The Browser Cache (checking if the exact resource is already stored and fresh). The next check is the HSTS Cache."
+      },
+      {
+        front: "In an Ethernet frame sent to the internet, what is the Destination MAC address?",
+        back: "The Destination MAC address is the Default Gateway's (Router's) MAC address, NOT the final destination server's MAC."
+      },
+      {
+        front: "What is BGP and at what OSI layer does it operate?",
+        back: "Border Gateway Protocol (BGP) is the routing protocol of the internet backbone, used by ISPs to advertise paths to networks. It operates at Layer 3 (Network Layer)."
+      },
+      {
+        front: "What Transport Layer protocol does Google's QUIC (HTTP/3) run over to avoid TCP head-of-line blocking?",
+        back: "It runs over UDP, with built-in TLS 1.3 encryption and multiplexing."
+      },
+      {
+        front: "What is STUN used for in a video call?",
+        back: "Session Traversal Utilities for NAT (STUN) allows a device to discover its own public IP and port when it is hiding behind a NAT router."
+      }
+    ],
+    quiz: [
+      {
+        question: "If a device on a network fails to reach a DHCP server, what IP address range might it self-assign?",
+        options: ["192.168.0.0/16", "10.0.0.0/8", "169.254.0.0/16 (APIPA)", "127.0.0.1 (Loopback)"],
+        answer: 2
+      },
+      {
+        question: "During a TCP connection to an HTTPS website, which port does the client typically use as the Source Port?",
+        options: ["Port 80", "Port 443", "Port 8080", "A random Ephemeral Port (e.g., 51342)"],
+        answer: 3
+      },
+      {
+        question: "When playing a competitive online multiplayer game, why is UDP generally preferred over TCP for transmitting character movement?",
+        options: ["UDP has built-in encryption to prevent wall-hacks.", "UDP requires less bandwidth than TCP.", "A stale position update is useless; it's better to drop a late packet than wait for retransmission.", "UDP forces the server to use a higher tick rate."],
+        answer: 2
       }
     ]
   }
