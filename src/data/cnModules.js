@@ -625,5 +625,588 @@ export const cnModules = [
         answer: 2
       }
     ]
+  },
+  {
+    id: 'cn_routing',
+    title: 'Module 9: Routing',
+    notes: {
+      intro: "Welcome to **Module 9: Routing**. In the last module, we established how devices get their IP addresses and how networks are logically sliced into subnets. Now, we tackle the core function of the internet: **Pathfinding**.\n\nHow does a packet traversing the globe know which cables to take to reach its destination in milliseconds? The answer lies in routing algorithms.",
+      chapter1: {
+        title: "Routing Basics",
+        points: [
+          "Explanation:\nBefore we look at the complex math, we must understand the fundamental mechanisms a router uses to make decisions.",
+          "**The Routing Table:**\nEvery router maintains an internal database called a **Routing Table**. When a packet arrives, the router reads the Destination IP address, consults this table, and finds the best matching network to determine which physical interface (port) to send the packet out of.",
+          "**Static vs. Dynamic Routing:**",
+          "**1. Static Routing:** A network administrator manually types the routes into the router.\n- *Pros:* Zero CPU overhead, completely secure, highly predictable.\n- *Cons:* Does not scale. If a cable is cut, the router will blindly drop packets into a black hole until a human manually updates the table.",
+          "**2. Dynamic Routing:** Routers use specialized protocols to talk to each other. They dynamically advertise their connected networks and continuously update their tables based on network changes.\n- *Pros:* Fault-tolerant. Automatically calculates new paths around failures. Highly scalable.\n- *Cons:* Consumes router CPU and memory. Requires bandwidth to send updates.",
+          "**The Default Route (Gateway of Last Resort):**\nA router cannot possibly hold every single route on the internet. To save memory, routers use a **Default Route**, represented as `0.0.0.0/0`. If a router has absolutely no idea where the destination network is, it sends the packet to the Default Route (e.g., your home router points to your ISP)."
+        ]
+      },
+      chapter2: {
+        title: "Routing Algorithms 1: Distance Vector",
+        points: [
+          "Explanation:\nWhen routers dynamically build their tables, they must use a mathematical algorithm. In a **Distance Vector** protocol (Routing by Rumor), a router only knows what its direct neighbors tell it. It has no map of the overall network topology.",
+          "**Distance:** How far away the destination is (usually measured in 'Hops' — the number of routers crossed).\n**Vector:** Which direction to send it (the next-hop router).",
+          "**The Mechanism:**\nEvery 30 seconds, a router broadcasts its *entire* routing table to its immediate neighbors. The neighbors look at the table, add 1 to the hop count, and update their own tables if they find a shorter path.",
+          "**The Math: Bellman-Ford Algorithm**\nDistance Vector routing relies on the Bellman-Ford equation to calculate the cheapest path:\n`D_x(y) = min_v { c(x,v) + D_v(y) }`\nWhere:\n- `D_x(y)` is the least cost path from node x to node y.\n- `v` represents the immediate neighbors of x.\n- `c(x,v)` is the cost to travel from x to neighbor v.\n- `D_v(y)` is the neighbor's estimated cost to the final destination y.",
+          "**Protocol in the wild: RIP (Routing Information Protocol)**\nRIP uses Hop Count as its metric. Its major limitation is that the maximum hop count is 15. A hop count of 16 is considered 'Infinity' (unreachable). This makes it useless for large enterprise networks."
+        ]
+      },
+      chapter3: {
+        title: "Routing Algorithms 2: Link State",
+        points: [
+          "Explanation:\nLink State routing takes the opposite approach (The God's Eye View). Instead of trusting rumors from neighbors, every single router maps out the *entire* network topology for itself.",
+          "**The Mechanism:**\nInstead of sharing their whole routing table, routers only share the state of their own direct links (e.g., 'My link to Router B is up and is a 10Gbps connection'). They broadcast these small updates (**LSAs - Link State Advertisements**) to *every* router in the area. Because every router receives every LSA, every router builds an identical, complete map of the network.",
+          "**The Math: Dijkstra's Algorithm**\nOnce the map is built, each router runs **Dijkstra's Shortest Path algorithm** independently to calculate the best route to every destination. The algorithm systematically visits nodes, calculating the lowest cumulative path cost from the source node to all other nodes.",
+          "**Protocol in the wild: OSPF (Open Shortest Path First)**\nOSPF is the enterprise standard. Unlike RIP's basic hop count, OSPF calculates path 'cost' based on the actual bandwidth of the link (a 10Gbps fiber link costs far less than a 10Mbps copper link)."
+        ]
+      },
+      chapter4: {
+        title: "Distance Vector vs. Link State",
+        points: [
+          "Explanation:\nIn a system design interview, understanding the trade-offs between these two approaches is critical for network architecture.",
+          "| Feature | Distance Vector (RIP) | Link State (OSPF) |\n|---|---|---|\n| **Knowledge of Topology** | Only knows what neighbors tell it (Rumor). | Has a complete, independent map of the network. |\n| **Updates Sent** | Entire routing table sent periodically (e.g., every 30s). | Only changes (Link states) sent when they happen. |\n| **Metric** | Usually Hop Count. | Bandwidth / Cost. |\n| **Convergence Speed** | Slow (Susceptible to routing loops). | Very Fast. |\n| **Resource Usage** | Low CPU and Memory. | High CPU and Memory (running Dijkstra takes work). |\n| **Scale** | Small networks. | Large, hierarchical enterprise networks. |"
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is the Default Route (Gateway of Last Resort)?",
+        back: "Represented as 0.0.0.0/0, it is the route a router uses when it receives a packet destined for a network that is NOT explicitly listed in its routing table."
+      },
+      {
+        front: "What routing algorithm does a Distance Vector protocol (like RIP) use?",
+        back: "The Bellman-Ford algorithm."
+      },
+      {
+        front: "What routing algorithm does a Link State protocol (like OSPF) use?",
+        back: "Dijkstra's Shortest Path algorithm."
+      }
+    ],
+    quiz: [
+      {
+        question: "Which of the following is a primary characteristic of a Link State routing protocol?",
+        options: ["Routers periodically broadcast their entire routing table.", "Routers only know the topology based on what their immediate neighbors tell them.", "Every router builds an identical, complete map of the entire network topology.", "It utilizes the Bellman-Ford equation to calculate Hop Count."],
+        answer: 2
+      },
+      {
+        question: "In RIP (Routing Information Protocol), what is considered 'Infinity' or unreachable?",
+        options: ["10 Hops", "16 Hops", "255 Hops", "100 Hops"],
+        answer: 1
+      }
+    ]
+  },
+  {
+    id: 'cn_layer4',
+    title: 'Module 10: The Transport Layer (Layer 4)',
+    notes: {
+      intro: "Welcome to **Module 10: The Transport Layer (Layer 4)**.\n\nIf Layer 3 (IP) is about getting a packet from Server A to Server B, Layer 4 is about making sure the packet gets to the correct *application* running on Server B.\n\nIn a system design interview, choosing between TCP and UDP is often the very first architectural decision you make. Do you need perfect reliability (TCP), or do you need raw speed and are willing to lose some data (UDP)? Let's break down the mechanics of both.",
+      chapter1: {
+        title: "UDP vs. TCP",
+        points: [
+          "Explanation:\n**UDP (User Datagram Protocol)** is the 'fire and forget' protocol of the internet. It is connectionless, meaning it doesn't bother checking if the receiver is ready, and doesn't care if the packet gets lost in transit.",
+          "**UDP Characteristics:** Extremely fast, zero setup delay, stateless, and completely unreliable. There is no error recovery or packet ordering.",
+          "**The UDP Header:** It is incredibly lightweight (only 8 bytes). It contains exactly four fields: Source Port, Destination Port, Length, and Checksum.",
+          "**TCP (Transmission Control Protocol)** is the workhorse of the internet. It is a **connection-oriented, highly reliable** protocol. It guarantees that data is delivered accurately and in the exact order it was sent.",
+          "**TCP Characteristics:** Achieves reliability by assigning a **Sequence Number** to every byte. The receiver sends **ACKs (Acknowledgements)** back to the sender to confirm receipt. If no ACK is received before a timeout, the packet is retransmitted.",
+          "**The TCP Header:** It is heavy (minimum 20 bytes). Contains Source/Dest Ports, Sequence Number, Acknowledgment Number, Window Size, Checksum, and crucial **Flags (SYN, ACK, FIN, RST)**.",
+          "| Feature | TCP | UDP |\n|---|---|---|\n| **Connection State** | Connection-oriented (Handshake required) | Connectionless (Fire and forget) |\n| **Reliability** | Guaranteed delivery and data integrity | Best-effort (Packets can be lost/corrupted) |\n| **Ordering** | Guaranteed strict order | Packets arrive in random order |\n| **Header Size** | Minimum 20 Bytes | Fixed 8 Bytes |\n| **Speed/Overhead** | High overhead (slower) | Extremely lightweight (fast) |\n| **Use Cases** | Web Browsing (HTTP), Email, File Transfer, Databases | Live Video (WebRTC), Gaming, DNS, IoT Sensor Streams |"
+        ]
+      },
+      chapter2: {
+        title: "Connection Lifecycle",
+        points: [
+          "Explanation:\n**TCP Three-Way Handshake (Connection Establishment)**\nBefore TCP sends a single byte of application data, it must establish a formal connection to synchronize sequence numbers. This requires three steps.",
+          "**1. SYN (Synchronize):** The Client sends a packet with the SYN flag set. *'I want to talk. My Initial Sequence Number (ISN) is 1000.'*",
+          "**2. SYN-ACK:** The Server receives this, allocates memory, and replies with a SYN and an ACK flag. *'I acknowledge your 1000. My ISN is 5000.'*",
+          "**3. ACK:** The Client replies with an ACK. *'I acknowledge your 5000. Let's begin.'*",
+          "**Security Note: SYN Flood DDoS Attack**\nWhen a server replies with a SYN-ACK, it leaves the connection 'half-open' and reserves RAM. In a SYN Flood attack, an attacker sends millions of SYN packets but never sends the final ACK, filling up the server's memory until it crashes.",
+          "**TCP Four-Way Termination (Connection Teardown)**\nTCP is a full-duplex connection (a two-way street). Each direction must be closed independently.",
+          "**1. FIN:** Client says, *'I am done sending data.'*",
+          "**2. ACK:** Server says, *'I acknowledge you are done sending.'*",
+          "**3. FIN:** Later, the Server says, *'I am also done sending data.'*",
+          "**4. ACK:** Client says, *'I acknowledge. Goodbye.'*",
+          "**The TIME_WAIT State:**\nAfter sending that final ACK, the client does not close the connection instantly. It enters a `TIME_WAIT` state (usually for 2 minutes). It does this in case the final ACK was lost in the network. If it was lost, the server will re-transmit its FIN, and the client needs to still be around to re-ACK it."
+        ]
+      },
+      chapter3: {
+        title: "Flow Control & Congestion Control",
+        points: [
+          "Explanation:\nIf a sender waited for an ACK after every single packet, the internet would be agonizingly slow. Instead, TCP allows the sender to transmit multiple packets in flight simultaneously using a **Sliding Window**.",
+          "**Flow Control (Protects the Receiver)**\nFlow Control prevents a fast sender from overwhelming a slow receiver's limited RAM/buffer.",
+          "In every ACK sent back to the sender, the receiver includes its **Advertised Window (rwnd)** (e.g., *'I have 50KB of buffer space left'*). If the receiver's buffer fills up, it advertises a Window Size of 0, forcing the sender to completely pause.",
+          "**Congestion Control (Protects the Network)**\nCongestion Control prevents a catastrophic 'congestion collapse' by protecting the routers and switches in the middle. The sender calculates an internal **Congestion Window (cwnd)**.",
+          "**1. Slow Start:** The sender starts cautiously. `cwnd` starts at 1 packet. For every successful ACK, `cwnd` doubles (1, 2, 4, 8...). It grows exponentially to rapidly probe the network's capacity.",
+          "**2. AIMD (Additive Increase, Multiplicative Decrease):** Once the sender hits a threshold, it switches to AIMD. It grows slowly (+1 packet per round trip). When a packet drops (congestion detected!), it harshly halves the window (`cwnd / 2`).",
+          "**3. Fast Retransmit & Fast Recovery:** If the sender receives 3 duplicate ACKs (subsequent packets arrived out of order), it immediately retransmits the missing packet without waiting for a timeout, and smoothly recovers its window size.",
+          "| Feature | Flow Control | Congestion Control |\n|---|---|---|\n| **Protects** | The Receiver's RAM/Buffer. | The Network (Routers/Links). |\n| **Mechanism** | Advertised Window (`rwnd`) in the TCP Header. | Internal Congestion Window (`cwnd`) calculated by sender. |\n| **Triggered by** | Slow application layer reading data. | Dropped packets / network bottlenecks. |"
+        ]
+      },
+      chapter4: {
+        title: "Reliable Transmission Protocols",
+        points: [
+          "Explanation:\nWhen a packet is lost in that sliding window, how exactly does the protocol recover it? There are three mathematical models.",
+          "**1. Stop and Wait:** Send 1 packet. Wait for the ACK. Send packet 2. Wait. (Highly inefficient, wastes bandwidth).",
+          "**2. Go-Back-N (GBN):** Send $N$ packets. The receiver only accepts packets in strict order. If packet 2 is lost, but packets 3, 4, and 5 arrive, the receiver drops 3, 4, and 5. The sender times out on packet 2 and retransmits 2, 3, 4, and 5. (Simpler for receiver, but wastes bandwidth on retransmitting good packets).",
+          "**3. Selective Repeat (SR):** Send $N$ packets. If packet 2 is lost, the receiver keeps 3, 4, and 5 in a buffer and ACKs them. The sender realizes only packet 2 is missing and *selectively* retransmits only packet 2. (Highly efficient, but requires complex memory management on both sides). *Modern TCP uses a variation of this.*"
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is the primary difference in use cases between Flow Control and Congestion Control in TCP?",
+        back: "Flow Control protects the RECEIVER from being overwhelmed. Congestion Control protects the NETWORK (routers/switches) from being overwhelmed."
+      },
+      {
+        front: "What is a SYN Flood attack?",
+        back: "A DDoS attack where an attacker sends millions of SYN packets to a server but never completes the 3-way handshake with the final ACK. This leaves 'half-open' connections that consume all of the server's RAM."
+      },
+      {
+        front: "Why does TCP connection termination require a 4-Way Handshake instead of a 3-way?",
+        back: "Because TCP is full-duplex. The client might be done sending data (requiring a FIN), but the server might still be transmitting a large file. Both directions must be closed independently."
+      }
+    ],
+    quiz: [
+      {
+        question: "Which TCP Congestion Control phase aggressively probes network capacity by doubling the Congestion Window (cwnd) for every successful ACK?",
+        options: ["AIMD (Additive Increase, Multiplicative Decrease)", "Fast Retransmit", "Slow Start", "Selective Repeat"],
+        answer: 2
+      },
+      {
+        question: "In reliable transmission models, which protocol forces the sender to re-transmit an entire window of packets (including successfully delivered ones) if just one packet in the sequence is lost?",
+        options: ["Stop and Wait", "Go-Back-N (GBN)", "Selective Repeat (SR)", "Sliding Window Protocol"],
+        answer: 1
+      }
+    ]
+  },
+  {
+    id: 'cn_layer7',
+    title: 'Module 11: The Application Layer (Layer 7)',
+    notes: {
+      intro: "Welcome to **Module 11: The Application Layer (Layer 7)**. We have finally reached the top of the OSI model. This is where the network meets the software.\n\nWhen you are designing web architectures, microservices, or client-server interactions, you will spend 90% of your time operating at this layer. These protocols dictate how applications format data, authenticate users, and manage state.\n\nLet's dive into the protocols that power the modern web.",
+      chapter1: {
+        title: "HTTP (Hypertext Transfer Protocol)",
+        points: [
+          "Explanation:\nHTTP is the absolute foundation of data communication on the World Wide Web. It is a **stateless, client-server protocol** that operates over TCP (usually Port 80).",
+          "**Core Concepts:**",
+          "**Request & Response Cycle:** The Client (your browser) sends an HTTP Request to the Server. The Server processes it and sends back an HTTP Response.",
+          "**Statelessness:** Every single HTTP request is completely independent. The server has no memory of the previous request. *(In system design, to give users a 'session', we pass Cookies or JWT tokens in the headers of every request).*.",
+          "**HTTP Methods (The Verbs):**",
+          "**GET:** Retrieve data (e.g., loading a webpage). Should never modify data.\n**POST:** Submit new data to the server (e.g., submitting a login form).\n**PUT:** Update or replace existing data on the server.\n**DELETE:** Remove data from the server.",
+          "**Status Codes (The Server's Answer):**\n- **1xx (Informational):** Request received, continuing process.\n- **2xx (Success):** Action successfully received (e.g., `200 OK`, `201 Created`).\n- **3xx (Redirection):** Further action must be taken (e.g., `301 Moved Permanently`).\n- **4xx (Client Error):** You messed up (e.g., `400 Bad Request`, `401 Unauthorized`, `404 Not Found`).\n- **5xx (Server Error):** The server messed up (e.g., `500 Internal Server Error`, `503 Service Unavailable`).",
+          "**Headers:**\nKey-value pairs sent in both requests and responses. They contain critical metadata, such as the `Content-Type` (e.g., `application/json`), authorization tokens, and caching instructions."
+        ]
+      },
+      chapter2: {
+        title: "HTTPS & TLS / SSL",
+        points: [
+          "Explanation:\nHTTP transmits everything in plaintext. If you send a password over HTTP, anyone intercepting the traffic can read it perfectly. **HTTPS (HTTP Secure)** is simply HTTP layered on top of an encrypted security protocol called **TLS (Transport Layer Security)**.",
+          "**Encryption Mechanics:** TLS uses a hybrid approach.",
+          "**1. Asymmetric Encryption (Public/Private Keys):** The server has a Public Key (shared) and a Private Key (secret). Data encrypted with the Public Key can *only* be decrypted by the Private Key. Highly secure but mathematically very slow.",
+          "**2. Symmetric Encryption (Session Key):** Both sides use the *exact same key* to encrypt and decrypt. Incredibly fast but risky to share over the internet.",
+          "**The Solution:** TLS uses slow Asymmetric encryption *just long enough* to securely exchange a fast Symmetric 'Session Key'. Once both sides have the Session Key, they switch to Symmetric encryption.",
+          "**Certificates & The TLS Handshake:**",
+          "The server provides a Digital Certificate issued by a trusted Certificate Authority (CA) to prove its identity.",
+          "**1. Client Hello:** 'I want to talk securely. Here are the cipher suites I support.'\n**2. Server Hello & Certificate:** 'Let's use this cipher. Here is my Certificate and my Public Key.'\n**3. Key Exchange:** The Client verifies the certificate, generates a random symmetric Session Key, encrypts it with the Server's Public Key, and sends it to the server.\n**4. Finished:** Both sides now securely share the Symmetric Key.",
+          "| Feature | HTTP | HTTPS |\n|---|---|---|\n| **Port** | 80 | 443 |\n| **Security** | Plaintext (Insecure) | Encrypted (Secure) |\n| **Performance** | Faster (No handshake overhead) | Slightly slower initial connection |",
+          "| Feature | SSL (Secure Sockets Layer) | TLS (Transport Layer Security) |\n|---|---|---|\n| **Status** | Deprecated / Obsolete | The modern standard (TLS 1.2 / 1.3) |\n| **History** | Created by Netscape in the 90s | The open standard successor to SSL |"
+        ]
+      },
+      chapter3: {
+        title: "FTP (File Transfer Protocol)",
+        points: [
+          "Explanation:\nFTP is a legacy protocol used for transferring files between a client and a server. It is unique because it uses **two separate TCP connections** to work.",
+          "**1. Control Channel (Port 21):** Used to send commands (like `USER`, `PASS`, `LIST`). This connection stays open the whole time.",
+          "**2. Data Channel (Port 20):** A temporary connection opened specifically to transfer the actual file, then closed when the file is done.",
+          "**Active vs. Passive Mode:**",
+          "**Active Mode:** Client opens a random port and asks the Server to connect to it. *(Problem: Client firewalls block incoming connections).*.",
+          "**Passive Mode (Modern Standard):** Server opens a random port and asks the Client to connect to it. *(Highly firewall-friendly).*.",
+          "| Feature | FTP | SFTP (SSH File Transfer Protocol) |\n|---|---|---|\n| **Security** | Plaintext (Passwords easily stolen) | Fully encrypted |\n| **Underlying Protocol** | TCP (Ports 20/21) | SSH (Port 22) |\n| **Channels** | Uses two distinct channels | Uses a single secure channel |"
+        ]
+      },
+      chapter4: {
+        title: "The Email Trinity: SMTP, POP3, and IMAP",
+        points: [
+          "Explanation:\nEmail requires a complex flow of protocols. You use **SMTP** to *push* an email to your mail server, which uses SMTP to *push* it to your friend's mail server. Your friend's app then uses **IMAP** or **POP3** to *pull* the email down to their screen.",
+          "**SMTP (Simple Mail Transfer Protocol):**",
+          "**Purpose:** Pushing mail. It only sends; it never downloads.\n**Ports:** Port 25 (Unencrypted/Relay), Port 587 (Encrypted Submission).",
+          "**POP3 (Post Office Protocol v3):**",
+          "**Purpose:** Downloading mail.\n**Behavior:** By default, POP3 downloads the email to your local hard drive and then **deletes it** from the server. Saves server storage, but terrible for modern multi-device users.",
+          "**IMAP (Internet Message Access Protocol):**",
+          "**Purpose:** Synchronizing mail.\n**Behavior:** Reads emails directly off the server. If you read an email on your phone, it marks it 'Read' on the server, so your laptop also sees it as 'Read'. Perfect for multi-device support, but requires massive server storage.",
+          "| Protocol | Function | Primary Direction | Standard Port (Encrypted) |\n|---|---|---|---|\n| **SMTP** | Sending Mail | Client -> Server (or Server -> Server) | 587 |\n| **POP3** | Receiving Mail (Download & Delete) | Server -> Client | 995 |\n| **IMAP** | Receiving Mail (Sync) | Server <-> Client | 993 |"
+        ]
+      },
+      chapter5: {
+        title: "SSH & Telnet",
+        points: [
+          "Explanation:\nWhen a system administrator needs to manage a headless Linux server sitting in a data center 1,000 miles away, they need a remote command-line interface.",
+          "**Telnet (The Legacy Way)**",
+          "Telnet transmits absolutely everything—including every keystroke, username, and password—in **plaintext**. If a network engineer logs in using Telnet, anyone sniffing the network can steal the admin credentials. (Uses Port 23).",
+          "**SSH (Secure Shell)**",
+          "The secure, modern replacement for Telnet. Everything is heavily encrypted via a process similar to TLS. (Uses Port 22).",
+          "**Public Key Authentication:** While you can use passwords, SSH is famous for this. You generate a cryptographic keypair on your laptop and put the Public Key on the server. When connecting, the server challenges your laptop to prove it holds the matching Private Key. If the math checks out, you log in instantly without a password.",
+          "| Feature | Telnet | SSH |\n|---|---|---|\n| **Port** | 23 | 22 |\n| **Encryption** | None (Plaintext) | Full cryptographic encryption |\n| **Authentication** | Passwords only | Passwords or Cryptographic Keypairs |\n| **System Design Use** | Never use this. | Industry standard for server administration. |"
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is the primary difference between POP3 and IMAP?",
+        back: "POP3 downloads the email to a single device and deletes it from the server. IMAP synchronizes the email directly on the server, allowing seamless use across multiple devices."
+      },
+      {
+        front: "What does an HTTP 404 Status Code represent?",
+        back: "A 'Client Error' indicating that the requested resource could not be found on the server (usually because the user typed the wrong URL)."
+      },
+      {
+        front: "Why does TLS use both Asymmetric and Symmetric encryption?",
+        back: "Asymmetric encryption is highly secure but mathematically slow. TLS only uses it during the initial handshake to securely exchange a Symmetric 'Session Key'. It then switches to the much faster Symmetric encryption for the rest of the connection."
+      },
+      {
+        front: "What is Public Key Authentication in SSH?",
+        back: "Instead of a password, you use a cryptographic keypair. You place your Public Key on the server. When you connect, the server challenges your computer to prove it holds the matching Private Key."
+      }
+    ],
+    quiz: [
+      {
+        question: "Which FTP mode is considered 'firewall-friendly' for the client because the Server opens a port and waits for the Client to connect to it?",
+        options: ["Active Mode", "Passive Mode", "Control Mode", "Data Mode"],
+        answer: 1
+      },
+      {
+        question: "If your browser receives an HTTP 503 error, what does the '5' in 503 indicate?",
+        options: ["Informational", "Success", "Redirection", "Server Error"],
+        answer: 3
+      }
+    ]
+  },
+  {
+    id: 'cn_backend_architecture',
+    title: 'Module 12: Modern Networking & Backend Architecture',
+    notes: {
+      intro: "Welcome to **Module 12: Modern Networking & Backend Architecture**. We have moved past how packets travel across cables and routers. Now, we are standing inside the data center. When you get a system design interview question like 'Design Twitter' or 'Design Netflix', the concepts in this module are the exact puzzle pieces you will use to build a scalable, highly available architecture.\n\nLet’s break down the components that handle millions of requests per second.",
+      chapter1: {
+        title: "APIs (Application Programming Interfaces)",
+        points: [
+          "Explanation:\nIf a website is designed for humans to read, an API is a website designed for *code* to read. It is the contract that allows two separate software systems to communicate.",
+          "**Core Concepts:**",
+          "**Endpoint:** The specific URL where the API lives (e.g., `https://api.weather.com/v1/current`).",
+          "**JSON (JavaScript Object Notation):** The universal lightweight language of modern APIs, structuring data in key-value pairs.",
+          "**CRUD Operations:** The four fundamental actions on data:\n- **C**reate -> `POST`\n- **R**ead -> `GET`\n- **U**pdate -> `PUT` / `PATCH`\n- **D**elete -> `DELETE`",
+          "**REST Basics (Representational State Transfer):**\nREST is an architectural style, not a protocol. A RESTful API must be **stateless** (server remembers nothing between requests) and **resource-based** (endpoints represent nouns, like `/users/123`, not verbs).",
+          "| Feature | REST API | GraphQL | WebSockets |\n|---|---|---|---|\n| **Architecture** | Multiple endpoints (`/users`, `/posts`). | Single endpoint (`/graphql`). Client requests exactly the fields they want. | Persistent, full-duplex TCP connection. |\n| **Data Fetching** | Prone to 'Overfetching' or 'Underfetching'. | Solves overfetching. Highly flexible. | Real-time push (server pushes data instantly). |\n| **State** | Stateless. | Stateless. | Stateful (Connection stays open). |\n| **Best For** | Standard CRUD web services. | Complex UIs needing data from many sources. | Chat apps, live sports scores, multiplayer games. |"
+        ]
+      },
+      chapter2: {
+        title: "Forward Proxy vs. Reverse Proxy",
+        points: [
+          "Explanation:\nProxies are the 'middlemen' of the internet. The difference between them comes down to **who they are protecting**.",
+          "**Forward Proxy (Protects the Client)**",
+          "A forward proxy sits on the *client's* local network. When you want to go to google.com, you send the request to the proxy. The proxy goes to the internet, gets the page, and hands it back to you.",
+          "**Purpose:** The internet never sees your IP address; it only sees the Proxy's IP.\n**Use Cases:** Corporate Content Filtering (blocking social media) and scanning outgoing traffic for malware.",
+          "**Reverse Proxy (Protects the Server)**",
+          "A reverse proxy sits inside the data center, directly in front of the backend web servers. When the client sends a request to `netflix.com`, it actually hits the Reverse Proxy first.",
+          "**Purpose:** Shields the backend infrastructure from direct exposure to the internet.\n**Capabilities:**\n- **SSL Termination:** Decrypting HTTPS traffic at the proxy so backend servers don't waste CPU doing cryptography.\n- **Caching:** Serving static images/pages directly without waking up the backend server.",
+          "| Feature | Forward Proxy | Reverse Proxy |\n|---|---|---|\n| **Who it represents** | Represents the Client (User). | Represents the Server (Backend). |\n| **Direction** | Outbound traffic (Client -> Internet). | Inbound traffic (Internet -> Server). |"
+        ]
+      },
+      chapter3: {
+        title: "Load Balancers",
+        points: [
+          "Explanation:\nIf you have one server, a traffic spike will crash it. To scale horizontally, you add 10 servers. A **Load Balancer** sits in front of them to intelligently distribute the incoming traffic.",
+          "**Core Mechanisms:**",
+          "**Health Checks:** The load balancer constantly 'pings' backend servers. If a server crashes, it is removed from the pool.",
+          "**Sticky Sessions (Session Affinity):** Ensures a specific user's future requests are always routed back to the exact same server where their session data lives.",
+          "**Load Balancing Algorithms:**",
+          "**1. Round Robin:** Request 1 goes to Server A, Request 2 to B, Request 3 to C, Request 4 back to A.\n**2. Least Connections:** Routes the new request to the server with the fewest currently active connections.\n**3. IP Hash:** Hashes the client's IP address to determine the server. Ensures a specific user *always* hits the same server.\n**4. Weighted:** Assigns a higher 'weight' to more powerful servers so they receive a larger percentage of the traffic.",
+          "**Load Balancer vs. Reverse Proxy:**\nA Reverse Proxy focuses on security, caching, and SSL (useful even for a single server). A Load Balancer focuses strictly on traffic distribution across *multiple* servers."
+        ]
+      },
+      chapter4: {
+        title: "API Gateways",
+        points: [
+          "Explanation:\nAs companies moved from monolithic applications to **Microservices**, managing hundreds of small APIs became a nightmare. The API Gateway is the **single point of entry** for all clients.",
+          "**Key Responsibilities:**",
+          "**Routing:** Translates a single client request into calls across multiple distinct microservices (e.g., routing `/billing` to the Billing Service).",
+          "**Authentication:** Verifies the user's identity (like JWTs) *once* at the gateway, passing trusted requests downstream, saving every microservice from repeating the auth logic.",
+          "**Rate Limiting:** Blocks a user if they make too many requests per minute to protect backends from abuse.",
+          "**Request Aggregation:** Instead of a mobile phone making 3 slow requests over cellular networks for User, Billing, and Recommendation data, it makes 1 request to the API Gateway. The Gateway makes the 3 fast backend requests, compiles them into one JSON payload, and sends it back.",
+          "| Feature | API Gateway | Load Balancer / Reverse Proxy |\n|---|---|---|\n| **Intelligence** | Highly intelligent. Understands API endpoints, payloads, and user identities. | Relatively 'dumb'. Mostly looks at IPs, Ports, and basic HTTP headers. |\n| **Logic** | Executes business logic (Auth, Aggregation, Rate Limiting). | Executes infrastructure logic (Distribution, SSL). |"
+        ]
+      },
+      chapter5: {
+        title: "CDN (Content Delivery Network)",
+        points: [
+          "Explanation:\nPhysics is the ultimate bottleneck. If your server is in New York and a user in Tokyo requests a 5MB image, crossing the ocean introduces massive latency. A CDN solves this.",
+          "**How It Works:** A globally distributed network of proxy servers called **Edge Servers**. When the Tokyo user requests the image, they hit the Tokyo Edge Server. If it doesn't have it, it fetches it once from the Origin Server in New York, caches it locally, and serves all future Tokyo users instantly.",
+          "**Static vs. Dynamic Content:**",
+          "**Static Content (Easy):** Images, CSS, JavaScript. CDNs cache these perfectly.",
+          "**Dynamic Content (Hard):** A unique bank account balance cannot be cached. However, modern CDNs provide highly optimized, dedicated fiber-optic paths back to the Origin Server, skipping congested public internet routers.",
+          "**CDN vs. Reverse Proxy:** A Reverse Proxy sits locally in your data center. A CDN sits geographically as close to the end-user as physically possible (a massive, global network of reverse proxies)."
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is Request Aggregation in an API Gateway?",
+        back: "A pattern where the API Gateway takes a single request from a client, makes multiple internal requests to various microservices, combines the results into a single payload, and sends it back to the client. This saves mobile apps from making multiple slow network requests."
+      },
+      {
+        front: "What is SSL Termination?",
+        back: "The process where a Reverse Proxy decrypts incoming HTTPS traffic. It handles the heavy cryptographic math, passing plaintext HTTP to the backend servers to save them CPU power."
+      },
+      {
+        front: "Explain the difference between a Forward Proxy and a Reverse Proxy.",
+        back: "A Forward Proxy sits on the client's network and protects the client (e.g., hiding their IP from the internet). A Reverse Proxy sits in the data center and protects the server (e.g., hiding the backend infrastructure from the internet)."
+      },
+      {
+        front: "What load balancing algorithm hashes the client's IP address to ensure they always connect to the same backend server?",
+        back: "IP Hashing."
+      }
+    ],
+    quiz: [
+      {
+        question: "Which of the following architectural styles solves the problem of 'Overfetching' by allowing the client to specify exactly which fields it wants returned in a single endpoint?",
+        options: ["REST API", "WebSockets", "GraphQL", "SOAP"],
+        answer: 2
+      },
+      {
+        question: "If a backend server crashes, what load balancer mechanism ensures traffic stops being routed to that dead server?",
+        options: ["Sticky Sessions", "Health Checks", "Round Robin", "Rate Limiting"],
+        answer: 1
+      }
+    ]
+  },
+  {
+    id: 'cn_performance',
+    title: 'Module 13: Performance',
+    notes: {
+      intro: "Welcome to **Module 13: Performance**.\n\nIn system design interviews, you will frequently be asked to identify bottlenecks. Is the application slow because of the database, or is it physics? Understanding network performance allows you to confidently answer those questions and architect systems that respect the limitations of the physical world.\n\nLet's break down exactly where time is lost in a network and how we measure it.",
+      chapter1: {
+        title: "Network Delays (Where time is lost)",
+        points: [
+          "Explanation:\nWhen a packet travels from Host A to Host B, it crosses multiple routers. At *every single router*, the packet experiences four distinct types of delay. The total time lost at a single router (Nodal Delay) is: `d_nodal = d_proc + d_queue + d_trans + d_prop`",
+          "**1. Processing Delay (d_proc)**\n**What it is:** Time the router's CPU takes to inspect the packet's header, determine where to send it, and check for bit-level errors.\n**Scale:** Usually microseconds or less (highly optimized).",
+          "**2. Queuing Delay (d_queue)**\n**What it is:** Time the packet spends waiting in the router's memory buffer because the output link is currently busy.\n**Scale:** Highly variable. 0 if empty. Milliseconds if congested. If the queue is full, the packet is dropped (Packet Loss).",
+          "**3. Transmission Delay (d_trans)**\n**What it is:** The physical time it takes to push all the bits of the packet onto the wire. Function of packet length (L) and link bandwidth (R).\n**Formula:** `L / R`\n**Analogy:** How long it takes to squeeze a 10-gallon bucket of water through a funnel. A wider funnel (more bandwidth) pushes it through faster.",
+          "**4. Propagation Delay (d_prop)**\n**What it is:** The time it takes for a single bit to physically travel through the cable from Router A to Router B. Bound by the speed of light.\n**Formula:** `d / s` (Distance / speed).\n**Analogy:** How long the water takes to travel through a 100-mile long pipe once it's already inside.\n*(Note: You cannot optimize this without physically moving servers closer to the user—this is exactly why CDNs exist).*."
+        ]
+      },
+      chapter2: {
+        title: "Performance Metrics",
+        points: [
+          "Explanation:\nTo evaluate a system's health, we track these five vital metrics.",
+          "**1. Bandwidth:** The maximum theoretical capacity of a network link (e.g., a 1 Gbps fiber cable). Analogy: Physical diameter of a water pipe.",
+          "**2. Throughput:** The *actual* rate of successful data transfer at a given moment. Influenced by congestion and protocol overhead. Analogy: Actual water flowing out of the pipe.",
+          "**3. Latency:** The total time it takes for a packet to travel from the source to the destination (sum of transmission, propagation, processing, and queuing delays).",
+          "**4. Jitter:** The *variance* in latency. If Packet 1 takes 50ms, Packet 2 takes 120ms, and Packet 3 takes 40ms, you have high jitter. Disastrous for real-time UDP applications (VoIP, gaming).",
+          "**5. Packet Loss:** The percentage of packets that fail to reach their destination. Almost always caused by router buffers overflowing during traffic spikes."
+        ]
+      },
+      chapter3: {
+        title: "Core Comparisons for System Design",
+        points: [
+          "Explanation:\nIf an interviewer asks you to optimize a system, you must use these terms correctly.",
+          "| Feature | Bandwidth | Throughput |\n|---|---|---|\n| **What it measures** | Potential capacity (The ceiling). | Actual performance (The reality). |\n| **Fixed/Variable** | Fixed by the physical hardware. | Highly variable based on network conditions. |\n| **Optimization** | Buy a better, more expensive cable/port. | Optimize TCP window sizes, reduce congestion, use a CDN. |",
+          "| Feature | Latency | Ping (Round Trip Time - RTT) |\n|---|---|---|\n| **Direction** | Technically, it is **One-Way** (Source to Destination). | Strictly **Two-Way** (Source -> Dest -> Source). |\n| **What it includes** | Only the network transit delays. | Network transit + destination's OS processing time to generate ICMP Echo Reply. |\n| **Usage** | Used by engineers to describe theoretical limits. | Practical diagnostic tool users see on their screens. |"
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is Jitter and what type of applications does it affect most?",
+        back: "Jitter is the variance (inconsistency) in latency between packets. It is disastrous for real-time UDP applications like VoIP or live gaming, causing robotic audio and teleporting characters."
+      },
+      {
+        front: "What is the difference between Transmission Delay and Propagation Delay?",
+        back: "Transmission Delay is the time required to push the data onto the wire (funnel). Propagation Delay is the time required for that data to physically travel through the medium to the destination (the length of the pipe)."
+      },
+      {
+        front: "Why do packets drop?",
+        back: "Packet loss almost always occurs when traffic spikes cause a router's memory buffer (Queue) to overflow. When the router has no memory left, it panics and drops incoming data."
+      }
+    ],
+    quiz: [
+      {
+        question: "Which network metric describes the actual, real-world rate of successful data transfer at any given moment, rather than the theoretical maximum of the cable?",
+        options: ["Bandwidth", "Throughput", "Latency", "Propagation"],
+        answer: 1
+      },
+      {
+        question: "If an interviewer asks you how to reduce 'Propagation Delay' for users in Tokyo trying to access your database in New York, what is the ONLY mathematically correct answer?",
+        options: ["Increase the bandwidth of the New York router to 10Gbps.", "Use a highly compressed data format like Protocol Buffers.", "Move the data closer to the user by utilizing a CDN Edge Server in Tokyo.", "Switch the application protocol from TCP to UDP."],
+        answer: 2
+      }
+    ]
+  },
+  {
+    id: 'cn_commands',
+    title: 'Module 14: Networking Commands',
+    notes: {
+      intro: "Welcome to **Module 14: Networking Commands**.\n\nIn the real world of system engineering, cloud architecture, and DevOps, you rarely have a shiny Graphical User Interface (GUI) to diagnose problems. When a server goes down at 3:00 AM, you only have a command-line terminal.\n\nMastering these commands is non-negotiable for troubleshooting, and they frequently pop up in technical interviews when assessing your hands-on operational knowledge.",
+      chapter1: {
+        title: "1. `ping`",
+        points: [
+          "**Purpose:** Tests Layer 3 (Network Layer) reachability to a specific host and measures the Round Trip Time (RTT). It uses ICMP Echo Request and Echo Reply messages.",
+          "**Syntax:** `ping <hostname_or_IP>`",
+          "**Sample Output:**",
+          "```bash\n$ ping google.com\nPinging google.com [142.250.190.46] with 32 bytes of data:\nReply from 142.250.190.46: bytes=32 time=12ms TTL=117\nReply from 142.250.190.46: bytes=32 time=14ms TTL=117\nReply from 142.250.190.46: bytes=32 time=11ms TTL=117\n\nPing statistics for 142.250.190.46:\n    Packets: Sent = 3, Received = 3, Lost = 0 (0% loss)\n```",
+          "**Explanation of Output Fields:**",
+          "**bytes=32:** The size of the ICMP payload sent.",
+          "**time=12ms:** The Round Trip Time (RTT). How long the packet took to get there and back.",
+          "**TTL=117:** Time to Live. Shows how many router hops the packet has remaining before it is discarded.",
+          "**Lost = 0:** Indicates network stability. Anything above 0% indicates a failing link or extreme congestion.",
+          "**Real-world Use Cases:**",
+          "**Sanity Check:** 'Is the server completely dead, or is it just the web application that crashed?' If it pings, the OS and network card are alive.",
+          "**Baseline Latency:** Measuring the baseline delay between your app server and your database server."
+        ]
+      },
+      chapter2: {
+        title: "2. `tracert` / `traceroute`",
+        points: [
+          "**Purpose:** Maps the exact router-by-router path a packet takes from your machine to the destination. It intentionally manipulates the IP TTL field to force each router along the path to reply with an ICMP 'Time Exceeded' error.",
+          "**Syntax:** `tracert <hostname_or_IP>` (Windows)",
+          "**Sample Output:**",
+          "```bash\n$ tracert 8.8.8.8\nTracing route to dns.google [8.8.8.8] over a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  192.168.1.1 (Home Router)\n  2    10 ms    11 ms    12 ms  10.20.30.40 (ISP Gateway)\n  3     * * * Request timed out.\n  4    15 ms    14 ms    15 ms  dns.google [8.8.8.8]\n\nTrace complete.\n```",
+          "**Explanation of Output Fields:**",
+          "**Hop Column (1, 2, 3...):** The sequence of routers crossed.",
+          "**Time Columns (10 ms, 11 ms...):** It sends 3 probes per hop. These are the RTTs for each probe.",
+          "**Hostname/IP:** The identity of the router at that hop.",
+          "**Asterisks (*):** Indicates the router dropped the packet or is configured to ignore ICMP requests for security reasons (very common on the internet backbone).",
+          "**Real-world Use Cases:**",
+          "**Pinpointing Outages:** If users complain they can't reach your site, `traceroute` tells you if the connection is dying at their ISP, halfway across the country, or at your own data center's firewall."
+        ]
+      },
+      chapter3: {
+        title: "3. Local Interface Config (`ipconfig` / `ip addr`)",
+        points: [
+          "**Purpose:** Displays or modifies the current configuration of the local Network Interface Cards (NICs), including IP addresses, Subnet Masks, and Default Gateways.\n- `ipconfig`: Windows standard.\n- `ifconfig`: Legacy Linux/Mac standard.\n- `ip addr`: Modern Linux standard.",
+          "**Syntax:** `ipconfig /all` (Windows) or `ip addr show` (Linux)",
+          "**Sample Output:**",
+          "```bash\nWireless LAN adapter Wi-Fi:\n   Physical Address. . . . . . . . . : A1-B2-C3-D4-E5-F6\n   IPv4 Address. . . . . . . . . . . : 192.168.1.50(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Default Gateway . . . . . . . . . : 192.168.1.1\n   DHCP Server . . . . . . . . . . . : 192.168.1.1\n```",
+          "**Explanation of Output Fields:**",
+          "**Physical Address:** Your Layer 2 MAC Address.",
+          "**IPv4 Address:** Your current Layer 3 logical address.",
+          "**Subnet Mask:** Defines the boundary of your local network (e.g., `/24`).",
+          "**Default Gateway:** The IP of the router that handles outbound internet traffic.",
+          "**Real-world Use Cases:**",
+          "**Network Setup:** Finding your router's IP so you can log into its web interface.",
+          "**DHCP Debugging:** Releasing and renewing a stuck IP lease (`ipconfig /release` then `/renew`)."
+        ]
+      },
+      chapter4: {
+        title: "4. `arp`",
+        points: [
+          "**Purpose:** Displays and modifies the local Address Resolution Protocol (ARP) cache, which maps Layer 3 IP addresses to Layer 2 MAC addresses.",
+          "**Syntax:** `arp -a` (Windows/Linux)",
+          "**Sample Output:**",
+          "```bash\nInterface: 192.168.1.50 --- 0x4\n  Internet Address      Physical Address      Type\n  192.168.1.1           a1-b2-c3-d4-e5-f6     dynamic\n  192.168.1.255         ff-ff-ff-ff-ff-ff     static\n```",
+          "**Explanation of Output Fields:**",
+          "**Internet Address:** The IP address of a device on your local LAN.",
+          "**Physical Address:** The corresponding MAC address.",
+          "**Type (Dynamic):** Learned automatically via the ARP process. Will expire from the cache eventually.",
+          "**Type (Static):** Hardcoded manually or represents a permanent multicast/broadcast address.",
+          "**Real-world Use Cases:**",
+          "**Security Audits:** Detecting 'ARP Spoofing' (Man-in-the-Middle attacks) by checking if two different IPs share the same MAC address in the table.",
+          "**Device Discovery:** Finding the MAC address of a headless Raspberry Pi or IoT device you just plugged into the switch."
+        ]
+      },
+      chapter5: {
+        title: "5. `route`",
+        points: [
+          "**Purpose:** Views or manipulates the host's internal IP routing table. It shows exactly how your machine decides where to send traffic.",
+          "**Syntax:** `route print` (Windows) or `ip route` (Linux)",
+          "**Sample Output:**",
+          "```bash\nIPv4 Route Table\n===========================================================================\nActive Routes:\nNetwork Destination        Netmask          Gateway       Interface  Metric\n          0.0.0.0          0.0.0.0      192.168.1.1    192.168.1.50      25\n      192.168.1.0    255.255.255.0         On-link     192.168.1.50      25\n===========================================================================\n```",
+          "**Explanation of Output Fields:**",
+          "**Network Destination 0.0.0.0:** This is the Default Route. Any traffic going to the internet matches this line.",
+          "**Gateway:** Where the packet is forwarded (your router).",
+          "**On-link:** Means the destination is on the exact same physical switch as you; no gateway router is needed.",
+          "**Metric:** The 'cost' of the route. If there are two routes to the same destination, the OS chooses the one with the lowest metric.",
+          "**Real-world Use Cases:**",
+          "**VPN Troubleshooting:** When you connect to a corporate VPN but can't reach internal servers, checking the route table confirms if the OS is correctly funneling corporate IPs down the VPN tunnel interface."
+        ]
+      },
+      chapter6: {
+        title: "6. `netstat`",
+        points: [
+          "**Purpose:** Displays active TCP/UDP connections, listening ports, and routing statistics. It is the ultimate tool for checking what software is using the network.",
+          "**Syntax:** `netstat -ano` (Windows - shows PIDs) or `netstat -tuln` (Linux - shows listening TCP/UDP ports).",
+          "**Sample Output:**",
+          "```bash\n  Proto  Local Address          Foreign Address        State           PID\n  TCP    0.0.0.0:80             0.0.0.0:0              LISTENING       4231\n  TCP    192.168.1.50:51234     142.250.190.46:443     ESTABLISHED     8912\n```",
+          "**Explanation of Output Fields:**",
+          "**Local Address (0.0.0.0:80):** Means a local application is bound to Port 80 and is accepting connections from *any* IP interface.",
+          "**State (LISTENING):** A server application (like Nginx) is waiting for incoming requests.",
+          "**State (ESTABLISHED):** An active, open data connection (e.g., your browser talking to a Google server on port 443).",
+          "**PID:** Process ID. Tells you exactly which application is using that port.",
+          "**Real-world Use Cases:**",
+          "**Port Conflicts:** You try to start a Node.js server on Port 3000 and it crashes with `EADDRINUSE`. You run `netstat` to find the PID of the ghost process hogging Port 3000 so you can kill it.",
+          "**Security:** Spotting unauthorized outbound connections to strange IPs."
+        ]
+      },
+      chapter7: {
+        title: "7. `nslookup` / `dig`",
+        points: [
+          "**Purpose:** Queries DNS servers to resolve domain names to IP addresses, or fetches specific DNS records (MX, TXT, CNAME). `nslookup` is standard on Windows; `dig` is the superior, more detailed tool on Linux/Mac.",
+          "**Syntax:** `nslookup google.com` or `dig google.com +short`",
+          "**Sample Output (nslookup):**",
+          "```bash\n$ nslookup google.com\nServer:  UnKnown\nAddress:  192.168.1.1\n\nNon-authoritative answer:\nName:    google.com\nAddresses:  2607:f8b0:4009:815::200e\n          142.250.190.46\n```",
+          "**Explanation of Output Fields:**",
+          "**Server / Address (Top):** The DNS server your machine asked (usually your local router or ISP).",
+          "**Non-authoritative answer:** Means your local DNS server didn't own the domain; it just pulled the answer from its cache or asked another server.",
+          "**Addresses (Bottom):** The actual IPv6 and IPv4 addresses for the domain.",
+          "**Real-world Use Cases:**",
+          "**DNS Propagation:** You just migrated your website to a new host and changed the DNS records. You use `nslookup` to see if the world is seeing the new IP yet.",
+          "**Email Setup:** Querying `dig domain.com MX` to verify email routing records are configured correctly."
+        ]
+      },
+      chapter8: {
+        title: "8. `curl` / `wget`",
+        points: [
+          "**Purpose:** Tools to transfer data to or from a server over HTTP, HTTPS, or FTP directly from the command line. `wget` is primarily for downloading files, while `curl` is an incredibly powerful tool for interacting with REST APIs.",
+          "**Syntax:** `curl -I https://example.com` (Fetches only headers) | `wget https://example.com/file.zip` (Downloads file).",
+          "**Sample Output (curl -I):**",
+          "```bash\n$ curl -I https://api.github.com\nHTTP/2 200 \nserver: GitHub.com\ndate: Tue, 21 Jul 2026 11:00:00 GMT\ncontent-type: application/json; charset=utf-8\nstrict-transport-security: max-age=31536000\n```",
+          "**Explanation of Output Fields:**",
+          "**HTTP/2 200:** Confirms the protocol version and the `200 OK` success status code.",
+          "**content-type:** Tells you what kind of data the API returns (JSON).",
+          "**strict-transport-security:** A security header enforcing HTTPS.",
+          "**Real-world Use Cases:**",
+          "**API Testing:** Using `curl -X POST -d '{\"key\":\"value\"}'` to test a microservice endpoint without needing to write a frontend client or launch Postman.",
+          "**Automation:** Using `wget` inside a bash script to automatically download the latest version of a software package during server provisioning."
+        ]
+      }
+    },
+    flashcards: [
+      {
+        front: "What is the primary purpose of the `traceroute` command?",
+        back: "It maps the exact router-by-router path a packet takes to its destination by manipulating the IP Time To Live (TTL) field, helping to pinpoint exactly where a network connection is failing."
+      },
+      {
+        front: "If a Node.js server crashes with 'EADDRINUSE' (Port 3000 is already in use), what command should you run to find the ghost process?",
+        back: "`netstat -ano` (Windows) or `netstat -tuln` (Linux). It displays active connections, listening ports, and the associated Process ID (PID)."
+      },
+      {
+        front: "What does the `arp` command do?",
+        back: "It displays and modifies the local Address Resolution Protocol cache, which maps Layer 3 IP addresses to Layer 2 MAC addresses."
+      },
+      {
+        front: "What is the difference between `curl` and `wget`?",
+        back: "`wget` is primarily used for downloading files from the internet, while `curl` is a powerful tool designed for interacting with REST APIs (sending payloads, testing endpoints) directly from the command line."
+      }
+    ],
+    quiz: [
+      {
+        question: "When running the `ping` command, what does the 'TTL=117' field indicate?",
+        options: ["The network speed in megabits per second.", "The total time elapsed since the server started.", "The number of router hops the packet has remaining before it is discarded.", "The cryptographic key length of the ICMP request."],
+        answer: 2
+      },
+      {
+        question: "You want to verify if your newly updated DNS records have propagated globally. Which command is best suited for querying DNS servers for domain names and IP resolution?",
+        options: ["nslookup / dig", "route print", "netstat", "ipconfig"],
+        answer: 0
+      }
+    ]
   }
 ];

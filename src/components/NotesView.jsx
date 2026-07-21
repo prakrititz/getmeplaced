@@ -33,7 +33,7 @@ export function NotesView({ module, user, starredCards }) {
     );
   }
 
-  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db' || module.id === 'oop_blueprint' || module.id === 'cpp_fundamentals' || module.id === 'cpp_architecture' || module.id === 'cpp_inheritance' || module.id === 'solid_principles' || module.id === 'cpp_polymorphism' || module.id === 'cpp_runtime_polymorphism' || module.id === 'cpp_diamond_problem' || module.id === 'cpp_templates' || module.id === 'cpp_vs_java' || module.id === 'java_interfaces_abstract_classes' || module.id === 'cn_fundamentals' || module.id === 'cn_network_types' || module.id === 'cn_characteristics_osi' || module.id === 'cn_topologies' || module.id === 'cn_devices' || module.id === 'cn_layer2' || module.id === 'cn_layer3' || module.id === 'cn_core_protocols') {
+  if (module.id === 'types_of_databases' || module.id === 'partitioning_sharding' || module.id === 'cap_theorem' || module.id === 'master_slave_db' || module.id === 'oop_blueprint' || module.id === 'cpp_fundamentals' || module.id === 'cpp_architecture' || module.id === 'cpp_inheritance' || module.id === 'solid_principles' || module.id === 'cpp_polymorphism' || module.id === 'cpp_runtime_polymorphism' || module.id === 'cpp_diamond_problem' || module.id === 'cpp_templates' || module.id === 'cpp_vs_java' || module.id === 'java_interfaces_abstract_classes' || module.id === 'cn_fundamentals' || module.id === 'cn_network_types' || module.id === 'cn_characteristics_osi' || module.id === 'cn_topologies' || module.id === 'cn_devices' || module.id === 'cn_layer2' || module.id === 'cn_layer3' || module.id === 'cn_core_protocols' || module.id === 'cn_routing' || module.id === 'cn_layer4' || module.id === 'cn_layer7' || module.id === 'cn_backend_architecture' || module.id === 'cn_performance' || module.id === 'cn_commands') {
     const colorPalette = [
       { bg: 'bg-indigo-50 dark:bg-indigo-950/20', border: 'border-indigo-200 dark:border-indigo-900/50', text: 'text-indigo-600 dark:text-indigo-400', icon: 'text-indigo-500' },
       { bg: 'bg-amber-50 dark:bg-amber-950/20', border: 'border-amber-200 dark:border-amber-900/50', text: 'text-amber-600 dark:text-amber-400', icon: 'text-amber-500' },
@@ -68,7 +68,7 @@ export function NotesView({ module, user, starredCards }) {
                       return (
                         <div key={idx} className="w-full my-4 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-sm">
                           <pre className="p-4 text-sm text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap">
-                            {pt.replace(/```(cpp|java)?\n?/g, '').replace(/```$/, '')}
+                            {pt.replace(/```[a-zA-Z]*\n?/g, '').replace(/```$/, '')}
                           </pre>
                         </div>
                       );
